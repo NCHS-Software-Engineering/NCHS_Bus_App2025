@@ -1,0 +1,89 @@
+html {
+    height: 100%;
+}          
+body {
+    height: 100%;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background: rgb(169, 169, 169);
+    
+}
+h1 {
+    
+    color: white;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+a, a:link, a:visited, a:hover, a:active {
+    color: black;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    text-decoration: none;
+}
+#redbar {
+    display: flex;
+    background-color: rgb(255, 44, 44);
+    flex-direction: column;
+    width: 170px;
+    height: 100%;
+    box-shadow: 0px 10px 34px rgb(18, 18, 18);
+}
+#buslist, #buschanges, #logs, #settings, #logout {
+    background-color: #ffffff;
+    width: 150px; 
+    height: 150px;
+    margin: 10px; /* Distance from right side of screen */
+    cursor: pointer; /* Make button look clickable */
+    border-radius: 25px; /* Rounded Corners */
+    text-align: center;
+    box-shadow: 0px 10px 14px rgb(18, 18, 18);
+}
+#buslist:hover, #buschanges:hover, #logs:hover, #settings:hover, #logout:hover {
+    background-color: #dcdcdc;
+}
+#buslist:active, #buschanges:active, #logs:active, #settings:active, #logout:active {
+    background-color: #dcdcdc;
+    transform: translateY(3px);
+}
+#buslist-container {
+    display: flex;
+    background-color: white;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+}
+#main-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+#log_body {
+    background-color: white;
+    width: 900px; 
+    height: 550px;
+    position: absolute;
+    right: 20px;
+    margin: 40px;
+    text-align: left;
+    
+    
+}
+#page{
+    display: flex;
+}
+
+table, th, td{
+    /*border: 1px solid;*/
+    border-bottom: 1px solid rgb(0,0,0);
+    padding: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 85%;
+    border-collapse: collapse;
+    
+    table-layout: fixed;
+    margin-top: 15px 
+    
+}
+
+tr:nth-child(even){background-color: #ebebeb;}
+tr:hover {background-color: #ff928e;}
+th{background-color: rgb(220, 53, 69); color: black;}

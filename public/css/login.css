@@ -1,0 +1,60 @@
+html {
+    height: 100%;
+}          
+body {
+    height: 100%;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: rgb(249, 254, 255);
+    /*background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(204,204,204,1) 100%);*/
+}
+h1, a {
+    color: white;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+#login-text {
+    color: black;
+    margin-left: 12.33%;
+    margin-top: 9%;
+}
+
+#login-box {
+    margin: 0 auto;
+    position: relative;
+    top: 35%;
+    transform: translateY(-50%);
+    width: 400px;
+    height: 400px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  }
+
+  .login-box h2 {
+    margin-top: 0;
+    font-size: 28px;
+    text-align: center;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  }
+
+  /* Style the input fields and submit button */
+  input[type=text], input[type=password], input[type=submit] {
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    font-size: 16px;
+    background-color: #f2f2f2;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  }
+
+  input[type=submit] {
+    background-color: rgb(243, 80, 96);
+    color: #fff;
+    cursor: pointer;
+  }

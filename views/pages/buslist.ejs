@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>NCHS Bus Changes - Admin</title>
+
+        <link rel="icon" type="image/png" href="/images/Naperville_Central_Logo.png">
+
+        <!-- Latest compiled and minified CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Latest compiled JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <link rel="stylesheet" href="/css/buslist.css">
+    
+
+    </head>
+
+    <body>
+        <div id="main-container" class="flex-container" style="display: none;">
+            <div id="redbar" class="flex-container">
+                    
+                    <div id="buslist" class="flex-fill" onclick="location.href='buslist'" style="cursor:default;"><img id="menu-btn" src="/images/clipboard.png" alt="Bus List" style="top: 100px;"></div>
+
+                    <div id="buschanges" class="flex-fill" onclick="location.href='buschanges';"><img id="menu-btn" src="/images/change.png" alt="Bus Changes"></div>
+
+                    <div id="logs" class="flex-fill" onclick="location.href='logs';"><img id="menu-btn" src="/images/log-file-format.png" alt="Logs"></div>
+
+                    <div id="settings" class="flex-fill" onclick="location.href='settings';"><img id="menu-btn" src="/images/settings.png" alt="Settings"></div>
+
+                    <div id="logout" class="flex-fill" onclick="location.href='logout';"><img id="menu-btn" src="/images/exit.png" alt="Logout"></div>
+                    
+            </div>
+            <div id="tabs" class="flex-container">
+                <div id="view-all">View All</div> 
+
+            </div>
+            <div id="allBusses" onload="getBusses()" class="flex-container">
+
+            </div>
+            
+            <div id="searchBusses" class="flex-container" style="display: none;">
+
+            </div> 
+        </div>
+    </body>
+
+    <script src="/js/buslist.js"></script>
+    <script>
+        let button = document.getElementById('buslist');
+        button.style.filter = "invert(1)";
+        button.style.boxShadow = "0px 7px 14px rgb(237, 237, 237)";
+
+        setInterval(updateBusses, 1000);
+    </script>
+
+</html>
