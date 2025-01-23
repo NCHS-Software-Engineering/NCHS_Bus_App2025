@@ -1,3 +1,26 @@
+//Websocket connection
+const socket = new WebSocket("ws://localhost:3000"); // Connect to WebSocket server
+
+socket.addEventListener("open", () => {
+  console.log("Connected to WebSocket server");
+});
+
+// Listen for messages from the server
+socket.addEventListener("message", (event) => {
+  const data = JSON.parse(event.data);
+  console.log("WebSocket message received:", data);
+
+  // Update bus status dynamically based on received data
+  const busDivs = document.getElementsByClassName('busObj');
+  for (let div of busDivs) {
+    if (div.textContent.includes(data.number)) {
+      div.style.backgroundColor = getStatusColor(data.newStatus);
+      div.textContent = `${data.number} → ${data.change || ''}`;
+    }
+  }
+});
+
+
 function viewBusEdit() {
     let viewTab = document.getElementById('viewBusses');
     let editTab = document.getElementById('editBusses');

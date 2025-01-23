@@ -110,23 +110,35 @@
 
 
         <script>
-            import WebSocket, { WebSocketServer } from 'ws';
+            const socket = new WebSocket("ws://localhost:3000"); // Connect to WebSocket server
 
-            const wss = new WebSocketServer({ port: 8080 });
-
-            wss.on('connection', function connection(ws) {
-            ws.on('error', console.error);
-
-            ws.on('message', function message(data, isBinary) {
-                wss.clients.forEach(function each(client) {
-                if (client.readyState === WebSocket.OPEN) {
-                    client.send(data, { binary: isBinary });
-                }
-                });
+            socket.addEventListener("open", () => {
+            console.log("Connected to WebSocket server");
             });
+
+            // Listen for messages from the server
+            socket.addEventListener("message", (event) => {
+                const data = JSON.stringify(event.data);
+                console.log("WebSocket message received:", data);
+
+                
+                // Update bus status dynamically based on received data
+                const busDivs = document.getElementsByClassName('busObj');
+                for (let div of busDivs) {
+                    if (div.textContent.includes(data.number)) {
+                    div.style.backgroundColor = getStatusColor(data.newStatus);
+                    div.textContent = `${data.number} → ${data.change || ''}`;
+                    }
+                }
             });
         </script>
-
+        <script>
+                ws.onmessage = (event) => {
+                const rawData = event.data; // Raw string received
+                console.log(rawData); // Display the raw object string
+                // Parse or process this data to update your UI
+                 };
+        </script>
         <script>
               document.addEventListener('DOMContentLoaded', function() {
                 //let starredBusses = [];

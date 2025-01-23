@@ -73,26 +73,28 @@ app.post("/updateStatus", (req, res) => {
   });
 });
 
-
+function broadcast(data){
+  wss.clients.forEach(client =>{
+    if(client.readystate === WebSocket.OPEN) {
+      client.send(JSON.stringify(data));
+    }
+  })
+}
 // WebSocket handling
 wss.on('connection', (ws) => {
   console.log('Client connected');
 
-  // Handle messages from clients
-  ws.on('message', (message) => {
-    console.log('Received message:', message);
+  const busUpdates = [
+      { number: 1, status: "Not Arrived" },
+      { number: 2, status: "Arrived" },
+      { number: 3, status: "Delayed" }
+  ];
 
-    // Broadcast the message to all connected clients
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(message);
-      }
-    });
-  });
+  setInterval(() => {
+      ws.send(busUpdates.toString()); // Convert object to string
+  }, 3000);
 
-  ws.on('close', () => {
-    console.log('Client disconnected');
-  });
+  ws.on('close', () => console.log('Client disconnected'));
 });
 
 // Start the server
@@ -418,26 +420,17 @@ app.post("/updateStatusTime", (req, res) => {
   });
 });
 
-app.post("/updateChange", (req, res) => {
-  let bus = req.body;
-  change = bus.newChange;
-
-  fs.readFile("buslist.json", "utf-8", (err, jsonString) => {
-    let buslist = JSON.parse(jsonString);
-
-        for (i = 0; i < buslist.buslist.length; i++) {
-            if (buslist.buslist[i].number == bus.number) {
-                if (bus.change == 0) buslist.buslist[i].change = null;
-                else buslist.buslist[i].change = bus.change;
-            }
-        };
-
-    let final = JSON.stringify(buslist);
-
-    fs.writeFile("buslist.json", final, (err) => {});
-
-    res.redirect("buslist");
-  });
+app.post('/updateChange', express.json(), (req, res) => {
+  const { number, change } = req.body;
+  const bus = busList.find(b => b.number === number);
+  if (bus) {
+      bus.change = change;
+      bus.status = "Updated"; // Optional: Change status when updating
+      broadcast({ buslist: busList }); // Send updated data to clients
+      res.json({ message: "Bus change updated successfully." });
+  } else {
+      res.status(404).json({ message: "Bus not found." });
+  }
 });
 
 app.get("/getlogs", (req, res) => {
