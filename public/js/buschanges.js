@@ -7,7 +7,7 @@ socket.addEventListener("open", () => {
 
 // Listen for messages from the server
 socket.addEventListener("message", (event) => {
-  const data = JSON.parse(event.data);
+  const data = JSON.stringify(event.data);
   console.log("WebSocket message received:", data);
 
   // Update bus status dynamically based on received data
@@ -118,7 +118,7 @@ function editBusses() {
                 div.style.height = (h-180)/10+"px";
 
                 let busNumber = data.buslist[i].number;
-                if (data.buslist[i].change == null)
+                if (data.buslist[i].change === null)
                     div.textContent = busNumber;
                 else {
                     div.textContent = busNumber + " → " + data.buslist[i].change;

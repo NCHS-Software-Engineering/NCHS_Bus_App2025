@@ -6,7 +6,7 @@ socket.addEventListener("open", () => {
 
 // Listen for messages from the server
 socket.addEventListener("message", (event) => {
-  const data = JSON.parse(event.data);
+  const data = JSON.stringify(event.data);
   console.log("WebSocket message received:", data);
 
   // Update bus status dynamically based on received data

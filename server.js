@@ -76,10 +76,11 @@ app.post("/updateStatus", (req, res) => {
 function broadcast(data){
   wss.clients.forEach(client =>{
     if(client.readystate === WebSocket.OPEN) {
+      console.log("SENT MESSASGE:" +data);
       client.send(JSON.stringify(data));
     }
   })
-}
+};
 // WebSocket handling
 wss.on('connection', (ws) => {
   console.log('Client connected');
@@ -411,7 +412,7 @@ app.post("/updateStatusTime", (req, res) => {
       buslist.buslist[i].timestamp = "";
     }
   }
-
+    
     let final = JSON.stringify(buslist);
 
     fs.writeFile("buslist.json", final, (err) => {});
@@ -421,16 +422,20 @@ app.post("/updateStatusTime", (req, res) => {
 });
 
 app.post('/updateChange', express.json(), (req, res) => {
-  const { number, change } = req.body;
-  const bus = busList.find(b => b.number === number);
-  if (bus) {
-      bus.change = change;
-      bus.status = "Updated"; // Optional: Change status when updating
-      broadcast({ buslist: busList }); // Send updated data to clients
-      res.json({ message: "Bus change updated successfully." });
-  } else {
-      res.status(404).json({ message: "Bus not found." });
-  }
+  const givenbus = req.body;
+  fs.readFile("buslist.json" , "utf-8",(err, jsonString)=>{
+    let busList = JSON.parse(jsonString);
+    console.log(givenbus.number);
+    const bus = givenbus;
+    if (bus) {
+        bus.status = "Updated"; // Optional: Change status when updating
+        broadcast({ buslist: busList }); // Send updated data to clients
+        res.json({ message: "Bus change updated successfully." });
+    } else {
+        res.status(404).json({ message: "Bus not found." });
+    }
+  })
+ 
 });
 
 app.get("/getlogs", (req, res) => {

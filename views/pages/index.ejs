@@ -120,7 +120,7 @@
             socket.addEventListener("message", (event) => {
                 const data = JSON.stringify(event.data);
                 console.log("WebSocket message received:", data);
-
+                
                 
                 // Update bus status dynamically based on received data
                 const busDivs = document.getElementsByClassName('busObj');
@@ -460,7 +460,8 @@ if(data) { // if there is data
                                 
             
                                 while(i < busses.length) { // busses[i]
-                                    console.log(i)
+                                    //console.log(i);
+                                    //console.log("Busses.length: " + busses.length);
                                     let row = table.rows[i];
                                     row.cells[0].innerHTML = busses[i-1].number;
                                     row.cells[1].innerHTML = busses[i-1].change;
@@ -478,6 +479,7 @@ if(data) { // if there is data
             
                                       
                                     i++;
+                                    //console.log("i: "+ i);
                                 }
                                 item.classList.add('starred-factor');
              
