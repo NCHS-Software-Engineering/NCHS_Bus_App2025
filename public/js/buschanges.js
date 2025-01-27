@@ -1,4 +1,3 @@
-//Websocket connection
 const socket = new WebSocket("ws://localhost:3000"); // Connect to WebSocket server
 
 socket.addEventListener("open", () => {
@@ -6,20 +5,25 @@ socket.addEventListener("open", () => {
 });
 
 // Listen for messages from the server
-socket.addEventListener("message", (event) => {
-  const data = JSON.stringify(event.data);
-  console.log("WebSocket message received:", data);
-
-  // Update bus status dynamically based on received data
-  const busDivs = document.getElementsByClassName('busObj');
-  for (let div of busDivs) {
-    if (div.textContent.includes(data.number)) {
-      div.style.backgroundColor = getStatusColor(data.newStatus);
-      div.textContent = `${data.number} → ${data.change || ''}`;
+socket.addEventListener('message', (event) => {
+    console.log('WebSocket message received:', event.data);
+  
+    // Parse the received data
+    let data;
+    try {
+      data = JSON.parse(event.data);
+    } catch (e) {
+      console.error('Error parsing WebSocket message:', event.data);
+      return;
     }
-  }
-});
-
+  
+    // Update the buses if buslist is included in the message
+    if (data.buslist) {
+      getBusses(data.buslist); // Renders updated bus list
+      location.reload();
+    }
+  });
+  
 
 function viewBusEdit() {
     let viewTab = document.getElementById('viewBusses');
@@ -50,14 +54,17 @@ function getBusses() {
         if(data) { // if there is data
             let i = 0;
             while(i < data.buslist.length) {
-                while(data.buslist[i].change == null) i++;
-                if (i >= data.buslist.length) break;
-
                 let div = document.createElement("div");
                 div.classList.add('busObj')
                 div.classList.add('flex-fill');
+                console.log("HERE");
 
-                div.style.backgroundColor = "rgb(255, 44, 44)";
+                if(data.buslist[i].status == "Not Arrived") div.style.backgroundColor = "rgb(255, 44, 44)";
+                else if(data.buslist[i].status == "Arrived") div.style.backgroundColor = "green";
+                else if(data.buslist[i].status == "Departed") div.style.backgroundColor = "grey";
+                /*if (data.buslist[i].status == "Departed" && data.buslist[i].number == 1234567890){
+                    div.style.backgroundColor = "rgb(60, 60, 200)";
+                }*/
 
                 div.style.borderRadius = "30px";
                 div.style.margin = "10px";
@@ -69,22 +76,98 @@ function getBusses() {
                 if (data.buslist[i].change == null)
                     div.textContent = busNumber;
                 else {
-                    div.textContent = busNumber + " → " + data.buslist[i].change;
+                    div.textContent = busNumber + " → " + data.buslist[i].change + "";
                 }
+                let change;
+                if (data.buslist[i].change != undefined) change = data.buslist[i].change;
+                else change = 0;
+
                 div.style.textAlign = 'center';
                 div.style.fontFamily = 'Gill Sans';
+                div.style.fontSize = (h-180)/10+"px";
+                div.style.cursor = "pointer";
                 div.style.lineHeight = div.style.height;
-                div.style.fontSize = div.style.height;
 
-                div.onclick = remove;
+                div.onclick = changeColor;
+                
 
                 document.getElementById('viewBusses').appendChild(div);  
                 i++;
 
-                function remove() {
-                    
+                function changeColor() {
+                    if (div.style.backgroundColor == "rgb(255, 44, 44)") {
+
+                        let busdata = {
+                            number: busNumber,
+                            newStatus: "Arrived",
+                            change: change
+                        };
+                        // sends the busdata
+                        fetch('/updateStatus', {
+                            method: 'POST',
+                            body: JSON.stringify(busdata),
+                            headers: {
+                                'Content-Type': 'application/json',
+                              }
+                        })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            console.log('Success:', data);
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
+
+                        div.style.backgroundColor = 'green';
+                    } else if (div.style.backgroundColor == 'green'){
+                        let busdata = {
+                            number: busNumber,
+                            newStatus: "Departed",
+                            change: change
+                        };
+                        console.log(busdata);
+                        // sends the busdata
+                        fetch('/updateStatus', {
+                            method: 'POST',
+                            body: JSON.stringify(busdata),
+                            headers: {
+                                'Content-Type': 'application/json',
+                              }
+                        })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            console.log('Success:', data);
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
+
+                        div.style.backgroundColor = 'grey';
+                    } else {
+                        let busdata = {
+                            number: busNumber,
+                            newStatus: "Not Arrived",
+                            change: change
+                        };
+                        // sends the busdata
+                        fetch('/updateStatus', {
+                            method: 'POST',
+                            body: JSON.stringify(busdata),
+                            headers: {
+                                'Content-Type': 'application/json',
+                              }
+                        })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            console.log('Success:', data);
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
+                        div.style.backgroundColor = "rgb(255, 44, 44)";
+                    }
                 }
-            }
+            }//end of the while loop
         }
     }).catch(err => console.error(err));
 }
@@ -118,7 +201,7 @@ function editBusses() {
                 div.style.height = (h-180)/10+"px";
 
                 let busNumber = data.buslist[i].number;
-                if (data.buslist[i].change === null)
+                if (data.buslist[i].change == null)
                     div.textContent = busNumber;
                 else {
                     div.textContent = busNumber + " → " + data.buslist[i].change;

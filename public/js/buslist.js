@@ -19,51 +19,12 @@ socket.addEventListener('message', (event) => {
   
     // Update the buses if buslist is included in the message
     if (data.buslist) {
-      renderBuses(data.buslist); // Renders updated bus list
+      getBusses(data.buslist); // Renders updated bus list
     }
   });
   
 
-  function renderBuses(busList) {
-    const allBusses = document.getElementById('allBusses');
-    if (!allBusses) return;
-  
-    // Keep track of existing buses
-    const currentBusIds = busList.map((bus) => `bus-${bus.number}`);
-  
-    // Remove buttons for buses that are no longer in the list
-    Array.from(allBusses.children).forEach((button) => {
-      if (!currentBusIds.includes(button.id)) {
-        button.remove();
-      }
-    });
-  
-    // Update or create buttons for each bus
-    busList.forEach((bus) => {
-      let busButton = document.getElementById(`bus-${bus.number}`);
-      if (!busButton) {
-        busButton = document.createElement('button');
-        busButton.id = `bus-${bus.number}`;
-        busButton.className = 'bus-button';
-        busButton.style.margin = '10px';
-        busButton.style.padding = '20px';
-        busButton.style.borderRadius = '8px';
-        busButton.style.cursor = 'pointer';
-        busButton.textContent = bus.number;
-        busButton.addEventListener('click', () => handleBusClick(bus.number));
-        allBusses.appendChild(busButton);
-      }
-  
-      // Update button color
-      if (bus.status === "Not Arrived") {
-        busButton.style.backgroundColor = "rgb(255, 44, 44)"; // Red
-      } else if (bus.status === "Arrived") {
-        busButton.style.backgroundColor = "green"; // Green
-      } else if (bus.status === "Departed") {
-        busButton.style.backgroundColor = "grey"; // Grey
-      }
-    });
-  }
+ 
   
   
   function handleBusClick(busNumber) {
@@ -264,7 +225,7 @@ function getBusses() {
                             change: change
                         };
                         // sends the busdata
-                        fetch('/updateStatusTime', {
+                        fetch('/updateStatus', {
                             method: 'POST',
                             body: JSON.stringify(busdata),
                             headers: {
@@ -322,7 +283,6 @@ function displayBusses() {
 }
 
 function resize() {
-    getBusses();
     var w = window.innerWidth;
     var h = window.innerHeight;
 

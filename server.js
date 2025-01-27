@@ -32,12 +32,11 @@ app.get("/getbus", (req, res) => {
 
 app.post("/updateStatus", (req, res) => {
   let bus = req.body;
-
   // Validate incoming request
   if (!bus || !bus.number || !bus.newStatus) {
     return res.status(400).json({ error: "Invalid bus data provided" });
   }
-
+  console.log()
   let change = bus.newStatus;
   let time = getTime();
 
@@ -62,6 +61,7 @@ app.post("/updateStatus", (req, res) => {
 
     // Update the bus status
     let busFound = false;
+    console.log("bus change: "+ bus.newStatus);
     for (let i = 0; i < buslist.buslist.length; i++) {
       let iteratedbus = buslist.buslist[i].number;
       if (buslist.buslist[i].change != null) {
@@ -452,25 +452,34 @@ app.post('/updateChange', express.json(), (req, res) => {
       console.error("Error reading buslist.json:", err);
       return res.status(500).json({ message: "Error reading bus list" });
     }
-  
+    
     try {
       let busList = JSON.parse(jsonString);
-      console.log(givenbus.number);
       const bus = givenbus;
-  
-      if (bus) {
-        bus.status = "Updated"; // Optional: Change status when updating
-        broadcast({ buslist: busList }); // Send updated data to clients
-        res.json({ message: "Bus change updated successfully." });
-      } else {
-        res.status(404).json({ message: "Bus not found." });
-      }
-    } catch (parseError) {
+      
+      for (i = 0; i < busList.buslist.length; i++) {
+        if (busList.buslist[i].number == bus.number) {
+            if (bus.change == 0) busList.buslist[i].change = null;
+            else busList.buslist[i].change = bus.change;
+        }
+      };
+
+
+      
+    let final = JSON.stringify(busList);
+
+    fs.writeFile("buslist.json", final, (err) => {});
+
+    res.redirect("buslist");
+
+    broadcast(busList);
+    } 
+    catch (parseError) {
       console.error("Error parsing buslist.json:", parseError);
       return res.status(500).json({ message: "Invalid JSON in bus list" });
     }
-  });
- 
+    });
+  
 });
 
 app.get("/getlogs", (req, res) => {
