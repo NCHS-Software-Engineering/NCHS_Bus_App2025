@@ -442,7 +442,6 @@ app.post("/updateStatusTime", (req, res) => {
 
     // Update the bus status
     let busFound = false;
-    console.log("bus change: "+ bus.newStatus);
     for (let i = 0; i < buslist.buslist.length; i++) {
       let iteratedbus = buslist.buslist[i].number;
       if (buslist.buslist[i].change != null) {

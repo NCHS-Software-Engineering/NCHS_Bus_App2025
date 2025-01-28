@@ -117,24 +117,23 @@
             });
 
             // Listen for messages from the server
-            socket.addEventListener("message", (event) => {
-                const data = JSON.stringify(event.data);
-                console.log("WebSocket message received:", data);
-                
-                
-                // Update bus status dynamically based on received data
-                const busDivs = document.getElementsByClassName('busObj');
-                let table = fetchBusses();
-                if(table){
-                    console.log("bus table: ", table);
-                    for (let div of busDivs) {
-                        if (div.textContent.includes(data.number)) {
-                        div.style.backgroundColor = getStatusColor(data.newStatus);
-                        div.textContent = `${data.number} → ${data.change || ''}`;
-                        }
-                    }
-                {}
-                
+            socket.addEventListener('message', (event) => {
+            console.log('WebSocket message received:', event.data);
+        
+            // Parse the received data
+            let data;
+            try {
+            data = JSON.parse(event.data);
+            } catch (e) {
+            console.error('Error parsing WebSocket message:', event.data);
+            return;
+            }
+        
+            // Update the buses if buslist is included in the message
+            if (data.buslist) {
+                makeTable();
+                updateTable(data.buslist); // Renders updated bus list
+            }
             });
 
         </script>
@@ -331,6 +330,41 @@
                  // Parse the JSON string to convert it back to an array
             }
             
+
+            //updates the bustable after reciving the message from ws
+            function updateTable(message){
+                let busses = message;
+                if(busses){
+                    var table = document.getElementById('busTable');
+                    if(table){       
+                    for(let i = 1; i <= busses.length+1; i++){
+                        console.log(table.rows);
+                        let row = table.rows[i];
+                        if(row){
+                            row.cells[0].innerHTML = busses[i-1].number;
+                            row.cells[1].innerHTML = busses[i-1].change;
+                            row.cells[2].innerHTML = busses[i-1].status;
+                            row.cells[3].innerHTML = busses[i-1].timestamp;
+                            
+                            
+                        }
+                        if(starredBusses.has(tableValue)){
+                            starredBusses.delete(tableValue);
+                            starred();
+
+                        }
+                        }
+                    }
+                    else{
+                        console.log("No table 'busTable' found");
+                    }
+                    console.log("Bus Table updated");
+                
+                }else{
+                    console.error("Invalid data recived from websocket:" ,message);
+                }
+            }   
+
             
             function updateStarredUI() {
                 
@@ -388,44 +422,36 @@
             
             function makeTable() {
 
-var table = document.createElement('table');
-table.setAttribute('id', 'myTable'); // Set an ID for the table
-fetch('/getbus')
-.then(response => { 
-if(response.ok) {
-    return response.json(); // not important
-}
-}).then(data => {
-if(data) { // if there is data
-    let i = 0;
+            var table = document.createElement('table');
+            table.setAttribute('id', 'myTable'); // Set an ID for the table
+            fetch('/getbus')
+            .then(response => { 
+            if(response.ok) {
+                return response.json(); // not important
+            }
+            }).then(data => {
+            if(data) { // if there is data
+                let i = 0;
 
 
-    let busses = data.buslist;
-    let table = document.getElementById('busTable');
-    let item = document.getElementById('star-selector');
-    
+                let busses = data.buslist;
+                let table = document.getElementById('busTable');
+                let item = document.getElementById('star-selector');
+            
 
-    
+                while(i < busses.length) { // busses[i]
+                    let row = table.insertRow(-1);
+                
+                    row.insertCell(0).innerHTML = busses[i].number;
+                    row.insertCell(1).innerHTML = busses[i].change;
+                    row.insertCell(2).innerHTML = busses[i].status;
+                    row.insertCell(3).innerHTML = busses[i].timestamp;
+                    row.insertCell(4).innerHTML = "<span id = 'star-selector' class='e-icons e-medium e-star-filled starring'></span>";
 
-    while(i < busses.length) { // busses[i]
-        let row = table.insertRow(-1);
-     
-        row.insertCell(0).innerHTML = busses[i].number;
-        row.insertCell(1).innerHTML = busses[i].change;
-        row.insertCell(2).innerHTML = busses[i].status;
-        row.insertCell(3).innerHTML = busses[i].timestamp;
-        row.insertCell(4).innerHTML = "<span id = 'star-selector' class='e-icons e-medium e-star-filled starring'></span>";
-        
+                    row.addEventListener('click', function(event){
 
-
-
-       
-
-
-        row.addEventListener('click', function(event){
-
-            starred();
-        });
+                        starred();
+                    });
 
 
         i++;
@@ -502,7 +528,7 @@ if(data) { // if there is data
 
         <p style="text-align: center; color: grey;"><small>Version 1 Created by Simi Kama ('23), Adesh Kumar ('23), Theodore Ng ('23), </small><small onclick="hmm()">Alex Remiasz ('23), </small><small> and Boris Rokhmanov ('23)<br>
         <small>Version 2 Created by Vinay Narahari ('24), Tyler Browning ('24), and Peter Paik ('24)</small><br>
-    <small>Version 3 Created by Ryan Keough ('25), Priya Agwal ('25), and Andy Liang ('26)</small></p>
+        <small>Version 3 Created by Ryan Keough ('25), Priya Agrawal ('25), and Andy Liang ('26)</small></p>
         <script>
             makeTable();
             setInterval(fetchBusses, 15000);
