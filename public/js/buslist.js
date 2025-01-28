@@ -225,7 +225,7 @@ function getBusses() {
                             change: change
                         };
                         // sends the busdata
-                        fetch('/updateStatus', {
+                        fetch('/updateStatusTime', {
                             method: 'POST',
                             body: JSON.stringify(busdata),
                             headers: {

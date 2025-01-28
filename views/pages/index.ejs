@@ -124,20 +124,19 @@
                 
                 // Update bus status dynamically based on received data
                 const busDivs = document.getElementsByClassName('busObj');
-                for (let div of busDivs) {
-                    if (div.textContent.includes(data.number)) {
-                    div.style.backgroundColor = getStatusColor(data.newStatus);
-                    div.textContent = `${data.number} → ${data.change || ''}`;
+                let table = fetchBusses();
+                if(table){
+                    console.log("bus table: ", table);
+                    for (let div of busDivs) {
+                        if (div.textContent.includes(data.number)) {
+                        div.style.backgroundColor = getStatusColor(data.newStatus);
+                        div.textContent = `${data.number} → ${data.change || ''}`;
+                        }
                     }
-                }
+                {}
+                
             });
-        </script>
-        <script>
-                ws.onmessage = (event) => {
-                const rawData = event.data; // Raw string received
-                console.log(rawData); // Display the raw object string
-                // Parse or process this data to update your UI
-                 };
+
         </script>
         <script>
               document.addEventListener('DOMContentLoaded', function() {
@@ -502,7 +501,8 @@ if(data) { // if there is data
         </table>
 
         <p style="text-align: center; color: grey;"><small>Version 1 Created by Simi Kama ('23), Adesh Kumar ('23), Theodore Ng ('23), </small><small onclick="hmm()">Alex Remiasz ('23), </small><small> and Boris Rokhmanov ('23)<br>
-        <small>Version 2 Created by Vinay Narahari ('24), Tyler Browning ('24), and Peter Paik ('24)</small></p>
+        <small>Version 2 Created by Vinay Narahari ('24), Tyler Browning ('24), and Peter Paik ('24)</small><br>
+    <small>Version 3 Created by Ryan Keough ('25), Priya Agwal ('25), and Andy Liang ('26)</small></p>
         <script>
             makeTable();
             setInterval(fetchBusses, 15000);

@@ -411,39 +411,104 @@ app.get("/logout", (req, res) => {
   res.redirect("/");
 });
 
-
-
 app.post("/updateStatusTime", (req, res) => {
   let bus = req.body;
-  change = bus.newStatus;
+  // Validate incoming request
+  if (!bus || !bus.number || !bus.newStatus) {
+    return res.status(400).json({ error: "Invalid bus data provided" });
+  }
+  console.log()
+  let change = bus.newStatus;
+  let time = getTime();
 
   fs.readFile("buslist.json", "utf-8", (err, jsonString) => {
-    let buslist = JSON.parse(jsonString);
-
-    updatingbus = bus.number;
-    if(bus.change != 0){
-      updatingbus = bus.change
+    if (err) {
+      console.error("Error reading file:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
     }
 
-  for (i = 0; i < buslist.buslist.length; i++) {
-    iteratedbus = buslist.buslist[i].number;
-    if (buslist.buslist[i].change != null){
+    let buslist;
+    try {
+      buslist = JSON.parse(jsonString);
+    } catch (parseError) {
+      console.error("Error parsing JSON:", parseError);
+      return res.status(500).json({ error: "Invalid JSON data" });
+    }
+
+    let updatingbus = bus.number;
+    if (bus.change != 0) {
+      updatingbus = bus.change;
+    }
+
+    // Update the bus status
+    let busFound = false;
+    console.log("bus change: "+ bus.newStatus);
+    for (let i = 0; i < buslist.buslist.length; i++) {
+      let iteratedbus = buslist.buslist[i].number;
+      if (buslist.buslist[i].change != null) {
         iteratedbus = buslist.buslist[i].change;
+      }
+
+      if (updatingbus == iteratedbus) {
+        buslist.buslist[i].status = bus.newStatus;
+        buslist.buslist[i].timestamp = "";
+        busFound = true;
+        break;
+      }
     }
-    
-    if (updatingbus == iteratedbus){
-      buslist.buslist[i].status = bus.newStatus;
-      buslist.buslist[i].timestamp = "";
+
+    if (!busFound) {
+      return res.status(404).json({ error: "Bus not found" });
     }
-  }
-    
+
     let final = JSON.stringify(buslist);
 
-    fs.writeFile("buslist.json", final, (err) => {});
+    fs.writeFile("buslist.json", final, (err) => {
+      if (err) {
+        console.error("Error writing file:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
 
-    res.redirect("buslist");
+      // Broadcast updated data
+      
+      broadcast(buslist);
+
+      res.status(200).json({ message: "Bus status updated successfully" });
+    });
   });
 });
+
+// app.post("/updateStatusTime", (req, res) => {
+//   let bus = req.body;
+//   change = bus.newStatus;
+
+//   fs.readFile("buslist.json", "utf-8", (err, jsonString) => {
+//     let buslist = JSON.parse(jsonString);
+
+//     updatingbus = bus.number;
+//     if(bus.change != 0){
+//       updatingbus = bus.change
+//     }
+
+//   for (i = 0; i < buslist.buslist.length; i++) {
+//     iteratedbus = buslist.buslist[i].number;
+//     if (buslist.buslist[i].change != null){
+//         iteratedbus = buslist.buslist[i].change;
+//     }
+    
+//     if (updatingbus == iteratedbus){
+//       buslist.buslist[i].status = bus.newStatus;
+//       buslist.buslist[i].timestamp = "";
+//     }
+//   }
+    
+//     let final = JSON.stringify(buslist);
+
+//     fs.writeFile("buslist.json", final, (err) => {});
+
+//     res.redirect("buslist");
+//   });
+// });
 
 app.post('/updateChange', express.json(), (req, res) => {
   const givenbus = req.body;
