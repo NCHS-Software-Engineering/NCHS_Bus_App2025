@@ -88,7 +88,7 @@ app.post("/updateStatus", (req, res) => {
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
-      // Broadcast updated data
+      // Brodcast updated data
       broadcast(buslist);
 
       res.status(200).json({ message: "Bus status updated successfully" });
@@ -107,21 +107,7 @@ function broadcast(data) {
 }
 
 // WebSocket handling
-wss.on('connection', (ws) => {
-  console.log('Client connected');
 
-  const busUpdates = [
-      { number: 1, status: "Not Arrived" },
-      { number: 2, status: "Arrived" },
-      { number: 3, status: "Delayed" }
-  ];
-
-  setInterval(() => {
-      ws.send(busUpdates.toString()); // Convert object to string
-  }, 3000);
-
-  ws.on('close', () => console.log('Client disconnected'));
-});
 
 // Start the server
 const port = 3000;
@@ -469,7 +455,7 @@ app.post("/updateStatusTime", (req, res) => {
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
-      // Broadcast updated data
+      // Brodcast updated data
       
       broadcast(buslist);
 

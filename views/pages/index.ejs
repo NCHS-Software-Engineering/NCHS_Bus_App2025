@@ -542,44 +542,44 @@
 
         </script>
         <script>
-            function updateTable() {
-    let table = document.getElementById('busTable');
-    if (!table) {
-        console.error('Table with id "busTable" not found!');
-        return;
-    }
-
-    // Clear existing rows except for the header
-    while (table.rows.length > 1) {
-        table.deleteRow(1);
-    }
-
-    fetch('/getbus')
-        .then(response => {
-            if (response.ok) {
-                return response.json();
+        function updateTable() {
+            let table = document.getElementById('myTable');
+            if (!table) {
+                console.error('Table with id "busTable" not found!');
+                return;
             }
-        })
-        .then(data => {
-            if (data) {
-                let busses = data.buslist;
 
-                for (let i = 0; i < busses.length; i++) {
-                    let row = table.insertRow(-1);
-
-                    row.insertCell(0).innerHTML = busses[i].number;
-                    row.insertCell(1).innerHTML = busses[i].change;
-                    row.insertCell(2).innerHTML = busses[i].status;
-                    row.insertCell(3).innerHTML = busses[i].timestamp;
-                    row.insertCell(4).innerHTML = "<span id='star-selector' class='e-icons e-medium e-star-filled starring'></span>";
-
-                    row.addEventListener('click', function(event) {
-                        starred();
-                    });
-                }
+            // Clear existing rows except for the header
+            while (table.rows.length > 1) {
+                table.deleteRow(1);
             }
-        });
-}
+
+            fetch('/getbus')
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                })
+                .then(data => {
+                    if (data) {
+                        let busses = data.buslist;
+
+                        for (let i = 0; i < busses.length; i++) {
+                            let row = table.insertRow(-1);
+
+                            row.insertCell(0).innerHTML = busses[i].number;
+                            row.insertCell(1).innerHTML = busses[i].change;
+                            row.insertCell(2).innerHTML = busses[i].status;
+                            row.insertCell(3).innerHTML = busses[i].timestamp;
+                            row.insertCell(4).innerHTML = "<span id='star-selector' class='e-icons e-medium e-star-filled starring'></span>";
+
+                            row.addEventListener('click', function(event) {
+                                starred();
+                            });
+                        }
+                    }
+                });
+        }
         </script>
         <script>
             makeTable();
