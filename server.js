@@ -93,6 +93,7 @@ app.post("/updateStatus", (req, res) => {
 
       res.status(200).json({ message: "Bus status updated successfully" });
     });
+    
   });
 });
 

@@ -110,34 +110,6 @@
 
 
         <script>
-            const socket = new WebSocket("ws://localhost:3000"); // Connect to WebSocket server
-
-            socket.addEventListener("open", () => {
-            console.log("Connected to WebSocket server");
-            });
-
-            // Listen for messages from the server
-            socket.addEventListener('message', (event) => {
-            console.log('WebSocket message received:', event.data);
-        
-            // Parse the received data
-            let data;
-            try {
-            data = JSON.parse(event.data);
-            } catch (e) {
-            console.error('Error parsing WebSocket message:', event.data);
-            return;
-            }
-        
-            // Update the buses if buslist is included in the message
-            if (data.buslist) {
-                makeTable();
-                updateTable(data.buslist); // Renders updated bus list
-            }
-            });
-
-        </script>
-        <script>
               document.addEventListener('DOMContentLoaded', function() {
                 //let starredBusses = [];
                 
@@ -334,37 +306,45 @@
             //updates the bustable after reciving the message from ws
             function updateTable(message){
                 let busses = message;
+                fetch('/getbus')
+                        .then(response => { 
+                            if(response.ok) {
+                                return response.json(); // not important
+                            }
+                        }).then(data => {
+                            if(data) {
                 if(busses){
-                    var table = document.getElementById('busTable');
+                    let table = document.getElementById('busTable');
                     if(table){       
-                    for(let i = 1; i <= busses.length+1; i++){
-                        console.log(table.rows);
-                        let row = table.rows[i];
-                        if(row){
-                            row.cells[0].innerHTML = busses[i-1].number;
-                            row.cells[1].innerHTML = busses[i-1].change;
-                            row.cells[2].innerHTML = busses[i-1].status;
-                            row.cells[3].innerHTML = busses[i-1].timestamp;
-                            
-                            
-                        }
-                        if(starredBusses.has(tableValue)){
-                            starredBusses.delete(tableValue);
-                            starred();
+                        for(let i = 1; i <= busses.length+1; i++){
+                            console.log(table.rows);
+                            let row = table.rows[i];
+                            if(row){
+                                row.cells[0].innerHTML = busses[i-1].number;
+                                row.cells[1].innerHTML = busses[i-1].change;
+                                row.cells[2].innerHTML = busses[i-1].status;
+                                row.cells[3].innerHTML = busses[i-1].timestamp;
+                                
+                                
+                            }
+                            if(starredBusses.has(tableValue)){
+                                starredBusses.delete(tableValue);
+                                starred();
 
+                            }
+                            }
+                            console.log("Bus Table updated");
                         }
-                        }
-                    }
                     else{
                         console.log("No table 'busTable' found");
-                    }
-                    console.log("Bus Table updated");
-                
+                        }
+
                 }else{
                     console.error("Invalid data recived from websocket:" ,message);
-                }
+                }}});
             }   
 
+            
             
             function updateStarredUI() {
                 
@@ -423,6 +403,7 @@
             function makeTable() {
 
             var table = document.createElement('table');
+
             table.setAttribute('id', 'myTable'); // Set an ID for the table
             fetch('/getbus')
             .then(response => { 
@@ -437,7 +418,7 @@
                 let busses = data.buslist;
                 let table = document.getElementById('busTable');
                 let item = document.getElementById('star-selector');
-            
+                console.log("bus table:" + table);
 
                 while(i < busses.length) { // busses[i]
                     let row = table.insertRow(-1);
@@ -467,6 +448,10 @@
 
 
 }
+
+
+
+
             
                    
             
@@ -530,8 +515,74 @@
         <small>Version 2 Created by Vinay Narahari ('24), Tyler Browning ('24), and Peter Paik ('24)</small><br>
         <small>Version 3 Created by Ryan Keough ('25), Priya Agrawal ('25), and Andy Liang ('26)</small></p>
         <script>
+            const socket = new WebSocket("ws://localhost:3000"); // Connect to WebSocket server
+
+            socket.addEventListener("open", () => {
+            console.log("Connected to WebSocket server");
+            });
+
+            // Listen for messages from the server
+            socket.addEventListener('message', (event) => {
+            console.log('WebSocket message received:', event.data);
+        
+            // Parse the received data
+            let data;
+            try {
+            data = JSON.parse(event.data);
+            } catch (e) {
+            console.error('Error parsing WebSocket message:', event.data);
+            return;
+            }
+        
+            // Update the buses if buslist is included in the message
+            if (data.buslist) {
+                updateTable(); // Renders updated bus list
+            }
+            });
+
+        </script>
+        <script>
+            function updateTable() {
+    let table = document.getElementById('busTable');
+    if (!table) {
+        console.error('Table with id "busTable" not found!');
+        return;
+    }
+
+    // Clear existing rows except for the header
+    while (table.rows.length > 1) {
+        table.deleteRow(1);
+    }
+
+    fetch('/getbus')
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+        })
+        .then(data => {
+            if (data) {
+                let busses = data.buslist;
+
+                for (let i = 0; i < busses.length; i++) {
+                    let row = table.insertRow(-1);
+
+                    row.insertCell(0).innerHTML = busses[i].number;
+                    row.insertCell(1).innerHTML = busses[i].change;
+                    row.insertCell(2).innerHTML = busses[i].status;
+                    row.insertCell(3).innerHTML = busses[i].timestamp;
+                    row.insertCell(4).innerHTML = "<span id='star-selector' class='e-icons e-medium e-star-filled starring'></span>";
+
+                    row.addEventListener('click', function(event) {
+                        starred();
+                    });
+                }
+            }
+        });
+}
+        </script>
+        <script>
             makeTable();
-            setInterval(fetchBusses, 15000);
             var smallestBus = 0;
             
 
