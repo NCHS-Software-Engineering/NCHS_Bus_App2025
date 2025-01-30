@@ -165,6 +165,7 @@ function reset(condition) {
 reset(false);
 setInterval(reset, 1000 * 60 * 60, false);
 
+
 //let busNum = Number(req.body.busnum);
 
 var time;
