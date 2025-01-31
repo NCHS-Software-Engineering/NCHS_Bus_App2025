@@ -473,37 +473,6 @@ app.post("/updateStatusTime", (req, res) => {
   });
 });
 
-// app.post("/updateStatusTime", (req, res) => {
-//   let bus = req.body;
-//   change = bus.newStatus;
-
-//   fs.readFile("buslist.json", "utf-8", (err, jsonString) => {
-//     let buslist = JSON.parse(jsonString);
-
-//     updatingbus = bus.number;
-//     if(bus.change != 0){
-//       updatingbus = bus.change
-//     }
-
-//   for (i = 0; i < buslist.buslist.length; i++) {
-//     iteratedbus = buslist.buslist[i].number;
-//     if (buslist.buslist[i].change != null){
-//         iteratedbus = buslist.buslist[i].change;
-//     }
-    
-//     if (updatingbus == iteratedbus){
-//       buslist.buslist[i].status = bus.newStatus;
-//       buslist.buslist[i].timestamp = "";
-//     }
-//   }
-    
-//     let final = JSON.stringify(buslist);
-
-//     fs.writeFile("buslist.json", final, (err) => {});
-
-//     res.redirect("buslist");
-//   });
-// });
 
 app.post('/updateChange', express.json(), (req, res) => {
   const givenbus = req.body;
