@@ -50,13 +50,10 @@
                 table-layout: fixed;
                 margin-top: 15px;
                 margin-bottom: 15px;
-            
-                
             }
             .e-star-filled{
                 border: 1px solid;
                 color: black;
-            
             }
 
             .e-star-filled:hover{
@@ -79,9 +76,13 @@
     <body>
         <nav id="navbar" class="navbar navbar-expand navbar-dark" style="box-shadow: 0px 0px 20px rgb(18, 18, 18); background-color: rgb(220, 53, 69);">
             <a class="navbar-brand">
-                <img src="/images/Naperville_Central_Logo.png" alt="NCHS Logo" style="width: 80px;">
+                <img src="/images/Naperville_Central_Logo.png" alt="NCHS Logo" style="width: 80px; border: 3px solid white; border-radius: 100%/100%; margin-left: 5px">
             </a>
+<<<<<<< Updated upstream
             <h1>NCHS Bus Status Page<br></h1>
+=======
+            <h1>NCHS Bus Status Page</h1>
+>>>>>>> Stashed changes
             
             <div class="navbar-nav ms-auto">
                 <div id="g_id_onload"
@@ -241,6 +242,12 @@
             
     });
 
+
+           
+
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
 
 
             var starredBusses = new Set([]);
@@ -476,7 +483,7 @@
 
             // Listen for messages from the server
             socket.addEventListener('message', (event) => {
-                console.log('WebSocket message received:', event.data);
+                //console.log('WebSocket message received:', event.data);
             
                 // Parse the received data
                 let data;
@@ -532,6 +539,30 @@
                     });
             }
         </script>
+        <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+            import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-analytics.js";
+            // TODO: Add SDKs for Firebase products that you want to use
+            // https://firebase.google.com/docs/web/setup#available-libraries
+          
+            // Your web app's Firebase configuration
+            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+            const firebaseConfig = {
+              apiKey: "AIzaSyDtqhN1RQkLp-g-IjQWPJs6CudIysqH8BU",
+              authDomain: "nchs-bus-app.firebaseapp.com",
+              projectId: "nchs-bus-app",
+              storageBucket: "nchs-bus-app.firebasestorage.app",
+              messagingSenderId: "488283227454",
+              appId: "1:488283227454:web:3c0e60d5e474392fb1986f",
+              measurementId: "G-TGBYMSQ1BY"
+            };
+          
+            // Initialize Firebase
+            const firebaseApp = initializeApp(firebaseConfig);
+            const firebaseAnalytics = getAnalytics(app);
+          </script>
+    
         <script>
             makeTable();
             var smallestBus = 0;

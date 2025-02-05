@@ -2,8 +2,6 @@
 var express = require("express");
 const ejs = require("ejs");
 
-
-
 // Initialise Express
 var app = express();
 // Render static files
@@ -16,6 +14,8 @@ app.listen(8080);
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
 
+
+
 // WEBSOCKET
 const http = require('http');
 const WebSocket = require('ws');
@@ -24,6 +24,12 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 app.use(express.json());
+
+
+// firebase admin
+const admin = require("firebase-admin");
+
+
 
 // retrives buslist
 app.get("/getbus", (req, res) => {
