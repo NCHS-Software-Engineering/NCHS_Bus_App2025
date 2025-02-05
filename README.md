@@ -82,6 +82,11 @@ Here’s the different parts
 - How it works generally:
     - In the index.ejs file, there exists a button that says “subscribe to notifications,” pressing it will call a function subscribe in index.ejs and send info to the server.js function subscribe. In the server.js, the subscription endpoint will be stored in a database along with the number 3, which is the bus number. In addition, it will use the service worker to send a notification at this time. Now when a bus status update is made to bus 3, the server will grab all subscription endpoints that have attribute bus number 3 from the database and send a notification to those devices. Also something something vapid keys it needs an email for some reason prob replace the email with one of yours because my email by then would have expired, also you might need to change the vapid keys once in a while.
 
+## Websockets
+- Uses the websockets from nodejs
+- How it works:
+    - In server.js, a websocket server is created, and a broadcast function which sends messages to all connected clients. This function is used in all of the POST methods which already update the buslist.json file. In both buslist.js and buschanges.js there are functions that recive the websockets message, after reciving they update their buttons automatically. In index.js there is also a function that recives messages which then updates the table. 
+
 ## GPS
 - Here are the two tutorials I followed to set up the Raspberry Pi which also include all the instructions of how to configure the Pi properly to function as a GPS
     - Connecting GPS module to the Pi: https://sparklers-the-makers.github.io/blog/robotics/use-neo-6m-module-with-raspberry-pi/
