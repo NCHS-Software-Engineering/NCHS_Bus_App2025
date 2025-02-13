@@ -27,7 +27,7 @@ app.use(express.json());
 
 
 // firebase admin
-// const admin = require("firebase-admin");
+//const admin = require("firebase-admin");
 
 
 
@@ -45,7 +45,7 @@ app.post("/updateStatus", (req, res) => {
   if (!bus || !bus.number || !bus.newStatus) {
     return res.status(400).json({ error: "Invalid bus data provided" });
   }
-  console.log()
+  //console.log()
   let change = bus.newStatus;
   let time = getTime();
 
@@ -231,18 +231,18 @@ app.get("/reset", (req, res) => {
 });
 
 app.get("/buslist", function (req, res) {
- if (verifyToken(req, res)) {
+ // if (verifyToken(req, res)) {
     return res.render("pages/buslist");
- }else {
-   return res.redirect("/");
- }
+  //} else {
+  //  return res.redirect("/");
+ // }
 });
 
 
 app.get("/buschanges", function (req, res) {
-  if (verifyToken(req, res)) 
+  //if (verifyToken(req, res)) 
   res.render("pages/buschanges");
- else res.redirect('/');
+ // else res.redirect('/');
 });
 
 app.get("/logs", function (req, res) {
@@ -252,9 +252,9 @@ app.get("/logs", function (req, res) {
 });
 
 app.get("/settings", function (req, res) {
-  if (verifyToken(req, res))
+  //if (verifyToken(req, res))
   res.render("pages/settings");
- else res.redirect('/');
+ // else res.redirect('/');
 });
 
 app.get("/getemails", (req, res) => {
@@ -575,7 +575,7 @@ app.post('/auth', (req, res) => {
     const userid = payload['sub'];
     // If request specified a G Suite domain:
     // const domain = payload['hd']; 
-    console.log(payload.email);
+    //console.log(payload.email);
     let whitelist = JSON.parse(fs.readFileSync("whitelist.json", "utf-8")).users;
     for (i = 0; i < whitelist.length; i++) {
       if (whitelist[i].toLowerCase() == payload.email.toLowerCase()){

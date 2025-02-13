@@ -22,7 +22,6 @@
         
 
         <style>
-            @import "../node_modules/@syncfusion/ej2-icons/material.css";
             html {
                 height: 100%;
             }          
@@ -111,7 +110,7 @@
                 
                 // Check if cookies exist
                 const starredBussesString = getCookie('starredBusses');
-                console.log(starredBusses);
+                //console.log(starredBusses);
                 let starredBussesArray = [] ;
                 if(starredBussesString != undefined){
                     starredBussesArray=   JSON.parse(starredBussesString)
@@ -125,15 +124,15 @@
                         }
                     }).then(data => {
                         if(data) {
-                            console.log(findSmallest())
+                            //console.log(findSmallest())
                             
                             let i = 1
                             let busses = data.buslist;
                             let table = document.getElementById('busTable');;
                             let item = document.getElementById('star-selector');
                             table.setAttribute('id', 'myTable'); // Set an ID for the table
-                            console.log(busses.length)
-                            console.log(starredBussesArray.length)
+                            //console.log(busses.length)
+                            //console.log(starredBussesArray.length)
                             for(var v = starredBussesArray.length - 1; v>=0; v--){
                                 while(i < busses.length + 1) { // busses[i]
 
@@ -146,10 +145,10 @@
 
                                     if(intValue == starredBussesArray[v]){
                                         const table = row.parentNode.parentNode;
-                                        console.log(table)
-                                        console.log(starredBussesArray[v])
+                                        //console.log(table)
+                                        //console.log(starredBussesArray[v])
                                         starredBusses.add(starredBussesArray[v])
-                                        console.log(starredBusses);
+                                        //console.log(starredBusses);
                                         starredBussesArray.pop();
 
                                         var element = row.cells[4].querySelector('span.starring');
@@ -237,15 +236,6 @@
             
             
     });
-
-
-           
-
-            // Initialize Firebase
-            const app = initializeApp(firebaseConfig);
-            const analytics = getAnalytics(app);
-
-
             var starredBusses = new Set([]);
             var lowestBus = 0;
             var factor = 10000;
@@ -254,9 +244,9 @@
             
             let table = document.getElementById('busTable');
             
-            var tabelElement = table.rows.cells[0]
-            var tableValue = parseInt(tableElement.textContent.trim(), 10);
-            console.log(tabelValue)
+            //var tabelElement = table.rows.cells[0]
+            //var tableValue = parseInt(tableElement.textContent.trim(), 10);
+            //console.log(tabelValue)
 
             
 
@@ -291,9 +281,9 @@
                 document.cookie = `starredBusses=${starredBussesString}; expires=${expirationDate.toUTCString()}; SameSite=None; Secure;`;
                 //     for dev:           document.cookie = `starredBusses=${starredBussesString}; expires=${expirationDate.toUTCString()}; SameSite=None; Secure; domain=https://bus-dev.redhawks.us/`;
 
-                console.log('starredBusses cookie value:', starredBussesString);
+                //console.log('starredBusses cookie value:', starredBussesString);
        
-                console.log(starredBussesArray)
+                //console.log(starredBussesArray)
             }
 
             function getStarredBussesArray(starredBussesString) {
@@ -315,7 +305,7 @@
                                 let table = document.getElementById('busTable');
                                 if(table){       
                                     for(let i = 1; i <= busses.length+1; i++){
-                                        console.log(table.rows);
+                                        //console.log(table.rows);
                                         let row = table.rows[i];
                                         if(row){
                                             row.cells[0].innerHTML = busses[i-1].number;
@@ -374,7 +364,7 @@
                                     if(starredBussesString.has(intValue)){
                                         table.insertBefore(row, table.firstChild.nextSibling);
 
-                                        console.log('lol')
+                                        //console.log('lol')
                                     }
                                     
                                  }
@@ -400,7 +390,7 @@
                         let busses = data.buslist;
                         let table = document.getElementById('busTable');
                         let item = document.getElementById('star-selector');
-                        console.log("bus table:" + table);
+                        //console.log("bus table:" + table);
 
                         while(i < busses.length) { // busses[i]
                             let row = table.insertRow(-1);
@@ -472,9 +462,10 @@
         <small>Version 3 Created by Ryan Keough ('25), Priya Agrawal ('25), and Andy Liang ('26)</small></p>
         <script>
             const socket = new WebSocket("ws://localhost:3000"); // Connect to WebSocket server
+            //const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
 
             socket.addEventListener("open", () => {
-            console.log("Connected to WebSocket server");
+            //console.log("Connected to WebSocket server");
             });
 
             // Listen for messages from the server
@@ -535,29 +526,6 @@
                     });
             }
         </script>
-        <script type="module">
-            // Import the functions you need from the SDKs you need
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-            import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-analytics.js";
-            // TODO: Add SDKs for Firebase products that you want to use
-            // https://firebase.google.com/docs/web/setup#available-libraries
-          
-            // Your web app's Firebase configuration
-            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-            const firebaseConfig = {
-              apiKey: "AIzaSyDtqhN1RQkLp-g-IjQWPJs6CudIysqH8BU",
-              authDomain: "nchs-bus-app.firebaseapp.com",
-              projectId: "nchs-bus-app",
-              storageBucket: "nchs-bus-app.firebasestorage.app",
-              messagingSenderId: "488283227454",
-              appId: "1:488283227454:web:3c0e60d5e474392fb1986f",
-              measurementId: "G-TGBYMSQ1BY"
-            };
-          
-            // Initialize Firebase
-            const firebaseApp = initializeApp(firebaseConfig);
-            const firebaseAnalytics = getAnalytics(app);
-          </script>
     
         <script>
             makeTable();
@@ -566,16 +534,16 @@
             function starred(){ //add isStarred
                 findSmallest();
                 findHighest();
-                console.log(starredBusses + "**************")
+                //console.log(starredBusses + "**************")
                 const buttons = document.querySelectorAll('.starring');
                 const clickedButton = event.target;
-                console.log(clickedButton)
+                //console.log(clickedButton)
                 const row = clickedButton.parentNode.parentNode; // Get the row associated with the clicked button
-                console.log(row)
+                //console.log(row)
                 var initelement = row.cells[0]
                 var intValue = parseInt(initelement.textContent.trim(), 10);
                 const table = row.parentNode; // Get the table element
-                console.log(intValue)
+                //console.log(intValue)
                 let noOtherStars = false;
 
 
@@ -616,29 +584,29 @@
                             let rowint = table.rows[v]; 
                             var initelement1 = rowint.cells[0];
                             var intValue1 = parseInt(initelement1.textContent.trim(), 10);
-                            console.log("(((((((((" + intValue1)
+                            //console.log("(((((((((" + intValue1)
                         }
                     
                         findSmallest()
                         
-                        console.log(intValue1)
-                        console.log(intValue)
-                        console.log(smallestBus)
-                        console.log( parseInt(table.rows[v+1].cells[0].textContent.trim(), 10)) // === undefined)
+                        //console.log(intValue1)
+                        //console.log(intValue)
+                        //console.log(smallestBus)
+                        //console.log( parseInt(table.rows[v+1].cells[0].textContent.trim(), 10)) // === undefined)
 
                         if(intValue === smallestBus){
                             check = true;
                         }else if(intValue === highestBus){
                             check = true;
                         }else if(!(starredBusses.has(intValue1)) || isNaN(parseInt(table.rows[v+1].cells[0].textContent.trim(), 10))){
-                           console.log(parseInt(table.rows[v+1].cells[0].textContent.trim(), 10))
+                           //console.log(parseInt(table.rows[v+1].cells[0].textContent.trim(), 10))
                             let rowint1 = table.rows[v+1]; 
                             var initelement2 = rowint1.cells[0];
                             var intValue2 = parseInt(initelement2.textContent.trim(), 10);
 
                             if(intValue1 < intValue && intValue < intValue2){
                                 check = true;
-                                console.log(intValue1);
+                                //console.log(intValue1);
                             }
                       //  v++;
                             
@@ -652,11 +620,11 @@
                     }
 
                     const rowReference = table.rows[v];
-                    console.log(rowReference)
+                    //console.log(rowReference)
                     
                     starredBusses.delete(intValue)
                     updateCookie();
-                    console.log()
+                    //console.log()
                     //table.insertBefore(row, rowReference.nextSibling);
             
                     if(noOtherStars||intValue == highestBus){
@@ -719,7 +687,7 @@
                     }).then(data => {
                     if(data) { // if there is data
                         smallestBus = data.buslist[0].number;
-                        console.log(smallestBus)
+                        //console.log(smallestBus)
                 
                     }
                 }).catch(err => console.error(err));
