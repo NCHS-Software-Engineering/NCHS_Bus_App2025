@@ -460,6 +460,7 @@
         <p style="text-align: center; color: grey;"><small>Version 1 Created by Simi Kama ('23), Adesh Kumar ('23), Theodore Ng ('23), </small><small onclick="hmm()">Alex Remiasz ('23), </small><small> and Boris Rokhmanov ('23)<br>
         <small>Version 2 Created by Vinay Narahari ('24), Tyler Browning ('24), and Peter Paik ('24)</small><br>
         <small>Version 3 Created by Ryan Keough ('25), Priya Agrawal ('25), and Andy Liang ('26)</small></p>
+        <button id="notifications">BUTTON!</button>
         <script>
             const socket = new WebSocket("ws://localhost:3000"); // Connect to WebSocket server
             //const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
@@ -484,6 +485,12 @@
                 // Update the buses if buslist is included in the message
                 if (data.buslist) {
                     updateTable(); // Renders updated bus list
+                }
+                
+                if (Notification.permission === 'granted'){
+                    new Notification ('BUS TABLE UPDATE', {
+                        body: event.data
+                    })
                 }
             });
 
@@ -555,7 +562,28 @@
 
 
         </script>
-    
+        <script>
+            const button = document.getElementById("notifications");
+
+            button.addEventListener("click", () => {
+                if (Notification.permission === 'granted'){
+                    new Notification ('Hello from your webAkp1pjo!', {
+                        body: "asdlkasjdlkasjdlkasjdlkajsldkajsldjal"
+                    })
+                }
+            });
+
+        </script>
+        <script>
+            navigator.serviceWorker.register("service-worker.js").then((registration) => {
+                return registration.pushManager.getSubscription().then(/* ... */);
+            });
+
+
+            self.addEventListener("push", (res) =>{
+
+            });
+        </script>
         <script>
             makeTable();
             var smallestBus = 0;
