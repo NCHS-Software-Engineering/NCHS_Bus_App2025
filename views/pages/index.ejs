@@ -487,6 +487,8 @@
                 }
             });
 
+            //let starredBusNumbers = new Set(); // Store starred buses globally
+
             function updateTable() {
                 let table = document.getElementById('myTable');
                 if (!table) {
@@ -509,28 +511,55 @@
                         if (data) {
                             let busses = data.buslist;
 
+                            // First, add starred buses to the table
                             for (let i = 0; i < busses.length; i++) {
-                                let row = table.insertRow(-1);
+                                if (starredBusses.has(busses[i].number)) {
+                                    let row = table.insertRow(-1);
 
-                                row.insertCell(0).innerHTML = busses[i].number;
-                                row.insertCell(1).innerHTML = busses[i].change;
-                                row.insertCell(2).innerHTML = busses[i].status;
-                                row.insertCell(3).innerHTML = busses[i].timestamp;
-                                row.insertCell(4).innerHTML = "<span id='star-selector' class='e-icons e-medium e-star-filled starring'></span>";
+                                    row.insertCell(0).innerHTML = busses[i].number;
+                                    row.insertCell(1).innerHTML = busses[i].change;
+                                    row.insertCell(2).innerHTML = busses[i].status;
+                                    row.insertCell(3).innerHTML = busses[i].timestamp;
+                                    row.insertCell(4).innerHTML = "<span id='star-selector' class='e-icons e-medium e-star-filled starring'></span>";
 
-                                row.addEventListener('click', function(event) {
-                                    starred();
-                                });
+                                    let starButton = row.cells[4].querySelector('span.starring');
+                                    starButton.style.backgroundColor = 'yellow';
+                                    starButton.style.border = '2px solid black';
+
+                                    row.addEventListener('click', function(event) {
+                                        starred();
+                                    });
+                                }
+                            }
+
+                            // Then, add non-starred buses to the table
+                            for (let i = 0; i < busses.length; i++) {
+                                if (!starredBusses.has(busses[i].number)) {
+                                    let row = table.insertRow(-1);
+
+                                    row.insertCell(0).innerHTML = busses[i].number;
+                                    row.insertCell(1).innerHTML = busses[i].change;
+                                    row.insertCell(2).innerHTML = busses[i].status;
+                                    row.insertCell(3).innerHTML = busses[i].timestamp;
+                                    row.insertCell(4).innerHTML = "<span id='star-selector' class='e-icons e-medium e-star-filled starring'></span>";
+
+                                    row.addEventListener('click', function(event) {
+                                        starred();
+                                    });
+                                }
                             }
                         }
                     });
             }
+
+
+
         </script>
     
         <script>
             makeTable();
             var smallestBus = 0;
-            
+
             function starred(){ //add isStarred
                 findSmallest();
                 findHighest();
