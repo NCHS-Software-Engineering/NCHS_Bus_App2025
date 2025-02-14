@@ -26,10 +26,6 @@ const wss = new WebSocket.Server({ server });
 app.use(express.json());
 
 
-// firebase admin
-//const admin = require("firebase-admin");
-
-
 
 // retrives buslist
 app.get("/getbus", (req, res) => {
@@ -231,30 +227,30 @@ app.get("/reset", (req, res) => {
 });
 
 app.get("/buslist", function (req, res) {
- // if (verifyToken(req, res)) {
+  if (verifyToken(req, res)) {
     return res.render("pages/buslist");
-  //} else {
-  //  return res.redirect("/");
- // }
+  } else {
+   return res.redirect("/");
+  }
 });
 
 
 app.get("/buschanges", function (req, res) {
-  //if (verifyToken(req, res)) 
+  if (verifyToken(req, res)) 
   res.render("pages/buschanges");
- // else res.redirect('/');
+  else res.redirect('/');
 });
 
 app.get("/logs", function (req, res) {
- // if (verifyToken(req, res))
+  if (verifyToken(req, res))
   res.render("pages/logs");
- // else res.redirect('/');
+  else res.redirect('/');
 });
 
 app.get("/settings", function (req, res) {
-  //if (verifyToken(req, res))
+  if (verifyToken(req, res))
   res.render("pages/settings");
- // else res.redirect('/');
+  else res.redirect('/');
 });
 
 app.get("/getemails", (req, res) => {
