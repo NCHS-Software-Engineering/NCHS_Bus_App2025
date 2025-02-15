@@ -100,7 +100,8 @@ function getBusses() {
                         let busdata = {
                             number: busNumber,
                             newStatus: "Arrived",
-                            change: change
+                            change: change,
+                            changed: true
                         };
                         // sends the busdata
                         fetch('/updateStatus', {
@@ -123,7 +124,8 @@ function getBusses() {
                         let busdata = {
                             number: busNumber,
                             newStatus: "Departed",
-                            change: change
+                            change: change,
+                            changed: true
                         };
                         console.log(busdata);
                         // sends the busdata
@@ -147,7 +149,8 @@ function getBusses() {
                         let busdata = {
                             number: busNumber,
                             newStatus: "Not Arrived",
-                            change: change
+                            change: change,
+                            changed: true
                         };
                         // sends the busdata
                         fetch('/updateStatus', {

@@ -1,6 +1,7 @@
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js');
 
+// Initialize Firebase (DO NOT call initializeApp twice)
 firebase.initializeApp({
   apiKey: "AIzaSyDtqhN1RQkLp-g-IjQWPJs6CudIysqH8BU",
   authDomain: "nchs-bus-app.firebaseapp.com",
@@ -11,14 +12,10 @@ firebase.initializeApp({
   measurementId: "G-TGBYMSQ1BY"
 });
 
-console.log("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHH?")
-// Initialize Firebase App
-firebase.initializeApp(firebaseConfig);
-
 // Retrieve an instance of Firebase Messaging
 const messaging = firebase.messaging();
 
-// Handle background messages (when the app is not in the foreground)
+// Handle background messages
 messaging.onBackgroundMessage(function(payload) {
   console.log('Background Message received:', payload);
   const notificationTitle = payload.notification.title;

@@ -111,7 +111,7 @@
             import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
             import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
-            console.log("AHHHHHHHHHHHHHH!");
+           // console.log("AHHHHHHHHHHHHHH!");
 
             const firebaseConfig = {
                 apiKey: "AIzaSyDtqhN1RQkLp-g-IjQWPJs6CudIysqH8BU",
@@ -561,11 +561,13 @@
                 if (data.buslist) {
                     updateTable(); // Renders updated bus list
                 }
-                
+                //sends notification for when a bus changes status
                 if (Notification.permission === 'granted'){
-                    new Notification ('BUS TABLE UPDATE', {
-                        body: event.data
-                    })
+                        if(data){
+                        new Notification ('Bus Update', {
+                            body: "Bus #" + data.number + " Has " + data.newStatus
+                        })
+                        }
                 }
             });
 
@@ -641,7 +643,9 @@
         <!--Notifiactions Stuff
         <script>
             const button = document.getElementById("notifications");
-
+            document.addEventListener("DOMContentLoaded", () => {
+                Notification.requestPermission()
+            });
             button.addEventListener("click", () => {
                 if (Notification.permission === 'granted'){
                     new Notification ('Hello from your webAkp1pjo!', {
