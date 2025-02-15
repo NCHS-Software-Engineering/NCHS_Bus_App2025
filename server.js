@@ -551,6 +551,41 @@ app.get("/getlogs", (req, res) => {
   res.send(data);
 });
 
+//Firebase stuff -------------------------------------------------------
+const admin = require("firebase-admin");
+
+// Load Firebase service account credentials
+const serviceAccount = require("./serviceAccountKey.json"); // Download from Firebase Console
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+const messaging = admin.messaging();
+
+// Route to send notifications
+app.post("/send-notification", async (req, res) => {
+  const { token, title, body } = req.body;
+
+  const message = {
+    notification: {
+      title: title,
+      body: body
+    },
+    token: token
+  };
+
+  try {
+    const response = await messaging.send(message);
+    console.log("Notification sent successfully:", response);
+    res.status(200).send("Notification sent!");
+  } catch (error) {
+    console.error("Error sending notification:", error);
+    res.status(500).send(error);
+  }
+});
+
+
 //google sign in -----------------------------------------------------
 
 app.post('/auth', (req, res) => {

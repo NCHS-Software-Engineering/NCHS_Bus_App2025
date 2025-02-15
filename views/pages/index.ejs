@@ -10,6 +10,9 @@
 
         <!-- Latest compiled JavaScript -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js" type="module"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js" type="module"></script>
     
 
         <link href="https://cdn.syncfusion.com/ej2/22.1.34/ej2-icons/styles/bootstrap5.css" rel="stylesheet"/>
@@ -103,7 +106,79 @@
 
             <div id="returntohome" style="position:absolute; top: 0px; height: 116px; width:50%; cursor: pointer;" onclick="location.href='/'"></div>
 
+        <!-- firebase stuff-->
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+            import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
+            console.log("AHHHHHHHHHHHHHH!");
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyDtqhN1RQkLp-g-IjQWPJs6CudIysqH8BU",
+                authDomain: "nchs-bus-app.firebaseapp.com",
+                projectId: "nchs-bus-app",
+                storageBucket: "nchs-bus-app.firebasestorage.app",
+                messagingSenderId: "488283227454",
+                appId: "1:488283227454:web:3c0e60d5e474392fb1986f",
+                measurementId: "G-TGBYMSQ1BY"
+            };
+
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const messaging = getMessaging(app);
+
+            // Ask for Notification Permission
+            async function requestPermission() {
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === "granted") {
+                console.log("Notification permission granted.");
+                getFCMToken(); // Fetch FCM Token
+                } else {
+                console.log("Notification permission denied.");
+                }
+            } catch (error) {
+                console.error("Error requesting permission:", error);
+            }
+            }
+
+            // Get FCM Token
+            async function getFCMToken() {
+            try {
+                const token = await getToken(messaging, { vapidKey: "YOUR_VAPID_KEY" });
+                if (token) {
+                console.log("FCM Token:", token);
+                // You can send this token to your backend for future notifications
+                } else {
+                console.log("No registration token available.");
+                }
+            } catch (error) {
+                console.error("Error getting token:", error);
+            }
+            }
+
+            // Handle Incoming Notifications
+            onMessage(messaging, (payload) => {
+            console.log("Message received:", payload);
+            new Notification(payload.notification.title, {
+                body: payload.notification.body,
+                icon: payload.notification.icon
+            });
+            });
+
+            if ("serviceWorker" in navigator) {
+                navigator.serviceWorker.register("/js/firebase-messaging-sw.js")
+                .then((registration) => {
+                console.log("Service Worker registered with scope:", registration.scope);
+                })
+                .catch((error) => {
+                console.error("Service Worker registration failed:", error);
+                });
+            }
+
+            // Request permission on page load
+            requestPermission();
+        </script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 //let starredBusses = [];
@@ -562,6 +637,8 @@
 
 
         </script>
+
+        <!--Notifiactions Stuff
         <script>
             const button = document.getElementById("notifications");
 
@@ -573,8 +650,6 @@
                 }
             });
 
-        </script>
-        <script>
             navigator.serviceWorker.register("service-worker.js").then((registration) => {
                 return registration.pushManager.getSubscription().then(/* ... */);
             });
@@ -583,7 +658,8 @@
             self.addEventListener("push", (res) =>{
 
             });
-        </script>
+        </script>-->
+
         <script>
             makeTable();
             var smallestBus = 0;
