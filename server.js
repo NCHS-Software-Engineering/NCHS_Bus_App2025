@@ -563,6 +563,11 @@ admin.initializeApp({
 
 const messaging = admin.messaging();
 
+
+app.get('/firebase-messaging-sw.js', (req,res)=>{
+  res.sendFile(__dirname + '/public/js/firebase-messaging-sw.js');
+});
+
 // Route to send notifications
 app.post("/send-notification", async (req, res) => {
   const { token, title, body } = req.body;
