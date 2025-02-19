@@ -44,7 +44,7 @@
     "express-session": "^1.18.0",
     "finalhandler": "^1.1.1",
     "firebase": "^10.14.1",
-    "firebase-admin": "^13.0.2",
+    "firebase-admin": "^13.1.0",
     "forwarded": "^0.2.0",
     "fresh": "^0.5.2",
     "google-auth-library": "^8.9.0",
@@ -111,6 +111,7 @@
     "with": "^4.0.3",
     "wordwrap": "^0.0.2",
     "ws": "^8.18.0",
+    "wss": "^3.3.4",
     "yargs": "^3.32.0"
   },
   "scripts": {

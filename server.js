@@ -94,7 +94,7 @@ app.post("/updateStatus", (req, res) => {
       }
 
       // Brodcast updated data using the websockets
-      broadcast(buslist);
+      broadcast(req.body);
 
       res.status(200).json({ message: "Bus status updated successfully" });
     });
@@ -227,30 +227,30 @@ app.get("/reset", (req, res) => {
 });
 
 app.get("/buslist", function (req, res) {
-  if (verifyToken(req, res)) {
+ //if (verifyToken(req, res)) {
     return res.render("pages/buslist");
-  } else {
-   return res.redirect("/");
-  }
+ // } else {
+   //return res.redirect("/");
+ //}
 });
 
 
 app.get("/buschanges", function (req, res) {
-  if (verifyToken(req, res)) 
+  //if (verifyToken(req, res)) 
   res.render("pages/buschanges");
-  else res.redirect('/');
+  //else res.redirect('/');
 });
 
 app.get("/logs", function (req, res) {
-  if (verifyToken(req, res))
+  //if (verifyToken(req, res))
   res.render("pages/logs");
-  else res.redirect('/');
+  //else res.redirect('/');
 });
 
 app.get("/settings", function (req, res) {
-  if (verifyToken(req, res))
+  //if (verifyToken(req, res))
   res.render("pages/settings");
-  else res.redirect('/');
+  //else res.redirect('/');
 });
 
 app.get("/getemails", (req, res) => {
@@ -550,6 +550,46 @@ app.get("/getlogs", (req, res) => {
   let data = JSON.parse(datajson);
   res.send(data);
 });
+
+//Firebase stuff -------------------------------------------------------
+const admin = require("firebase-admin");
+
+// Load Firebase service account credentials
+const serviceAccount = require("./serviceAccountKey.json"); // Download from Firebase Console
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+const messaging = admin.messaging();
+
+
+app.get('/firebase-messaging-sw.js', (req,res)=>{
+  res.sendFile(__dirname + '/public/js/firebase-messaging-sw.js');
+});
+
+// Route to send notifications
+app.post("/send-notification", async (req, res) => {
+  const { token, title, body } = req.body;
+
+  const message = {
+    notification: {
+      title: title,
+      body: body
+    },
+    token: token
+  };
+
+  try {
+    const response = await messaging.send(message);
+    console.log("Notification sent successfully:", response);
+    res.status(200).send("Notification sent!");
+  } catch (error) {
+    console.error("Error sending notification:", error);
+    res.status(500).send(error);
+  }
+});
+
 
 //google sign in -----------------------------------------------------
 
