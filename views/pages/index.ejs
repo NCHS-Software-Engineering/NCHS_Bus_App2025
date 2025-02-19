@@ -145,7 +145,7 @@
             // Get FCM Token
             async function getFCMToken() {
             try {
-                const token = await getToken(messaging, { vapidKey: "YOUR_VAPID_KEY" });
+                const token = await getToken(messaging, { vapidKey: "BFczqoG5aFc4UK24ZfURzutR3ZCrfzGIjQL953JEFU78YxwimYfmVoLG_CEch8OqSkCpG3C-fkxDg_V2aJlckXs" });
                 if (token) {
                 console.log("FCM Token:", token);
                 // You can send this token to your backend for future notifications
@@ -167,7 +167,7 @@
             });
 
             if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("/public/js/firbase-messaging-sw.js")
+                navigator.serviceWorker.register("/firebase-messaging-sw.js")
                 .then((registration) => {
                 console.log("Service Worker registered with scope:", registration.scope);
                 })

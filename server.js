@@ -563,9 +563,10 @@ admin.initializeApp({
 
 const messaging = admin.messaging();
 
+app.use(express.static(__dirname));
 
 app.get('/firebase-messaging-sw.js', (req,res)=>{
-  res.sendFile(__dirname + '/public/js/firebase-messaging-sw.js');
+  res.sendFile(__dirname + '/firebase-messaging-sw.js');
 });
 
 // Route to send notifications
