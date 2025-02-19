@@ -8,23 +8,116 @@ var app = express();
 app.use(express.static("public"));
 // Set the view engine to ejs
 app.set("view engine", "ejs");
-// Port website will run on
-app.listen(8080);
 
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
-
-
+require('dotenv').config();
 
 // WEBSOCKET
 const http = require('http');
-const WebSocket = require('ws');
-//creats websocket server
 const server = http.createServer(app);
+
+const port = 3000;
+server.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
+
+
+const bodyParser = require("body-parser");
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
+
+const fs = require("fs");
+const { ok } = require("assert");
+
+var crypto = require('crypto');
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
+
+// *** GET Routes - display pages ***
+// Root Route
+app.use(express.static("public"));
+app.get("/", function (req, res) {
+  res.render("pages/index");
+});
+
+//creats websocket server
+const WebSocket = require('ws');
 const wss = new WebSocket.Server({ server });
 
-app.use(express.json());
+// PUSH STUFF -----------------------------------
 
+const webPush = require("web-push");
+const vapidPublicKey = process.env.VAPID_PUBLIC_KEY;
+const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+if (!vapidPublicKey || !vapidPrivateKey) {
+  console.log(
+    "You must set the VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY " +
+      "environment variables. You can use the following ones:"
+  );
+  console.log(webPush.generateVAPIDKeys());
+  return;
+}
+// Set the keys used for encrypting the push messages.
+webPush.setVapidDetails(
+  "https://localhost:3000",
+  vapidPublicKey,
+  vapidPrivateKey
+);
+
+
+  app.get('/vapidPublicKey', function (req, res) {
+    res.send(vapidPublicKey);
+  });
+
+  app.post( "/register", function (req, res) {
+    // A real world application would store the subscription info.
+    res.sendStatus(201);
+  });
+
+  app.post( "/sendNotification", function (req, res) {
+    const subscription = req.body.subscription;
+    const payload = req.body.payload;
+    const options = {
+      TTL: req.body.ttl,
+    };
+
+    setTimeout(function () {
+      webPush
+        .sendNotification(subscription, payload, options)
+        .then(function () {
+          res.sendStatus(201);
+        })
+        .catch(function (error) {
+          console.log(error);
+          res.sendStatus(500);
+        });
+    }, req.body.delay * 1000);
+  });
+
+
+
+
+//Firebase stuff -------------------------------------------------------
+const admin = require("firebase-admin");
+
+// Load Firebase service account credentials
+const serviceAccount = require("./serviceAccountKey.json"); // Download from Firebase Console
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+const messaging = admin.messaging();
+
+app.use(express.static(__dirname));
+
+app.get('/firebase-messaging-sw.js', (req,res)=>{
+  res.sendFile(__dirname + '/firebase-messaging-sw.js');
+});
 
 
 // retrives buslist
@@ -114,33 +207,7 @@ function broadcast(data) {
 // WebSocket handling
 
 
-// Start the server
-const port = 3000;
-server.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
-});
 
-
-const bodyParser = require("body-parser");
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
-
-const fs = require("fs");
-const { ok } = require("assert");
-
-var crypto = require('crypto');
-const cookieParser = require("cookie-parser");
-app.use(cookieParser());
-
-// *** GET Routes - display pages ***
-// Root Route
-app.use(express.static("public"));
-app.get("/", function (req, res) {
-  res.render("pages/index");
-});
 
 // resets the buslist.json file
 function reset(condition) {
@@ -551,23 +618,7 @@ app.get("/getlogs", (req, res) => {
   res.send(data);
 });
 
-//Firebase stuff -------------------------------------------------------
-const admin = require("firebase-admin");
 
-// Load Firebase service account credentials
-const serviceAccount = require("./serviceAccountKey.json"); // Download from Firebase Console
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
-
-const messaging = admin.messaging();
-
-app.use(express.static(__dirname));
-
-app.get('/firebase-messaging-sw.js', (req,res)=>{
-  res.sendFile(__dirname + '/firebase-messaging-sw.js');
-});
 
 // Route to send notifications
 app.post("/send-notification", async (req, res) => {
