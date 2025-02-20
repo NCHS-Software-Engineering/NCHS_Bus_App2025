@@ -89,6 +89,7 @@ webPush.setVapidDetails(
       webPush
         .sendNotification(subscription, payload, options)
         .then(function () {
+          console.log("Notifcation sent");
           res.sendStatus(201);
         })
         .catch(function (error) {
@@ -189,11 +190,44 @@ app.post("/updateStatus", (req, res) => {
       // Brodcast updated data using the websockets
       broadcast(req.body);
 
+      sendNotification(req.body);
+
       res.status(200).json({ message: "Bus status updated successfully" });
     });
     
   });
 });
+
+function sendNotification(data) {
+  const title = "Bus Update";
+  const body = `Bus #${data.number} has ${data.newStatus}`;
+
+  // Get all subscriptions from the database or a file
+  const subscriptions = getSubscriptions();
+
+  // Send notification to each subscription
+  subscriptions.forEach((subscription) => {
+    webPush.sendNotification(subscription, {
+      notification: {
+        title,
+        body,
+      },
+    })
+      .then((result) => {
+        console.log("Notification sent successfully:", result);
+      })
+      .catch((error) => {
+        console.error("Error sending notification:", error);
+      });
+  });
+}
+
+function getSubscriptions() {
+  // Read subscriptions from a file or database
+  // For example, you can read from a file named 'subscriptions.json'
+  const subscriptions = fs.readFileSync("subscriptions.json");
+  return JSON.parse(subscriptions);
+}
 
 //broadcasts the
 function broadcast(data) {
