@@ -75,7 +75,55 @@ webPush.setVapidDetails(
 
   app.post( "/register", function (req, res) {
     // A real world application would store the subscription info.
+    const subscription = req.body.subscription;
+    storeSubscription(subscription);
     res.sendStatus(201);
+  });
+
+
+  function storeSubscription(subscription) {
+    try {
+      const subscriptions = JSON.parse(fs.readFileSync("subscriptions.json"));
+  
+      // Check if the subscription already exists
+      if (!subscriptions.some((sub) => JSON.stringify(sub) === JSON.stringify(subscription))) {
+        subscriptions.push(subscription);
+        fs.writeFileSync("subscriptions.json", JSON.stringify(subscriptions));
+        console.log("New subscription added:", subscription);
+      } else {
+        console.log("Subscription already exists:", subscription);
+      }
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        // Create the file if it does not exist
+        fs.writeFileSync("subscriptions.json", JSON.stringify([subscription]));
+        console.log("New subscription added:", subscription);
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  app.post("/send-notification", async (req, res) => {
+    const { token, title, body } = req.body;
+  
+    const message = {
+      notification: {
+        title: title,
+        body: body
+      },
+      token: token
+    };
+  
+    try {
+      sendNotification(message);
+      const response = await messaging.send(message);
+      console.log("Notification sent successfully:", response);
+      res.status(200).send("Notification sent!");
+    } catch (error) {
+      console.error("Error sending notification:", error);
+      res.status(500).send(error);
+    }
   });
 
   app.post( "/sendNotification", function (req, res) {
@@ -89,7 +137,7 @@ webPush.setVapidDetails(
       webPush
         .sendNotification(subscription, payload, options)
         .then(function () {
-          console.log("Notifcation sent");
+          console.log("Notification sent");
           res.sendStatus(201);
         })
         .catch(function (error) {
@@ -197,6 +245,13 @@ app.post("/updateStatus", (req, res) => {
     
   });
 });
+
+app.post('/check-subscription', (req,res) =>{
+  const subscription = req.body.subscription;
+  const subscriptions = getSubscriptions();
+  const exists = subscriptions.some(s => s.endpoint === subscription.endpoint);
+  res.json({ exists });
+})
 
 function sendNotification(data) {
   const title = "Bus Update";
@@ -611,6 +666,8 @@ app.post('/updateChange', express.json(), (req, res) => {
       return res.status(500).json({ message: "Invalid JSON in bus list" });
     }
     });
+
+    sendNotification(req.body);
   
 });
 
@@ -652,29 +709,6 @@ app.get("/getlogs", (req, res) => {
   res.send(data);
 });
 
-
-
-// Route to send notifications
-app.post("/send-notification", async (req, res) => {
-  const { token, title, body } = req.body;
-
-  const message = {
-    notification: {
-      title: title,
-      body: body
-    },
-    token: token
-  };
-
-  try {
-    const response = await messaging.send(message);
-    console.log("Notification sent successfully:", response);
-    res.status(200).send("Notification sent!");
-  } catch (error) {
-    console.error("Error sending notification:", error);
-    res.status(500).send(error);
-  }
-});
 
 
 //google sign in -----------------------------------------------------
