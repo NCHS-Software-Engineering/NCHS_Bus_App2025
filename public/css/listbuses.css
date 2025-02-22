@@ -1,5 +1,31 @@
-#editbusses{
-    width: 22vw;
-    height: 12vh;
-    left: 2vw;
+.editbuses{
+    border-radius: 15px;
+
+    margin-left: 1vw;
+    margin-top: 2vh;
+
+    display: inline-block;
+    padding: 15px 25px;
+    font-size: 24px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    border: none;
+
+    background-color: rgb(255, 44, 44);
+    box-shadow: 0 9px #999;
+}
+
+.editbuses:active {
+    background-color: #999;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+#buttonarea{
+    background-color: #fff7c9;
+    height: 100vh;
+    width: 86vw;
+    margin-left: 14vw;
 }
