@@ -638,9 +638,9 @@
 
         <button id="doIt">BUTTON!</button>
         <script>
-            // const socket = new WebSocket("ws://localhost:3000"); // Connect to WebSocket server
+             const socket = new WebSocket("ws://localhost:3000"); // Connect to WebSocket server
             //const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
-            const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
+            //const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
             socket.addEventListener("open", () => {
             //console.log("Connected to WebSocket server");
@@ -885,7 +885,22 @@
                     //location.reload();
 
         }
+            
+        const busNumber = parseInt(row.cells[0].textContent.trim(), 10);
+        const userId = getCookie('c_email');
+
+        if (userId) {
+            const starredBuses = JSON.parse(fs.readFileSync('starredBuses.json', 'utf8'));
+            if (!starredBuses.users[userId]) {
+            starredBuses.users[userId] = [];
             }
+            starredBuses.users[userId].push(busNumber);
+            fs.writeFileSync('starredBuses.json', JSON.stringify(starredBuses));
+
+
+
+
+            }}
 
         
             /*/*else{
