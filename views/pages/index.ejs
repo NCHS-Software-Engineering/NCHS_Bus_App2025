@@ -702,7 +702,7 @@
                   // Check if the user has starred the bus
                     const starredBuses = JSON.parse(localStorage.getItem('starredBuses'));
                     if (starredBuses && starredBuses.includes(data.number)) {
-                        // Send notification for starred bus
+                        // Send notification for starred bus!
                         if (Notification.permission === 'granted'){
                         new Notification ('Bus Update', {
                             body: "Bus #" + data.number + " has " + data.status

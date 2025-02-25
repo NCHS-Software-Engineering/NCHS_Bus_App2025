@@ -332,7 +332,7 @@ function broadcast(data) {
       client.send(JSON.stringify({
         number: data.number,
         status: data.newStatus
-      })); // Send updated data as stringified JSON
+      })); // Send updated data as stringified JSON!
     }
   });
 
