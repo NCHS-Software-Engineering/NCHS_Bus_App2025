@@ -17,7 +17,7 @@ require('dotenv').config();
 const http = require('http');
 const server = http.createServer(app);
 
-const port = 8080;
+const port = 3000;
 server.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
@@ -63,7 +63,7 @@ if (!vapidPublicKey || !vapidPrivateKey) {
 }
 // Set the keys used for encrypting the push messages.
 webPush.setVapidDetails(
-  "https://localhost:8080",
+  "https://localhost:3000",
   vapidPublicKey,
   vapidPrivateKey
 );
@@ -177,22 +177,6 @@ app.get("/getbus", (req, res) => {
   res.send(data);
 });
 
-app.post('/updateStarredBuses', (req, res) => {
-  const starredBuses = req.body.starredBuses;
-  const userId = req.cookies.c_email;
-
-  const starredBusesJson = JSON.parse(fs.readFileSync('starredBuses.json', 'utf8'));
-  if (!starredBusesJson.users[userId]) {
-    starredBusesJson.users[userId] = [];
-  }
-  starredBusesJson.users[userId] = starredBuses;
-
-  fs.writeFileSync('starredBuses.json', JSON.stringify(starredBusesJson));
-
-  res.json({ message: 'Starred buses updated successfully' });
-});
-
-
 //updates the buslist.json file after being called in buslist.js
 app.post("/updateStatus", (req, res) => {
   let bus = req.body;
@@ -294,9 +278,9 @@ app.post('/check-subscription', (req,res) =>{
   });
 }*/
 
-/*function sendNotification(data) {
+function sendNotification(data) {
   const title = "Bus Update";
-  const body = `Bus #${data.number} has ${data.status}`;
+  const body = `Bus #${data.number} has ${data.newStatus}`;
 
   const subscriptions = JSON.parse(fs.readFileSync("subscriptions.json"));
   subscriptions.forEach((subscription) => {
@@ -330,48 +314,7 @@ app.post('/check-subscription', (req,res) =>{
         });
     }
   });
-}*/
-
-function sendNotification(data) {
-  const title = "Bus Update";
-  const body = `Bus #${data.number} has ${data.status}`;
-
-  const subscriptions = JSON.parse(fs.readFileSync("subscriptions.json"));
-  subscriptions.forEach((subscription) => {
-      const userId = subscription.userId;
-      const starredBuses = JSON.parse(fs.readFileSync('starredBuses.json', 'utf8'));
-      if (starredBuses.users[userId] && starredBuses.users[userId].includes(data.number)) {
-          const payload = JSON.stringify({
-              notification: {
-                  title,
-                  body,
-              },
-          });
-          webPush.sendNotification(subscription.subscription, payload)
-          .then((result) => {
-              console.log("Notification sent successfully:", result);
-          })
-          .catch((error) => {
-              console.error("Error sending notification:", error);
-          });
-      } else {
-          const payload = JSON.stringify({
-              notification: {
-                  title: "Star a Bus",
-                  body: "Please star a bus to receive notifications when it arrives.",
-              },
-          });
-          webPush.sendNotification(subscription.subscription, payload)
-          .then((result) => {
-              console.log("Notification sent successfully:", result);
-          })
-          .catch((error) => {
-              console.error("Error sending notification:", error);
-          });
-      }
-  });
 }
-
 
 
 
@@ -387,15 +330,13 @@ function broadcast(data) {
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify({
-        buslist: data
+        number: data.number,
+        status: data.newStatus
       })); // Send updated data as stringified JSON
     }
   });
 
-  data.forEach((bus) => {
-    sendNotification(data); /// sendNotification(bus)
-  });
-  
+  sendNotification(data);
 }
 
 // WebSocket handling

@@ -466,7 +466,7 @@
             
 
             //updates the bustable after reciving the message from ws
-            function updateTable(buslist) {
+            function updateTable(message) {
                 let table = document.getElementById('myTable');
                 if (!table) {
                     console.error('Table with id "busTable" not found!');
@@ -479,7 +479,7 @@
                 }
 
                 // Add new rows
-                buslist.forEach((bus) => {
+                message.buslist.forEach((bus) => {
                     let row = table.insertRow(-1);
 
                     row.insertCell(0).innerHTML = bus.number;
@@ -673,7 +673,7 @@
 
         <button id="doIt">BUTTON!</button>
         <script>
-             const socket = new WebSocket("ws://localhost:8080"); // Connect to WebSocket server
+             const socket = new WebSocket("ws://localhost:3000"); // Connect to WebSocket server
             //const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
             //const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
@@ -697,21 +697,19 @@
             
                 // Update the buses if buslist is included in the message
                 //if (data.buslist) {
-                if (data.buslist) {
-                    updateTable(data.buslist);} // Renders updated bus list
+                updateTable(); // Renders updated bus list
                 //}
                   // Check if the user has starred the bus
                     const starredBuses = JSON.parse(localStorage.getItem('starredBuses'));
-                    for (let i = 0; i < data.buslist.length; i++) {
-                        if (starredBuses && starredBuses.includes(data.buslist[i].number)) {
-                            // Send notification for starred bus
-                            if (Notification.permission === 'granted'){
-                            new Notification ('Bus Update', {
-                                body: "Bus #" + data.buslist[i].number + " has " + data.buslist[i].status
-                            })
-                            }
-                        } 
-                    }});
+                    if (starredBuses && starredBuses.includes(data.number)) {
+                        // Send notification for starred bus
+                        if (Notification.permission === 'granted'){
+                        new Notification ('Bus Update', {
+                            body: "Bus #" + data.number + " has " + data.status
+                        })
+                        }
+                    } 
+                    });
 
             //let starredBusNumbers = new Set(); // Store starred buses globally
 
@@ -939,24 +937,12 @@
 
         const busNumber = parseInt(row.cells[0].textContent.trim(), 10);
         const starredBuses = JSON.parse(localStorage.getItem('starredBuses')) || [];
-        if (starredBuses.includes(intValue)) {
-            starredBuses.splice(starredBuses.indexOf(intValue), 1);
+        if (starredBuses.includes(busNumber)) {
+            starredBuses.splice(starredBuses.indexOf(busNumber), 1);
         } else {
-            starredBuses.push(intValue);
+            starredBuses.push(busNumber);
         }
         localStorage.setItem('starredBuses', JSON.stringify(starredBuses));
-        fetch('/updateStarredBuses', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-            starredBuses: starredBuses
-            })
-        })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error(error));
      }
         
 
