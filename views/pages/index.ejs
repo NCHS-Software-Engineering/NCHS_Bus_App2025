@@ -136,6 +136,9 @@
                 if (permission === "granted") {
                 console.log("Notification permission granted.");
                 getFCMToken(); // Fetch FCM Token
+                new Notification ('Star a Bus', {
+                    body: "You will only receive notifications for the busses you star. :)"
+                })
                 } else {
                 console.log("Notification permission denied.");
                 }
@@ -179,64 +182,82 @@
             }
 
             navigator.serviceWorker.ready
-            .then(function(registration) {
-            // Use the PushManager to get the user's subscription to the push service.
-            return registration.pushManager.getSubscription()
-            .then(async function(subscription) {
-                // If a subscription was found, return it.
-                if (subscription) {
-                return subscription;
-                }
+                .then(function(registration) {
+                // Use the PushManager to get the user's subscription to the push service.
+                    return registration.pushManager.getSubscription()
+                .then(async function(subscription) {
+                    // If a subscription was found, return it.
+                    if (subscription) {
+                        return subscription;
+                    }
 
-                // Get the server's public key
-                const response = await fetch('/vapidPublicKey');
-                const vapidPublicKey = await response.text();
-                // Chrome doesn't accept the base64-encoded (string) vapidPublicKey yet
-                // urlBase64ToUint8Array() is defined in /tools.js
-                const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+                    // Get the server's public key
+                    const response = await fetch('/vapidPublicKey');
+                    const vapidPublicKey = await response.text();
+                    // Chrome doesn't accept the base64-encoded (string) vapidPublicKey yet
+                    // urlBase64ToUint8Array() is defined in /tools.js
+                    const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
 
-                // Otherwise, subscribe the user (userVisibleOnly allows to specify that we don't plan to
-                // send notifications that don't have a visible effect for the user).
-                return registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: convertedVapidKey
+                    // Otherwise, subscribe the user (userVisibleOnly allows to specify that we don't plan to
+                    // send notifications that don't have a visible effect for the user).
+                    return registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: convertedVapidKey
+                    });
                 });
-            });
-            }).then(function(subscription) {
-            // Send the subscription details to the server using the Fetch API.
-            fetch('./register', {
-                method: 'post',
-                headers: {
-                'Content-type': 'application/json'
-                },
-                body: JSON.stringify({
-                subscription: subscription
-                }),
-            });
+                }).then(function(subscription) {
+                // Send the subscription details to the server using the Fetch API.
+                    fetch('./check-subscription',{
+                        method: 'post',
+                        headers: {
+                            'Content-type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            subscription:subscription,
+                        }),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if(!data.exists){
+                                fetch('./register', {
+                                    method: 'post',
+                                    headers: {
+                                    'Content-type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                    subscription: subscription
+                                }),
+                            });
+                            }
+                        })
 
-            document.getElementById('doIt').onclick = function() {
-                const payload = document.getElementById('notification-payload').value;
-                const delay = document.getElementById('notification-delay').value;
-                const ttl = document.getElementById('notification-ttl').value;
 
-                // Ask the server to send the client a notification (for testing purposes, in actual
-                // applications the push notification is likely going to be generated by some event
-                // in the server).
-                fetch('./sendNotification', {
-                method: 'post',
-                headers: {
-                    'Content-type': 'application/json'
-                },
-                body: JSON.stringify({
-                    subscription: subscription,
-                    payload: payload,
-                    delay: delay,
-                    ttl: ttl,
-                }),
+
+
+
+                    document.getElementById('doIt').onclick = function() {
+                        const payload = document.getElementById('notification-payload').value;
+                        const delay = document.getElementById('notification-delay').value;
+                        const ttl = document.getElementById('notification-ttl').value;
+
+                        // Ask the server to send the client a notification (for testing purposes, in actual
+                        // applications the push notification is likely going to be generated by some event
+                        // in the server).
+                        fetch('./send-notification', {
+                        method: 'post',
+                        headers: {
+                            'Content-type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            subscription: subscription,
+                            payload: payload,
+                            delay: delay,
+                            ttl: ttl,
+                        }),
+                        });
+                    };
+
                 });
-            };
-
-            });
 
 
             function urlBase64ToUint8Array(base64String) {
@@ -445,7 +466,39 @@
             
 
             //updates the bustable after reciving the message from ws
-            function updateTable(message){
+            function updateTable(message) {
+                let table = document.getElementById('myTable');
+                if (!table) {
+                    console.error('Table with id "busTable" not found!');
+                    return;
+                }
+
+                // Clear existing rows except for the header
+                while (table.rows.length > 1) {
+                    table.deleteRow(1);
+                }
+
+                // Add new rows
+                message.buslist.forEach((bus) => {
+                    let row = table.insertRow(-1);
+
+                    row.insertCell(0).innerHTML = bus.number;
+                    row.insertCell(1).innerHTML = bus.change;
+                    row.insertCell(2).innerHTML = bus.status;
+                    row.insertCell(3).innerHTML = bus.timestamp;
+                    row.insertCell(4).innerHTML = "<span id='star-selector' class='e-icons e-medium e-star-filled starring'></span>";
+
+                    let starButton = row.cells[4].querySelector('span.starring');
+                    starButton.style.backgroundColor = 'white';
+                    starButton.style.border = '1px solid black';
+
+                    row.addEventListener('click', function(event) {
+                    starred();
+                    });
+                });
+                }
+
+            /*function updateTable(message){
                 let busses = message;
                 fetch('/getbus')
                     .then(response => { 
@@ -483,7 +536,7 @@
                             }else{
                                 console.error("Invalid data recived from websocket:" ,message);
                 }}});
-            }   
+            }*/
             
             function updateStarredUI() {
                 const row1 = clickedButton.parentNode.parentNode; // Get the row associated with the clicked button
@@ -620,8 +673,9 @@
 
         <button id="doIt">BUTTON!</button>
         <script>
-            const socket = new WebSocket("ws://localhost:3000"); // Connect to WebSocket server
+             const socket = new WebSocket("ws://localhost:3000"); // Connect to WebSocket server
             //const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
+            //const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
             socket.addEventListener("open", () => {
             //console.log("Connected to WebSocket server");
@@ -635,24 +689,27 @@
                 let data;
                 try {
                     data = JSON.parse(event.data);
+                    console.log('Received data:', data);
                 } catch (e) {
                     console.error('Error parsing WebSocket message:', event.data);
                     return;
                 }
             
                 // Update the buses if buslist is included in the message
-                if (data.buslist) {
-                    updateTable(); // Renders updated bus list
-                }
-                //sends notification for when a bus changes status
-                if (Notification.permission === 'granted'){
-                        if(data){
+                //if (data.buslist) {
+                updateTable(); // Renders updated bus list
+                //}
+                  // Check if the user has starred the bus
+                    const starredBuses = JSON.parse(localStorage.getItem('starredBuses'));
+                    if (starredBuses && starredBuses.includes(data.number)) {
+                        // Send notification for starred bus!
+                        if (Notification.permission === 'granted'){
                         new Notification ('Bus Update', {
-                            body: "Bus #" + data.number + " Has " + data.newStatus
+                            body: "Bus #" + data.number + " has " + data.status
                         })
                         }
-                }
-            });
+                    } 
+                    });
 
             //let starredBusNumbers = new Set(); // Store starred buses globally
 
@@ -866,7 +923,28 @@
                     //location.reload();
 
         }
+            
+        /*const userId = getCookie('c_email');
+
+        if (userId) {
+            const starredBuses = JSON.parse(fs.readFileSync('starredBuses.json', 'utf8'));
+            if (!starredBuses.users[userId]) {
+            starredBuses.users[userId] = [];
             }
+            starredBuses.users[userId].push(busNumber);
+            fs.writeFileSync('starredBuses.json', JSON.stringify(starredBuses));
+            }*/
+
+        const busNumber = parseInt(row.cells[0].textContent.trim(), 10);
+        const starredBuses = JSON.parse(localStorage.getItem('starredBuses')) || [];
+        if (starredBuses.includes(busNumber)) {
+            starredBuses.splice(starredBuses.indexOf(busNumber), 1);
+        } else {
+            starredBuses.push(busNumber);
+        }
+        localStorage.setItem('starredBuses', JSON.stringify(starredBuses));
+     }
+        
 
         
             /*/*else{

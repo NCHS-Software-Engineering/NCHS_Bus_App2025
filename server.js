@@ -73,9 +73,58 @@ webPush.setVapidDetails(
     res.send(vapidPublicKey);
   });
 
-  app.post( "/register", function (req, res) {
-    // A real world application would store the subscription info.
+  app.post("/register", (req, res) => {
+    const subscription = req.body.subscription;
+    const userId = req.cookies.c_email;
+    storeSubscription(subscription, userId);
     res.sendStatus(201);
+  });
+  
+
+  function storeSubscription(subscription, userId) {
+    try {
+      const subscriptions = JSON.parse(fs.readFileSync("subscriptions.json"));
+      const existingSubscription = subscriptions.find((sub) => JSON.stringify(sub.subscription) === JSON.stringify(subscription));
+  
+      if (!existingSubscription) {
+        subscriptions.push({ subscription, userId });
+        fs.writeFileSync("subscriptions.json", JSON.stringify(subscriptions));
+        console.log("New subscription added:", subscription);
+      } else {
+        console.log("Subscription already exists:", subscription);
+      }
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        // Create the file if it does not exist
+        fs.writeFileSync("subscriptions.json", JSON.stringify([{ subscription, userId }]));
+        console.log("New subscription added:", subscription);
+      } else {
+        throw error;
+      }
+    }
+  }
+  
+
+  app.post("/send-notification", async (req, res) => {
+    const { token, title, body } = req.body;
+  
+    const message = {
+      notification: {
+        title: title,
+        body: body
+      },
+      token: token
+    };
+  
+    try {
+      sendNotification(message);
+      const response = await messaging.send(message);
+      console.log("Notification sent successfully:", response);
+      res.status(200).send("Notification sent!");
+    } catch (error) {
+      console.error("Error sending notification:", error);
+      res.status(500).send(error);
+    }
   });
 
   app.post( "/sendNotification", function (req, res) {
@@ -89,6 +138,7 @@ webPush.setVapidDetails(
       webPush
         .sendNotification(subscription, payload, options)
         .then(function () {
+          console.log("Notification sent");
           res.sendStatus(201);
         })
         .catch(function (error) {
@@ -189,19 +239,104 @@ app.post("/updateStatus", (req, res) => {
       // Brodcast updated data using the websockets
       broadcast(req.body);
 
+      sendNotification(req.body);
+
       res.status(200).json({ message: "Bus status updated successfully" });
     });
     
   });
 });
 
+app.post('/check-subscription', (req,res) =>{
+  const subscription = req.body.subscription;
+  const subscriptions = getSubscriptions();
+  const exists = subscriptions.some(s => s.endpoint === subscription.endpoint);
+  res.json({ exists });
+})
+
+/*function sendNotification(data) {
+  const title = "Bus Update";
+  const body = `Bus #${data.number} has ${data.newStatus}`;
+
+  // Get all subscriptions from the database or a file
+  const subscriptions = getSubscriptions();
+
+  // Send notification to each subscription
+  subscriptions.forEach((subscription) => {
+    webPush.sendNotification(subscription, {
+      notification: {
+        title,
+        body,
+      },
+    })
+      .then((result) => {
+        console.log("Notification sent successfully:", result);
+      })
+      .catch((error) => {
+        console.error("Error sending notification:", error);
+      });
+  });
+}*/
+
+function sendNotification(data) {
+  const title = "Bus Update";
+  const body = `Bus #${data.number} has ${data.newStatus}`;
+
+  const subscriptions = JSON.parse(fs.readFileSync("subscriptions.json"));
+  subscriptions.forEach((subscription) => {
+    const userId = subscription.userId;
+    const starredBuses = JSON.parse(fs.readFileSync('starredBuses.json', 'utf8'));
+    if (starredBuses.users[userId] && starredBuses.users[userId].includes(data.number)) {
+      webPush.sendNotification(subscription.subscription, {
+        notification: {
+          title,
+          body,
+        },
+      })
+        .then((result) => {
+          console.log("Notification sent successfully:", result);
+        })
+        .catch((error) => {
+          console.error("Error sending notification:", error);
+        });
+    } else {
+      webPush.sendNotification(subscription.subscription, {
+        notification: {
+          title: "Star a Bus",
+          body: "Please star a bus to receive notifications when it arrives.",
+        },
+      })
+        .then((result) => {
+          console.log("Notification sent successfully:", result);
+        })
+        .catch((error) => {
+          console.error("Error sending notification:", error);
+        });
+    }
+  });
+}
+
+
+
+function getSubscriptions() {
+  // Read subscriptions from a file or database
+  // For example, you can read from a file named 'subscriptions.json'
+  const subscriptions = fs.readFileSync("subscriptions.json");
+  return JSON.parse(subscriptions);
+}
+
 //broadcasts the
 function broadcast(data) {
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(data)); // Send updated data as stringified JSON
+      client.send(JSON.stringify({
+        number: data.number,
+        status: data.newStatus
+      })); // Send updated data as stringified JSON!
     }
   });
+
+  sendNotification(data);
 }
 
 // WebSocket handling
@@ -577,6 +712,8 @@ app.post('/updateChange', express.json(), (req, res) => {
       return res.status(500).json({ message: "Invalid JSON in bus list" });
     }
     });
+
+    sendNotification(req.body);
   
 });
 
@@ -618,29 +755,6 @@ app.get("/getlogs", (req, res) => {
   res.send(data);
 });
 
-
-
-// Route to send notifications
-app.post("/send-notification", async (req, res) => {
-  const { token, title, body } = req.body;
-
-  const message = {
-    notification: {
-      title: title,
-      body: body
-    },
-    token: token
-  };
-
-  try {
-    const response = await messaging.send(message);
-    console.log("Notification sent successfully:", response);
-    res.status(200).send("Notification sent!");
-  } catch (error) {
-    console.error("Error sending notification:", error);
-    res.status(500).send(error);
-  }
-});
 
 
 //google sign in -----------------------------------------------------
