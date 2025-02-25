@@ -11,9 +11,8 @@
         <!-- Latest compiled JavaScript -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
-        <link rel="stylesheet" href="/css/settings.css">
+        <link rel="stylesheet" href="/css/maincontent.css">
         <link rel="stylesheet" href="/css/navbar.css">
-    
 
     </head>
 
@@ -24,46 +23,37 @@
             <button onclick = "window.location.href = '/settings'" id = "active"><image src = "/images/settings.png"></image></button> <!--Redirects to Settings-->
             <button onclick = "window.location.replace('https://nchsbusapp.org')"><image src = "/images/exit.png"></image></button> <!--Exits Admin Panel-->
         </div>
-        <div id="main-container" class="flex-container" style="display: none;">
-         <div id="list">
-                <form id="form" action="/addbus" method="post">
-                    <input type="text" name="busnum" placeholder="Add Bus">
-                    <input type="submit" value="Submit">
-                </form>
-                <form id="form" action="/delbus" method="post">
-                    <input type="text" name="busnum" placeholder="Delete Bus">
-                    <input type="submit" value="Submit">
-                </form>
-                <form id="form" action="/addemail" method="post">
-                    <input type="text" name="email" placeholder="Add Email">
-                    <input type="submit" value="Submit">
-                </form>
-                <form id="form" action="/delemail" method="post">
-                    <input type="text" name="email" placeholder="Delete Email">
-                    <input type="submit" value="Submit">
-                </form>
+        <div id="maincontent">
+            <form class = "form" action="/addbus" method="post">
+                <input type="text" name="busnum" placeholder="Add Bus">
+                <input type="submit" value="Submit">
+            </form>
+            <form class = "form" action="/delbus" method="post">
+                <input type="text" name="busnum" placeholder="Delete Bus">
+                <input type="submit" value="Submit">
+            </form>
+            <form class = "form" action="/addemail" method="post">
+                <input type="text" name="email" placeholder="Add Email">
+                <input type="submit" value="Submit">
+            </form>
+            <form class = "form" action="/delemail" method="post">
+                <input type="text" name="email" placeholder="Delete Email">
+                <input type="submit" value="Submit">
+            </form>
 
-            
-                <div id="reset-button" onclick="reset()">Reset All Busses to Default</div>
-            
-                <div id="bus-whitelist">
-                    <h1 style="color: black;">Active Busses</h1>
-                </div>
+        
+            <button id="resetbtn" onclick="reset()">Reset All Busses to Default</button>
+        
+            <div id="bus-whitelist">
+                <h1 style="color: black;">Active Busses</h1>
+            </div>
 
-                <div id="emails">
-                    <h1 style="color: black;">Allowed Users</h1>
-                </div>
+            <div id="emails">
+                <h1 style="color: black;">Allowed Users</h1>
+            </div>
 
-           </div>
-        </div>
+       </div>
     </body>
 
     <script src="/js/settings.js"></script>
-    <script>
-        let button = document.getElementById('settings');
-        button.style.filter = "invert(1)";
-        button.style.boxShadow = "0px 7px 14px rgb(237, 237, 237)";
-
-    </script>
-
 </html>

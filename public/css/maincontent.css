@@ -1,0 +1,57 @@
+/* Buschanges and Buslist stuff */
+
+.editbuses{
+    border-radius: 15px;
+    margin-right: 1vw;
+    margin-bottom: 2vh;
+    display: inline-block;
+    cursor: pointer;
+    text-decoration: none;
+    background-color: rgb(255, 44, 44);
+    box-shadow: 0 9px #999;
+    font-size: 38px;
+    padding: 20px;
+}
+
+.editbuses:active {
+    background-color: #999;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+/* Buschanges, buslist, and settings stuff */
+#maincontent {
+    background-color: #fff7c9;
+    height: 100vh;
+    width: 86vw;
+    margin-left: 14vw;
+
+    padding-left: 1vw;
+    padding-top: 2vh;
+}
+
+/* Settings stuff */
+.form{
+    margin-right: 1vw;
+    margin-bottom: 1vh;
+}
+
+input[type=text]{
+    width: 250px;
+    height: 40px;
+    padding: 7px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 3px solid #ccc;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    outline: none;
+    border-radius: 10px;
+}
+
+input[type=text]:focus{
+    border: 3px solid #555;
+}
+
+input[type=submit]:active{
+}
