@@ -329,7 +329,10 @@ function getSubscriptions() {
 function broadcast(data) {
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(data)); // Send updated data as stringified JSON
+      client.send(JSON.stringify({
+        number: data.number,
+        status: data.newStatus
+      })); // Send updated data as stringified JSON
     }
   });
 

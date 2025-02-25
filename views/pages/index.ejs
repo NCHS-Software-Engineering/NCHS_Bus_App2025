@@ -136,6 +136,9 @@
                 if (permission === "granted") {
                 console.log("Notification permission granted.");
                 getFCMToken(); // Fetch FCM Token
+                new Notification ('Star a Bus', {
+                    body: "You will only receive notifications for the busses you star. :)"
+                })
                 } else {
                 console.log("Notification permission denied.");
                 }
@@ -463,7 +466,39 @@
             
 
             //updates the bustable after reciving the message from ws
-            function updateTable(message){
+            function updateTable(message) {
+                let table = document.getElementById('myTable');
+                if (!table) {
+                    console.error('Table with id "busTable" not found!');
+                    return;
+                }
+
+                // Clear existing rows except for the header
+                while (table.rows.length > 1) {
+                    table.deleteRow(1);
+                }
+
+                // Add new rows
+                message.buslist.forEach((bus) => {
+                    let row = table.insertRow(-1);
+
+                    row.insertCell(0).innerHTML = bus.number;
+                    row.insertCell(1).innerHTML = bus.change;
+                    row.insertCell(2).innerHTML = bus.status;
+                    row.insertCell(3).innerHTML = bus.timestamp;
+                    row.insertCell(4).innerHTML = "<span id='star-selector' class='e-icons e-medium e-star-filled starring'></span>";
+
+                    let starButton = row.cells[4].querySelector('span.starring');
+                    starButton.style.backgroundColor = 'white';
+                    starButton.style.border = '1px solid black';
+
+                    row.addEventListener('click', function(event) {
+                    starred();
+                    });
+                });
+                }
+
+            /*function updateTable(message){
                 let busses = message;
                 fetch('/getbus')
                     .then(response => { 
@@ -501,7 +536,7 @@
                             }else{
                                 console.error("Invalid data recived from websocket:" ,message);
                 }}});
-            }   
+            }*/
             
             function updateStarredUI() {
                 const row1 = clickedButton.parentNode.parentNode; // Get the row associated with the clicked button
@@ -654,24 +689,27 @@
                 let data;
                 try {
                     data = JSON.parse(event.data);
+                    console.log('Received data:', data);
                 } catch (e) {
                     console.error('Error parsing WebSocket message:', event.data);
                     return;
                 }
             
                 // Update the buses if buslist is included in the message
-                if (data.buslist) {
-                    updateTable(); // Renders updated bus list
-                }
-                //sends notification for when a bus changes status
-                if (Notification.permission === 'granted'){
-                        if(data){
+                //if (data.buslist) {
+                updateTable(); // Renders updated bus list
+                //}
+                  // Check if the user has starred the bus
+                    const starredBuses = JSON.parse(localStorage.getItem('starredBuses'));
+                    if (starredBuses && starredBuses.includes(data.number)) {
+                        // Send notification for starred bus
+                        if (Notification.permission === 'granted'){
                         new Notification ('Bus Update', {
-                            body: "Bus #" + data.number + " Has " + data.newStatus
+                            body: "Bus #" + data.number + " has " + data.status
                         })
                         }
-                }
-            });
+                    } 
+                    });
 
             //let starredBusNumbers = new Set(); // Store starred buses globally
 
@@ -886,8 +924,7 @@
 
         }
             
-        const busNumber = parseInt(row.cells[0].textContent.trim(), 10);
-        const userId = getCookie('c_email');
+        /*const userId = getCookie('c_email');
 
         if (userId) {
             const starredBuses = JSON.parse(fs.readFileSync('starredBuses.json', 'utf8'));
@@ -896,11 +933,18 @@
             }
             starredBuses.users[userId].push(busNumber);
             fs.writeFileSync('starredBuses.json', JSON.stringify(starredBuses));
+            }*/
 
-
-
-
-            }}
+        const busNumber = parseInt(row.cells[0].textContent.trim(), 10);
+        const starredBuses = JSON.parse(localStorage.getItem('starredBuses')) || [];
+        if (starredBuses.includes(busNumber)) {
+            starredBuses.splice(starredBuses.indexOf(busNumber), 1);
+        } else {
+            starredBuses.push(busNumber);
+        }
+        localStorage.setItem('starredBuses', JSON.stringify(starredBuses));
+     }
+        
 
         
             /*/*else{
