@@ -36,7 +36,7 @@
     margin-bottom: 1vh;
 }
 
-input[type=text], input[type=submit]{
+input[type=text], input[type=submit], button{
     
     font-size: 15px;
     height: 40px;
@@ -58,21 +58,10 @@ input[type=text]:focus{
     border: 3px solid #555;
 }
 
-input[type=submit]{
-    width: 70px;
-}
-
-input[type=submit]:active{
+button:active, input[type=submit]:active{
     border: 3px solid #555;
     background-color: #8a8989;
-    transition: all 0.2s;
-}
-
-input[type=submit]:active:after {
-    padding: 0;
-    margin: 0;
-    opacity: 1;
-    transition: 10s;
+    transition: all 0.15s;
 }
 
 #bus-whitelist {
