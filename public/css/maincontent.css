@@ -36,8 +36,9 @@
     margin-bottom: 1vh;
 }
 
-input[type=text]{
-    width: 250px;
+input[type=text], input[type=submit]{
+    
+    font-size: 15px;
     height: 40px;
     padding: 7px;
     margin: 8px 0;
@@ -49,9 +50,40 @@ input[type=text]{
     border-radius: 10px;
 }
 
+input[type=text]{
+    width: 250px;
+}
+
 input[type=text]:focus{
     border: 3px solid #555;
 }
 
+input[type=submit]{
+    width: 70px;
+}
+
 input[type=submit]:active{
+    border: 3px solid #555;
+    background-color: #8a8989;
+    transition: all 0.2s;
+}
+
+input[type=submit]:active:after {
+    padding: 0;
+    margin: 0;
+    opacity: 1;
+    transition: 10s;
+}
+
+#bus-whitelist {
+    background-color: white;
+    border-radius: 15px;
+    border: 2px solid #555;
+    margin: 5px;
+    padding: 10px;
+
+}
+
+#emails {
+
 }
