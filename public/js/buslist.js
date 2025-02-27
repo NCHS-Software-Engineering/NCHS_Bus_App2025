@@ -23,10 +23,6 @@ socket.addEventListener('message', (event) => {
     }
   });
   
-
- 
-  
-  
   function handleBusClick(busNumber) {
     const busButton = document.getElementById(`bus-${busNumber}`);
     let newStatus;
@@ -66,17 +62,10 @@ socket.addEventListener('message', (event) => {
         });
 }
 
-  
-
-
-console.log();
 
 function newBtn() {
     let div = document.createElement("div");
-    div.classList.add('flex-fill');
-    div.style.backgroundColor = "red";
-    div.style.borderRadius = "30px";
-    div.style.margin = "10px";
+    div.classList.add('editbuses');
 
     var h = window.innerHeight;
     div.style.height = (h-180)/10+"px";
@@ -131,8 +120,7 @@ function getBusses() {
             while(i < data.buslist.length) {
                 let div = document.createElement("div");
                 div.classList.add('busObj')
-                div.classList.add('flex-fill');
-                console.log("HERE");
+                div.classList.add('editbuses');
 
                 if(data.buslist[i].status == "Not Arrived") div.style.backgroundColor = "rgb(255, 44, 44)";
                 else if(data.buslist[i].status == "Arrived") div.style.backgroundColor = "green";
@@ -141,11 +129,6 @@ function getBusses() {
                     div.style.backgroundColor = "rgb(60, 60, 200)";
                 }*/
 
-                div.style.borderRadius = "30px";
-                div.style.margin = "10px";
-
-                var h = window.innerHeight;
-                div.style.height = (h-180)/10+"px";
 
                 let busNumber = data.buslist[i].number;
                 if (data.buslist[i].change == null)
@@ -157,15 +140,8 @@ function getBusses() {
                 if (data.buslist[i].change != undefined) change = data.buslist[i].change;
                 else change = 0;
 
-                div.style.textAlign = 'center';
-                div.style.fontFamily = 'Gill Sans';
-                div.style.fontSize = (h-180)/10+"px";
-                div.style.cursor = "pointer";
-                div.style.lineHeight = div.style.height;
-
                 div.onclick = changeColor;
                 
-
                 document.getElementById('allBusses').appendChild(div);  
                 i++;
 
@@ -243,6 +219,8 @@ function getBusses() {
                     }
                 }
             }//end of the while loop
+
+            updateButtonSize(data.buslist.length);
         }
     }).catch(err => console.error(err));
 }
@@ -251,13 +229,6 @@ function getBusses() {
 function newBus(text) {
     let div = document.createElement("div");
     div.classList.add('flex-fill');
-    div.style.backgroundColor = "red";
-    div.style.borderRadius = "30px";
-    div.style.margin = "10px";
-
-    var h = window.innerHeight;
-    div.style.height = (h-180)/10+"px";
-
     div.textContent = text;
 
     /*fetch('/getbus')
@@ -282,43 +253,36 @@ function displayBusses() {
     // get bus list AND status from server, create a table using the data
 }
 
-function resize() {
-    var w = window.innerWidth;
-    var h = window.innerHeight;
+function updateButtonSize(numButtons) {
 
-    // Resize the Redbar
-    var newW = w/5.88;
-    document.getElementById('redbar').style.width = newW+"px";
-    // resize the tab bar
-    document.getElementById('tabs').style.width = w-newW+"px";
-    // resize bus container
-    document.getElementById('allBusses').style.width = w-newW+"px";
-    document.getElementById('allBusses').style.height = h-50+"px";
-    document.getElementById('allBusses').style.left = newW+"px";
+    let columns = Math.ceil(Math.sqrt(numButtons));
+    let rows = Math.ceil(numButtons / columns);
 
+    let width = (85/columns - 1).toString() + "vw";
+    let height = (99/rows - 2.5).toString() + "vh";
 
-    // Resize the buttons
-    var buttonMargin = (newW-(newW*0.882352941176471))/2;
-    var newBtnW = newW*0.882352941176471;
-    let buttons = document.querySelectorAll('.flex-fill');
-    let btnIcons = document.querySelectorAll("#menu-btn");
-    for (let i = 0; i < buttons.length; i++) {
-        buttons[i].style.margin = buttonMargin+"px";
+    let buttons = document.querySelectorAll('.editbuses');
 
-        buttons[i].style.width = newBtnW+"px";
-        buttons[i].style.height = (h-(10*buttonMargin))/5+"px";
-        btnIcons[i].style.margin = ((h-(10*buttonMargin))/5)*.05+"px";
-
-        if (newBtnW > (h-(10*buttonMargin))/5) { // width is larger than height
-            btnIcons[i].style.width = ((h-(10*buttonMargin))/5)*.9+"px";
-            btnIcons[i].style.height = ((h-(10*buttonMargin))/5)*.9+"px";
-        } else if (newBtnW < (h-(10*buttonMargin))/5) { // height is larger than width
-            btnIcons[i].style.width = newBtnW*.9+"px";
-            btnIcons[i].style.height = newBtnW*.9+"px";
-        }
-    }
-
-    document.getElementById('main-container').style.display = "flex";
+    buttons.forEach(button => {
+        button.style.width = width;
+        button.style.height = height;
+    });
 }
-resize();
-window.addEventListener("resize", resize);
+
+function updateButtonSize(numButtons) {
+
+    let columns = Math.ceil(Math.sqrt(numButtons));
+    let rows = Math.ceil(numButtons / columns);
+
+    let width = (85/columns - 1).toString() + "vw";
+    let height = (99/rows - 2.5).toString() + "vh";
+
+    let buttons = document.querySelectorAll('.editbuses');
+
+    buttons.forEach(button => {
+        button.style.width = width;
+        button.style.height = height;
+    });
+}
+
+getBusses();
