@@ -52,11 +52,11 @@ body {
     filter: invert(0.9);
 }
 
-img[src = "/images/buslist.png"]{
+img[src="/images/buslist.png"]{
     margin-left: 0.6vw;
 }
 
-img[src = "/images/exit.png"]{
+img[src="/images/exit.png"]{
     margin-left: 1vw;
     margin-top: 2vh;
 }

@@ -24,34 +24,32 @@
             <button onclick = "window.location.replace('https://nchsbusapp.org')"><image src = "/images/exit.png"></image></button> <!--Exits Admin Panel-->
         </div>
         <div id="maincontent">
-            <form class = "form" action="/addbus" method="post">
-                <input type="text" name="busnum" placeholder="Add Bus">
-                <input type="submit" value="Submit">
-            </form>
-            <form class = "form" action="/delbus" method="post">
-                <input type="text" name="busnum" placeholder="Delete Bus">
-                <input type="submit" value="Submit">
-            </form>
-            <form class = "form" action="/addemail" method="post">
-                <input type="text" name="email" placeholder="Add Email">
-                <input type="submit" value="Submit">
-            </form>
-            <form class = "form" action="/delemail" method="post">
-                <input type="text" name="email" placeholder="Delete Email">
-                <input type="submit" value="Submit">
-            </form>
-
-        
-            <button id="resetbtn" onclick="reset()">Reset All Busses to Default</button>
-        
-            <div id="bus-whitelist">
-                <h1 style="color: black;">Active Busses</h1>
+            <div id = "forms">
+                <div class = "information" id="bus-whitelist">
+                    <h1>Active Buses</h1>
+                </div>
+                <form class = "form" action="/addbus" method="post">
+                    <input type="text" name="busnum" placeholder="Add Bus">
+                    <input type="submit" value="Submit">
+                </form>
+                <form class = "form" action="/delbus" method="post">
+                    <input type="text" name="busnum" placeholder="Delete Bus">
+                    <input type="submit" value="Submit">
+                </form>
+                <form class = "form" action="/addemail" method="post">
+                    <input type="text" name="email" placeholder="Add Email">
+                    <input type="submit" value="Submit">
+                </form>
+                <form class = "form" action="/delemail" method="post">
+                    <input type="text" name="email" placeholder="Delete Email">
+                    <input type="submit" value="Submit">
+                </form>
+                <button id="resetbtn" onclick="reset()">Reset All Busses to Default</button>
+                
+                <div class = "information" id="emails">
+                    <h1>Allowed Users</h1>
+                </div>
             </div>
-
-            <div id="emails">
-                <h1 style="color: black;">Allowed Users</h1>
-            </div>
-
        </div>
     </body>
 
