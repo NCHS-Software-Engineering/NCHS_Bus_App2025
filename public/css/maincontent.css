@@ -36,7 +36,7 @@
     margin-bottom: 1vh;
 }
 
-input[type=text], input[type=submit], button{
+input[type=text], input[type=submit], select, #resetbtn{
     font-size: 15px;
     height: 40px;
     padding: 7px;
@@ -49,7 +49,7 @@ input[type=text], input[type=submit], button{
     border-radius: 10px;
 }
 
-input[type=text]{
+input[type=text], select{
     width: 18.5vw;
 }
 
@@ -57,11 +57,11 @@ input[type=text]:focus{
     border: 3px solid #555;
 }
 
-input[type=submit]{
+input[type=submit], #resetbtn{
     width: 6vw;
 }
 
-button:active, input[type=submit]:active{
+#resetbtn:active, input[type=submit]:active{
     border: 3px solid #555;
     background-color: #8a8989;
     transition: all 0.15s;
@@ -69,11 +69,24 @@ button:active, input[type=submit]:active{
 
 #bus-whitelist, #emails {
     padding: 10px;
-    width: 25vw;
+    width: 28vw;
+    margin-bottom: 20px;
+    font-size: 1.4vw;
+    padding: 20px;
+}
+
+#inputs {
+    float: left;
 }
 
 .information {
     border: 3px solid #ccc;
     background-color: white;
     border-radius: 15px;
+    float: left;
+    margin-right: 1vw;    
+}
+
+#resetbtn{
+    width: 25vw;
 }

@@ -6,9 +6,6 @@ function reset(){
         }
         }).then(data => {
         if(data) {
-            
-            
-            
         }
     }).catch(err => console.error(err));
 
@@ -42,6 +39,7 @@ function listBus() {
     }).catch(err => console.error(err));
 }
 
+
 function listEmails() {
     fetch('/getemails')
     .then(response => {
@@ -51,6 +49,11 @@ function listEmails() {
         }).then(data => {
         if(data) {
             data.users.forEach(element => {
+                let newOption = document.createElement("option");
+                newOption.value = element;
+                newOption.textContent = element;
+                emailDropdown.appendChild(newOption);
+
                 document.getElementById("emails").append(element)
                 document.getElementById("emails").append("\n")
             });
@@ -73,7 +76,15 @@ function listBuswhitelist() {
             let busses = data.buslist;
             console.log('busses')
             while(i < busses.length) { // busses[i]
+                let newOption = document.createElement("option");
+                newOption.value = busses[i].number;
+                newOption.textContent = busses[i].number;
+                busDropdown.appendChild(newOption);
+
                 document.getElementById("bus-whitelist").append(busses[i].number)
+                if (i != busses.length-1){
+                    document.getElementById("bus-whitelist").append(",")
+                }
                 document.getElementById("bus-whitelist").append("\n")
                 i++;
             }
