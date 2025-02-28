@@ -1,0 +1,62 @@
+body { 
+    margin: 0px;
+}
+
+#navbar{
+    position: fixed;
+
+    background-color: rgb(255, 44, 44);
+    width: 14vw;
+    height: 100vh;
+
+    padding-top: 2vh;
+}
+
+#navbar button{
+    margin-left: 1vw;
+    margin-bottom: 3vh;
+
+    width: 12vw;
+    height: 21.5vh;
+
+    border-radius: 15px;
+
+    display: inline-block;
+    padding: 15px 25px;
+    font-size: 24px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    border: none;
+    box-shadow: 0 9px #999;
+}
+
+#navbar button:active {
+    background-color: #999;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+#active {
+    background-color: rgb(67, 67, 67);
+    box-shadow: 0 9px #292929;
+}
+
+#navbar button img {
+    height: 6vw;
+    max-height: 100px;
+}
+
+#navbar #active img {
+    filter: invert(0.9);
+}
+
+img[src="/images/buslist.png"]{
+    margin-left: 0.6vw;
+}
+
+img[src="/images/exit.png"]{
+    margin-left: 1vw;
+    margin-top: 2vh;
+}
