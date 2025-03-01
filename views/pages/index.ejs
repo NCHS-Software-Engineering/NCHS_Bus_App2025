@@ -701,9 +701,17 @@
                     if (starredBuses && starredBuses.includes(data.number)) {
                         // Send notification for starred bus!
                         if (Notification.permission === 'granted'){
-                        new Notification ('Bus Update', {
-                            body: "Bus #" + data.number + " has " + data.status
-                        })
+                            let body;
+
+                            // Check if the bus number has changed
+                            if (data.change && data.change !== "" && data.change !== data.number) {
+                                body = `Bus #${data.number}, which is Bus #${data.change} today, has ${data.status}!`;
+                            } else {
+                                body = `Bus #${data.number} has ${data.status}!`;
+                            }
+                            new Notification ('Bus Update', {
+                                body
+                            });
                         }
                     } 
                     });

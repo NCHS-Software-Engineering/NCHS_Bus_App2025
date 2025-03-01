@@ -236,10 +236,15 @@ app.post("/updateStatus", (req, res) => {
         return res.status(500).json({ error: "Internal Server Error" });
       }
 
+      let broadcastData = {
+        number: bus.number,
+        newStatus: bus.newStatus,
+        change: bus.change
+      };
       // Brodcast updated data using the websockets
-      broadcast(req.body);
+      broadcast(broadcastData);
 
-      sendNotification(req.body);
+      sendNotification(broadcastData);
 
       res.status(200).json({ message: "Bus status updated successfully" });
     });
@@ -280,7 +285,7 @@ app.post('/check-subscription', (req,res) =>{
 
 function sendNotification(data) {
   const title = "Bus Update";
-  const body = `Bus #${data.number} has ${data.newStatus}`;
+  let body;
 
   const subscriptions = JSON.parse(fs.readFileSync("subscriptions.json"));
   subscriptions.forEach((subscription) => {
@@ -331,7 +336,8 @@ function broadcast(data) {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify({
         number: data.number,
-        status: data.newStatus
+        status: data.newStatus,
+        change: data.change
       })); // Send updated data as stringified JSON!
     }
   });
