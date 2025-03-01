@@ -361,12 +361,6 @@ function reset(condition) {
 
       fs.writeFile("buslist.json", final, (err) => {});
 
-      /*let logWrite = {
-                "bus" : 0,
-                "description" : "All bus statuses reset",
-                "timestamp" : time
-            }
-            fs.writeFile('logs.json', JSON.stringify(logWrite), err => {})*/
     });
   }
 }
@@ -419,13 +413,13 @@ function verifyToken(req, res) {
 
 // All of these gets are called only if an authorized user calls them
 app.get("/reset", (req, res) => {
-  if (verifyToken(req, res)){
+  //if (verifyToken(req, res)){
     reset(true);
-    res.render("pages/buslist");
-  }
-  else{
-    res.redirect('/');
-  }
+    return res.render("pages/buslist");
+  //}
+  //else{
+   // return res.redirect('/');
+  //}
 });
 
 app.get("/buslist", function (req, res) {

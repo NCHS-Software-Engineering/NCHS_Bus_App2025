@@ -2,14 +2,13 @@ function reset(){
     fetch('/reset')
     .then(response => {
         if(response.ok) {
+            console.log(response.json());
             return response.json();
         }
         }).then(data => {
         if(data) {
         }
     }).catch(err => console.error(err));
-
-
 }
 
 function listBus() {
@@ -54,8 +53,8 @@ function listEmails() {
                 newOption.textContent = element;
                 emailDropdown.appendChild(newOption);
 
-                document.getElementById("emails").append(element)
-                document.getElementById("emails").append("\n")
+                document.getElementById("scrollable-div").append(element)
+                document.getElementById("scrollable-div").append("\n")
             });
             
         }
