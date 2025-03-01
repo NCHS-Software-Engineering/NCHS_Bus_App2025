@@ -292,6 +292,8 @@ function sendNotification(data) {
     const userId = subscription.userId;
     const starredBuses = JSON.parse(fs.readFileSync('starredBuses.json', 'utf8'));
     if (starredBuses.users[userId] && starredBuses.users[userId].includes(data.number)) {
+      if(data.change != null && date.change != data.number)
+        body = `Bus #${data.number}, which is #${data.change} today,has ${data.newStatus}`;
       webPush.sendNotification(subscription.subscription, {
         notification: {
           title,
