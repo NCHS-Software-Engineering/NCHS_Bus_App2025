@@ -9,8 +9,8 @@
     text-decoration: none;
     background-color: rgb(255, 44, 44);
     box-shadow: 0 9px #999;
-    font-size: 38px;
-    padding: 20px;
+    font-size: 2vw;
+    padding: 1.5vw;
 }
 
 .editbuses:active {

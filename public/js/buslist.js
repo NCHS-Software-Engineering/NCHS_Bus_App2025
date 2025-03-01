@@ -270,11 +270,12 @@ function updateButtonSize(numButtons) {
 }
 
 function updateButtonSize(numButtons) {
-    let columns = Math.ceil(Math.sqrt(numButtons * (window.innerWidth / window.innerHeight)));
+
+    let columns = Math.ceil(Math.sqrt(numButtons));
     let rows = Math.ceil(numButtons / columns);
 
-    let width = (85 / columns - 1).toString() + "vw";
-    let height = (99 / rows - 2.5).toString() + "vh";
+    let width = (85/columns - 1).toString() + "vw";
+    let height = (99/rows - 2.5).toString() + "vh";
 
     let buttons = document.querySelectorAll('.editbuses');
 
