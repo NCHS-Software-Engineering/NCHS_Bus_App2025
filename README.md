@@ -77,11 +77,14 @@ Here’s the different parts
     - This is roughly applied for the buslist in the trying-something-diff-2 branch of the development server github repo, however when tested on the main of the dev server, caused it to crash and unknown why, someone else can try implementing their own version or use the current code to build off of it.
 
 ## Notifications
-- Rough prototype in “trying something diff2” branch of development server repository
-- Uses web-push library of nodejs
+- Notifications implemented using FCM(firebase cloud messaging) in the following files:
+    -firebase-messaging-sw.js: Recives the notifcations and shows them to the user.
+    -subscriptions.json: stores subscriptions of users
+    -serviveAccountKey.json: has our firebase account
+- Uses firebase-admin out of node modules
 - How it works generally:
-    - In the index.ejs file, there exists a button that says “subscribe to notifications,” pressing it will call a function subscribe in index.ejs and send info to the server.js function subscribe. In the server.js, the subscription endpoint will be stored in a database along with the number 3, which is the bus number. In addition, it will use the service worker to send a notification at this time. Now when a bus status update is made to bus 3, the server will grab all subscription endpoints that have attribute bus number 3 from the database and send a notification to those devices. Also something something vapid keys it needs an email for some reason prob replace the email with one of yours because my email by then would have expired, also you might need to change the vapid keys once in a while.
-
+    - In index.js the user is prompted with a pop-up for notification permissions. When allowed they are added to the subscriptions file. When a notification is pushed, all subscriptions are sent a notification, then the firebase-messaging-sw.js service worker shows the notification on the device.
+    - 
 ## Websockets
 - Uses the websockets from nodejs
 - How it works:
