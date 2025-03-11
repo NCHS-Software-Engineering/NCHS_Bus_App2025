@@ -17,7 +17,7 @@ require('dotenv').config();
 const http = require('http');
 const server = http.createServer(app);
 
-const port = 3000;
+const port = 8080;
 server.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
@@ -63,8 +63,8 @@ if (!vapidPublicKey || !vapidPrivateKey) {
 }
 // Set the keys used for encrypting the push messages.
 webPush.setVapidDetails(
-  //"https://localhost:3000",
-  "wss://busTest.redhawks.us/ws/",
+  "https://localhost:3000",
+  //"wss://bustest.redhawks.us/ws/",
   vapidPublicKey,
   vapidPrivateKey
 );
