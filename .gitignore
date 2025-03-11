@@ -107,7 +107,6 @@ dist
 # vscode
 .vscode/
 Archive.zip
-buslist.json
 logs.JSON
 whitelist.json
 .DS_Store
