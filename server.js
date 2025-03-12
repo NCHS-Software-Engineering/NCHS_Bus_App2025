@@ -63,8 +63,8 @@ if (!vapidPublicKey || !vapidPrivateKey) {
 }
 // Set the keys used for encrypting the push messages.
 webPush.setVapidDetails(
-  //"https://localhost:3000",
-  "wss://bustest.redhawks.us/ws/",
+  "https://localhost:3000",
+  //"wss://bustest.redhawks.us/ws/",
   vapidPublicKey,
   vapidPrivateKey
 );
@@ -295,7 +295,7 @@ function sendNotification(data) {
     if (starredBuses.users[userId] && starredBuses.users[userId].includes(data.number)) {
       if(data.change != null && date.change != data.number)
         body = `Bus #${data.number}, which is #${data.change} today,has ${data.newStatus}`;
-      webPush.sendNotification(subscription.subscription, {
+        webPush.sendNotification(subscription.subscription, {
         notification: {
           title,
           body,
@@ -307,20 +307,20 @@ function sendNotification(data) {
         .catch((error) => {
           console.error("Error sending notification:", error);
         });
-    } else {
-      webPush.sendNotification(subscription.subscription, {
-        notification: {
-          title: "Star a Bus",
-          body: "Please star a bus to receive notifications when it arrives.",
-        },
-      })
-        .then((result) => {
-          console.log("Notification sent successfully:", result);
+      } else {
+        webPush.sendNotification(subscription.subscription, {
+          notification: {
+            title: "Star a Bus",
+            body: "Please star a bus to receive notifications when it arrives.",
+          },
         })
-        .catch((error) => {
-          console.error("Error sending notification:", error);
-        });
-    }
+          .then((result) => {
+            console.log("Notification sent successfully:", result);
+          })
+          .catch((error) => {
+            console.error("Error sending notification:", error);
+          });
+      }
   });
 }
 

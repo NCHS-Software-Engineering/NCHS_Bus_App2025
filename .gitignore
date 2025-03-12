@@ -111,3 +111,6 @@ buslist.json
 logs.JSON
 whitelist.json
 .DS_Store
+subscriptions.json
+serviceAccountkey.json
+starredBuses.json
