@@ -91,7 +91,7 @@ function storeSubscription(subscription, userId) {
       fs.writeFileSync("subscriptions.json", JSON.stringify(subscriptions));
       console.log("New subscription added:", subscription);
     } else {
-      console.log("Subscription already exists:", subscription);
+      console.log("Subscription already exists:" /*,subscription*/);
     }
   } catch (error) {
     if (error.code === "ENOENT") {
@@ -118,7 +118,7 @@ app.post("/send-notification", async (req, res) => {
   };
 
   try {
-    sendNotification(message);
+    //sendNotification(message);
     const response = await messaging.send(message);
     console.log("Notification sent successfully:", response);
     res.status(200).send("Notification sent!");
@@ -167,13 +167,13 @@ const messaging = admin.messaging();
 
 app.use(express.static(__dirname));
 
-app.get('/firebase-app.js', (req, res) => {
-  res.sendFile(__dirname + '/node_modules/firebase/app.js');
-});
+// app.get('/firebase-app.js', (req, res) => {
+//   res.sendFile(__dirname + '/node_modules/firebase/app.js');
+// });
 
-app.get('/firebase-messaging.js', (req, res) => {
-  res.sendFile(__dirname + '/node_modules/firebase/messaging.js');
-});
+// app.get('/firebase-messaging.js', (req, res) => {
+//   res.sendFile(__dirname + '/node_modules/firebase/messaging.js');
+// });
 
 /*app.get('/firebase-messaging-sw.js', (req,res)=>{
   res.sendFile(__dirname + '/firebase-messaging-sw.js');
@@ -254,7 +254,7 @@ app.post("/updateStatus", (req, res) => {
       // Brodcast updated data using the websockets
       broadcast(broadcastData);
 
-      sendNotification(broadcastData);
+      //sendNotification(broadcastData);
 
       res.status(200).json({ message: "Bus status updated successfully" });
     });
@@ -270,45 +270,48 @@ app.post('/check-subscription', (req,res) =>{
 })
 
 
-function sendNotification(data) {
-  const title = "Bus Update";
-  let body;
+// function sendNotification(data) {
+//   const title = "Bus Update";
+//   let body;
 
-  const subscriptions = JSON.parse(fs.readFileSync("subscriptions.json"));
-  subscriptions.forEach((subscription) => {
-    const userId = subscription.userId;
-    const starredBuses = JSON.parse(fs.readFileSync('starredBuses.json', 'utf8'));
-    if (starredBuses.users[userId] && starredBuses.users[userId].includes(data.number)) {
-      if(data.change != null && date.change != data.number)
-        body = `Bus #${data.number}, which is #${data.change} today,has ${data.newStatus}`;
-        webPush.sendNotification(subscription.subscription, {
-        notification: {
-          title,
-          body,
-        },
-      })
-        .then((result) => {
-          console.log("Notification sent successfully:", result);
-        })
-        .catch((error) => {
-          console.error("Error sending notification:", error);
-        });
-      } else {
-        webPush.sendNotification(subscription.subscription, {
-          notification: {
-            title: "Star a Bus",
-            body: "Please star a bus to receive notifications when it arrives.",
-          },
-        })
-          .then((result) => {
-            console.log("Notification sent successfully:", result);
-          })
-          .catch((error) => {
-            console.error("Error sending notification:", error);
-          });
-      }
-  });
-}
+//   const subscriptions = JSON.parse(fs.readFileSync("subscriptions.json"));
+//   subscriptions.forEach((subscription) => {
+//     const userId = subscription.userId;
+//     const options = {
+//       TTL: 60,
+//     }
+//     const starredBuses = JSON.parse(fs.readFileSync('starredBuses.json', 'utf8'));
+//     if (starredBuses.users[userId] && starredBuses.users[userId].includes(data.number)) {
+//       if(data.change != null && data.change != data.number){body = `Bus #${data.number}, which is #${data.change} today,has ${data.newStatus}`;}
+//         webPush.sendNotification(subscription.subscription, {
+//         notification: {
+//           title,
+//           body,
+//         },
+//       })
+//         .then((result) => {
+//           console.log("Notification sent successfully:", result);
+//         })
+//         .catch((error) => {
+//           console.error("Error sending notification:", error);
+//         });
+//       } else {
+//         const payload = JSON.stringify({
+//           notification: {
+//             title: "Star a Bus",
+//             body: "Please star a bus to receive notifications when it arrives.",
+//           }
+//         })
+//         webPush.sendNotification(subscription.subscription,payload,options)
+//           .then((result) => {
+//             console.log("Notification sent successfully:"/*, result*/);
+//           })
+//           .catch((error) => {
+//             console.error("Error sending notification:", error);
+//           });
+//       }
+//   });
+// }
 
 
 
@@ -331,7 +334,7 @@ function broadcast(data) {
     }
   });
 
-  sendNotification(data);
+  //sendNotification(data);
 }
 
 // WebSocket handling
@@ -697,7 +700,7 @@ app.post('/updateChange', express.json(), (req, res) => {
     }
     });
 
-    sendNotification(req.body);
+    //sendNotification(req.body);
   
 });
 
