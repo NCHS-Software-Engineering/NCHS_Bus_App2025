@@ -18,7 +18,7 @@ const http = require('http');
 const server = http.createServer(app);
 
 const port = 8080;
-server.listen(port, () => {
+server.listen(port, /*"0.0.0.0",*/ () => {
   console.log(`Server running on http://localhost:${port}`);
 });
 
@@ -64,90 +64,90 @@ if (!vapidPublicKey || !vapidPrivateKey) {
 // Set the keys used for encrypting the push messages.
 webPush.setVapidDetails(
   //"https://localhost:3000",
-  "wss://bustest.redhawks.us/ws/",
+  "https://bustest.redhawks.us/",
   vapidPublicKey,
   vapidPrivateKey
 );
 
+app.get('/vapidPublicKey', function (req, res) {
+  res.send(vapidPublicKey);
+});
 
-  app.get('/vapidPublicKey', function (req, res) {
-    res.send(vapidPublicKey);
-  });
+app.post("/register", (req, res) => {
+  const subscription = req.body.subscription;
+  const userId = req.cookies.c_email;
+  storeSubscription(subscription, userId);
+  res.sendStatus(201);
+});
 
-  app.post("/register", (req, res) => {
-    const subscription = req.body.subscription;
-    const userId = req.cookies.c_email;
-    storeSubscription(subscription, userId);
-    res.sendStatus(201);
-  });
-  
 
-  function storeSubscription(subscription, userId) {
-    try {
-      const subscriptions = JSON.parse(fs.readFileSync("subscriptions.json"));
-      const existingSubscription = subscriptions.find((sub) => JSON.stringify(sub.subscription) === JSON.stringify(subscription));
-  
-      if (!existingSubscription) {
-        subscriptions.push({ subscription, userId });
-        fs.writeFileSync("subscriptions.json", JSON.stringify(subscriptions));
-        console.log("New subscription added:", subscription);
-      } else {
-        console.log("Subscription already exists:", subscription);
-      }
-    } catch (error) {
-      if (error.code === "ENOENT") {
-        // Create the file if it does not exist
-        fs.writeFileSync("subscriptions.json", JSON.stringify([{ subscription, userId }]));
-        console.log("New subscription added:", subscription);
-      } else {
-        throw error;
-      }
+function storeSubscription(subscription, userId) {
+  try {
+    const subscriptions = JSON.parse(fs.readFileSync("subscriptions.json"));
+    const existingSubscription = subscriptions.find((sub) => JSON.stringify(sub.subscription) === JSON.stringify(subscription));
+
+    if (!existingSubscription) {
+      subscriptions.push({ subscription, userId });
+      fs.writeFileSync("subscriptions.json", JSON.stringify(subscriptions));
+      console.log("New subscription added:", subscription);
+    } else {
+      console.log("Subscription already exists:", subscription);
+    }
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      // Create the file if it does not exist
+      fs.writeFileSync("subscriptions.json", JSON.stringify([{ subscription, userId }]));
+      console.log("New subscription added:", subscription);
+    } else {
+      throw error;
     }
   }
-  
+}
 
-  app.post("/send-notification", async (req, res) => {
-    const { token, title, body } = req.body;
-  
-    const message = {
-      notification: {
-        title: title,
-        body: body
-      },
-      token: token
-    };
-  
-    try {
-      sendNotification(message);
-      const response = await messaging.send(message);
-      console.log("Notification sent successfully:", response);
-      res.status(200).send("Notification sent!");
-    } catch (error) {
-      console.error("Error sending notification:", error);
-      res.status(500).send(error);
-    }
-  });
 
-  app.post( "/sendNotification", function (req, res) {
-    const subscription = req.body.subscription;
-    const payload = req.body.payload;
-    const options = {
-      TTL: req.body.ttl,
-    };
+app.post("/send-notification", async (req, res) => {
 
-    setTimeout(function () {
-      webPush
-        .sendNotification(subscription, payload, options)
-        .then(function () {
-          console.log("Notification sent");
-          res.sendStatus(201);
-        })
-        .catch(function (error) {
-          console.log(error);
-          res.sendStatus(500);
-        });
-    }, req.body.delay * 1000);
-  });
+  const { token, title, body } = req.body;
+
+  const message = {
+    notification: {
+      title: title,
+      body: body
+    },
+    token: token
+  };
+
+  try {
+    sendNotification(message);
+    const response = await messaging.send(message);
+    console.log("Notification sent successfully:", response);
+    res.status(200).send("Notification sent!");
+  } catch (error) {
+    console.error("Error sending notification:", error);
+    res.status(500).send(error);
+  }
+});
+
+app.post( "/sendNotification", function (req, res) {
+  const subscription = req.body.subscription;
+  const payload = req.body.payload;
+  const options = {
+    TTL: req.body.ttl,
+  };
+
+  setTimeout(function () {
+    webPush
+      .sendNotification(subscription, payload, options)
+      .then(function () {
+        console.log("Notification sent");
+        res.sendStatus(201);
+      })
+      .catch(function (error) {
+        console.log(error);
+        res.sendStatus(500);
+      });
+  }, req.body.delay * 1000);
+});
 
 
 
@@ -157,6 +157,7 @@ const admin = require("firebase-admin");
 
 // Load Firebase service account credentials
 const serviceAccount = require("./serviceAccountKey.json"); // Download from Firebase Console
+const { Http2ServerRequest } = require("http2");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
@@ -260,29 +261,6 @@ app.post('/check-subscription', (req,res) =>{
   res.json({ exists });
 })
 
-/*function sendNotification(data) {
-  const title = "Bus Update";
-  const body = `Bus #${data.number} has ${data.newStatus}`;
-
-  // Get all subscriptions from the database or a file
-  const subscriptions = getSubscriptions();
-
-  // Send notification to each subscription
-  subscriptions.forEach((subscription) => {
-    webPush.sendNotification(subscription, {
-      notification: {
-        title,
-        body,
-      },
-    })
-      .then((result) => {
-        console.log("Notification sent successfully:", result);
-      })
-      .catch((error) => {
-        console.error("Error sending notification:", error);
-      });
-  });
-}*/
 
 function sendNotification(data) {
   const title = "Bus Update";
@@ -458,6 +436,7 @@ app.get("/getemails", (req, res) => {
     res.send(emails)
   })
 })
+
 
 app.post("/addemail", (req, res) => {
   action_done = "Email Added";
