@@ -1,10 +1,10 @@
 self.addEventListener('install', async (event) => {
   try {
-    const response = await fetch('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+    const response = await fetch('/firebase-app.js');
     const script = await response.text();
     eval(script);
 
-    const messagingResponse = await fetch('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js');
+    const messagingResponse = await fetch('/firebase-messaging.js');
     const messagingScript = await messagingResponse.text();
     eval(messagingScript);
 
