@@ -670,9 +670,10 @@
         
 
         <script>
-            //const socket = new WebSocket("ws://localhost:3000"); // Connect to WebSocket server
+             const socket = new WebSocket("ws://localhost:3000"); // Connect to WebSocket server
             //const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
-            const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
+             //const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
+
 
             socket.addEventListener("open", () => {
             //console.log("Connected to WebSocket server");
@@ -695,9 +696,11 @@
                 // Update the buses if buslist is included in the message
                 //if (data.buslist) {
                 updateTable(); // Renders updated bus list
+                let previousStatus = {};
                 //}
                   // Check if the user has starred the bus
                     const starredBuses = JSON.parse(localStorage.getItem('starredBuses'));
+                    console.log(starredBuses);
                     if (starredBuses && starredBuses.includes(data.number)) {
                         // Send notification for starred bus!
                         if (Notification.permission === 'granted'){
@@ -712,12 +715,14 @@
                             new Notification ('Bus Update', {
                                 body
                             });
+                            
+                            // By assigning busses[i].status to previousStatus[busses[i].number], we are updating the previousStatus object to reflect the current status of the bus.
+                            previousStatus[busses[i].number] = busses[i].status;
                         }
                     } 
                     });
 
             //let starredBusNumbers = new Set(); // Store starred buses globally
-
             function updateTable() {
                 let table = document.getElementById('myTable');
                 if (!table) {
@@ -760,7 +765,8 @@
                                     });
                                 }
                             }
-
+                    
+                
                             // Then, add non-starred buses to the table
                             for (let i = 0; i < busses.length; i++) {
                                 if (!starredBusses.has(busses[i].number)) {
