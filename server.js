@@ -167,9 +167,17 @@ const messaging = admin.messaging();
 
 app.use(express.static(__dirname));
 
-app.get('/firebase-messaging-sw.js', (req,res)=>{
-  res.sendFile(__dirname + '/firebase-messaging-sw.js');
+app.get('/firebase-app.js', (req, res) => {
+  res.sendFile(__dirname + '/node_modules/firebase/app.js');
 });
+
+app.get('/firebase-messaging.js', (req, res) => {
+  res.sendFile(__dirname + '/node_modules/firebase/messaging.js');
+});
+
+/*app.get('/firebase-messaging-sw.js', (req,res)=>{
+  res.sendFile(__dirname + '/firebase-messaging-sw.js');
+});*/
 
 
 // retrives buslist
