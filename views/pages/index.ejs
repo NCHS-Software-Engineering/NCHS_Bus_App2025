@@ -105,7 +105,7 @@
 
 
             <div id="returntohome" style="position:absolute; top: 0px; height: 116px; width:50%; cursor: pointer;" onclick="location.href='/'"></div>
-            <div><button id="permission"type="button">Click here for notifications!</button></div>
+            <div><button id="permission"type="button">Click here to receive notifications!</button></div>
 
         <!-- firebase stuff-->
 
@@ -135,11 +135,11 @@
             try {
                 const permission = await Notification.requestPermission();
                 if (permission === "granted") {
-                console.log("Notification permission granted.");
-                getFCMToken(); // Fetch FCM Token
-                new Notification ('Star a Bus', {
-                    body: "You will only receive notifications for the busses you star. :)"
-                })
+                    console.log("Notification permission granted.");
+                    new Notification ('Star a Bus', {
+                        body: "You will only receive notifications for the busses you star. :)"
+                    })
+                    getFCMToken(); // Fetch FCM Token
                 } else {
                 console.log("Notification permission denied.");
                 }
