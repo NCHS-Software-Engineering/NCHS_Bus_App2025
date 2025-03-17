@@ -233,8 +233,32 @@
                         })
 
                 });
+                // safari compatibility
+                if ('safari' in window && 'pushNotification' in window.safari) {
+                    console.log("Safari push notifications are supported!");
 
-
+                    // Ask for permission
+                    window.safari.pushNotification.requestPermission(
+                        "https://your-server.com", // Your web server
+                        "web.com.yourdomain.push", // Your Web Push ID from Apple
+                        {},
+                        function(permissionData) {
+                            if (permissionData.permission === 'granted') {
+                                console.log("Push Token:", permissionData.deviceToken);
+                                // Send this deviceToken to your backend
+                                fetch('/register-ios-token', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ token: permissionData.deviceToken })
+                                });
+                            } else {
+                                console.log("Push permission denied:", permissionData);
+                            }
+                        }
+                    );
+                } else {
+                    console.log("Safari push notifications are NOT supported on this browser.");
+                }
             function urlBase64ToUint8Array(base64String) {
                 var padding = '='.repeat((4 - base64String.length % 4) % 4);
                 var base64 = (base64String + padding)
@@ -649,9 +673,9 @@
         
 
         <script>
-            //const socket = new WebSocket("ws://localhost:8080"); // Connect to WebSocket server
+            const socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
             //const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
-            const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
+            //const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
 
             socket.addEventListener("open", () => {
@@ -696,7 +720,8 @@
                             });
                             
                             // By assigning busses[i].status to previousStatus[busses[i].number], we are updating the previousStatus object to reflect the current status of the bus.
-                            previousStatus[busses[i].number] = busses[i].status;
+                            //what is this????????????????
+                            //previousStatus[busses[i].number] = busses[i].status;
                         }
                     } 
                     });

@@ -30,6 +30,9 @@ app.use(
   })
 );
 
+
+
+
 const fs = require("fs");
 const { ok } = require("assert");
 
@@ -47,6 +50,54 @@ app.get("/", function (req, res) {
 //creats websocket server
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ server });
+
+
+//IOS NOTIFICATIONS
+
+
+// const apn = require("apn");
+
+// const options = {
+//     token: {
+//       key: "add key here", 
+//       keyId: "add key id",// found in console
+//       teamId: "team id here"//found in console
+//     },
+//     production: false
+// }
+
+// const apnProvider = new apn.Provider(options);
+
+// function sendNotificationToiOS(title,body){
+//   const tokens = JSON.parse(fs.readFileSync("ios-push-tokens.json", "utf8") || "[]");
+
+//   tokens.forEach(deviceToken => {
+//     let notification = new apn.Notification();
+//     notification.alert = { title, body };
+//     notification.sound = "ping.aiff";
+//     notification.topic = "web.com.yourdomain.push";
+    
+//     apnProvider.send(notification, deviceToken).then(result =>{
+//       console.log("Sent: ", result.sent.length);
+//       console.log("Failed:", result.failed.length, result.failed);
+//     });
+//   });
+// }
+
+app.post("/register-ios-token", (req, res) => {
+  const { token } = req.body;
+  if (!token) {
+      return res.status(400).json({ error: "Token is required" });
+  }
+
+  const tokens = JSON.parse(fs.readFileSync("ios-push-tokens.json", "utf8") || "[]");
+  if (!tokens.includes(token)) {
+      tokens.push(token);
+      fs.writeFileSync("ios-push-tokens.json", JSON.stringify(tokens));
+  }
+
+  res.status(200).json({ message: "iOS Token Registered" });
+});
 
 // PUSH STUFF -----------------------------------
 
@@ -270,48 +321,25 @@ app.post('/check-subscription', (req,res) =>{
 })
 
 
-// function sendNotification(data) {
-//   const title = "Bus Update";
-//   let body;
 
-//   const subscriptions = JSON.parse(fs.readFileSync("subscriptions.json"));
-//   subscriptions.forEach((subscription) => {
-//     const userId = subscription.userId;
-//     const options = {
-//       TTL: 60,
-//     }
-//     const starredBuses = JSON.parse(fs.readFileSync('starredBuses.json', 'utf8'));
-//     if (starredBuses.users[userId] && starredBuses.users[userId].includes(data.number)) {
-//       if(data.change != null && data.change != data.number){body = `Bus #${data.number}, which is #${data.change} today,has ${data.newStatus}`;}
-//         webPush.sendNotification(subscription.subscription, {
-//         notification: {
-//           title,
-//           body,
-//         },
-//       })
-//         .then((result) => {
-//           console.log("Notification sent successfully:", result);
-//         })
-//         .catch((error) => {
-//           console.error("Error sending notification:", error);
-//         });
-//       } else {
-//         const payload = JSON.stringify({
-//           notification: {
-//             title: "Star a Bus",
-//             body: "Please star a bus to receive notifications when it arrives.",
-//           }
-//         })
-//         webPush.sendNotification(subscription.subscription,payload,options)
-//           .then((result) => {
-//             console.log("Notification sent successfully:"/*, result*/);
-//           })
-//           .catch((error) => {
-//             console.error("Error sending notification:", error);
-//           });
-//       }
-//   });
-// }
+function sendNotification(data) {
+  if (isIOSUser(data)) {
+      sendNotificationToiOS("Bus Update", `Bus #${data.number} has ${data.newStatus}`);
+  } else {
+      // Send normal Web Push notification (Android, Desktop)
+      webPush.sendNotification(data.subscription, JSON.stringify({
+          notification: {
+              title: "Bus Update",
+              body: `Bus #${data.number} has ${data.newStatus}`,
+          }
+      }))
+      .catch(err => console.error("Error sending push notification:", err));
+  }
+}
+
+function isIOSUser(data) {
+  return data.device === "ios"; // Modify based on how you track users
+}
 
 
 
@@ -334,7 +362,7 @@ function broadcast(data) {
     }
   });
 
-  //sendNotification(data);
+  sendNotification(data);
 }
 
 // WebSocket handling
