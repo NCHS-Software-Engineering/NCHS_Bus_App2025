@@ -133,73 +133,49 @@ app.post("/register", (req, res) => {
 
 
 function storeSubscription(subscription, userId) {
+  if (!subscription || !subscription.endpoint) {
+    console.error("Invalid subscription received:", subscription);
+    return;
+  }
+
   try {
-    const subscriptions = JSON.parse(fs.readFileSync("subscriptions.json"));
-    const existingSubscription = subscriptions.find((sub) => JSON.stringify(sub.subscription) === JSON.stringify(subscription));
+    const subscriptions = fs.existsSync("subscriptions.json")
+      ? JSON.parse(fs.readFileSync("subscriptions.json", "utf8"))
+      : [];
+
+    const existingSubscription = subscriptions.find((sub) => sub.subscription.endpoint === subscription.endpoint);
 
     if (!existingSubscription) {
       subscriptions.push({ subscription, userId });
-      fs.writeFileSync("subscriptions.json", JSON.stringify(subscriptions));
-      console.log("New subscription added:", subscription);
+      fs.writeFileSync("subscriptions.json", JSON.stringify(subscriptions, null, 2));
+      console.log("New subscription added:", subscription.endpoint);
     } else {
-      console.log("Subscription already exists:" /*,subscription*/);
+      console.log("Subscription already exists for:", subscription.endpoint);
     }
   } catch (error) {
-    if (error.code === "ENOENT") {
-      // Create the file if it does not exist
-      fs.writeFileSync("subscriptions.json", JSON.stringify([{ subscription, userId }]));
-      console.log("New subscription added:", subscription);
-    } else {
-      throw error;
-    }
+    console.error("Error storing subscription:", error);
   }
 }
 
 
 app.post("/send-notification", async (req, res) => {
+  const { title, body } = req.body;
+  const subscriptions = getSubscriptions(); // Get stored subscriptions
 
-  const { token, title, body } = req.body;
-
-  const message = {
-    notification: {
-      title: title,
-      body: body
-    },
-    token: token
-  };
-
-  try {
-    //sendNotification(message);
-    const response = await messaging.send(message);
-    console.log("Notification sent successfully:", response);
-    res.status(200).send("Notification sent!");
-  } catch (error) {
-    console.error("Error sending notification:", error);
-    res.status(500).send(error);
+  if (subscriptions.length === 0) {
+    return res.status(404).json({ error: "No subscribers found" });
   }
+
+  const payload = JSON.stringify({ notification: { title, body } });
+
+  subscriptions.forEach(sub => {
+    webPush.sendNotification(sub.subscription, payload)
+      .then(() => console.log("Notification sent to:", sub.subscription.endpoint))
+      .catch(err => console.error("Error sending push notification:", err));
+  });
+
+  res.status(200).json({ message: "Notifications sent" });
 });
-
-app.post( "/sendNotification", function (req, res) {
-  const subscription = req.body.subscription;
-  const payload = req.body.payload;
-  const options = {
-    TTL: req.body.ttl,
-  };
-
-  setTimeout(function () {
-    webPush
-      .sendNotification(subscription, payload, options)
-      .then(function () {
-        console.log("Notification sent");
-        res.sendStatus(201);
-      })
-      .catch(function (error) {
-        console.log(error);
-        res.sendStatus(500);
-      });
-  }, req.body.delay * 1000);
-});
-
 
 
 
@@ -324,16 +300,35 @@ app.post('/check-subscription', (req,res) =>{
 
 function sendNotification(data) {
   if (isIOSUser(data)) {
-      sendNotificationToiOS("Bus Update", `Bus #${data.number} has ${data.newStatus}`);
+    sendNotificationToiOS("Bus Update", `Bus #${data.number} has ${data.newStatus}`);
   } else {
-      // Send normal Web Push notification (Android, Desktop)
-      webPush.sendNotification(data.subscription, JSON.stringify({
+    const subscriptions = getSubscriptions(); // Get all stored subscriptions
+    let validSubscriptions = [];
+
+    subscriptions.forEach((sub) => {
+      webPush
+        .sendNotification(sub.subscription, JSON.stringify({
           notification: {
-              title: "Bus Update",
-              body: `Bus #${data.number} has ${data.newStatus}`,
+            title: "Bus Update",
+            body: `Bus #${data.number} has ${data.newStatus}`,
           }
-      }))
-      .catch(err => console.error("Error sending push notification:", err));
+        }))
+        .then(() => {
+          console.log(`✅ Notification sent to ${sub.subscription.endpoint}`);
+          validSubscriptions.push(sub); // Keep valid subscriptions
+        })
+        .catch((err) => {
+          console.error("❌ Error sending push notification:", err);
+          if (err.statusCode === 410) {
+            console.log("🚨 Removing expired subscription:", sub.subscription.endpoint);
+          } else {
+            validSubscriptions.push(sub); // Keep non-expired subscriptions
+          }
+        })
+        .finally(() => {
+          fs.writeFileSync("subscriptions.json", JSON.stringify(validSubscriptions, null, 2));
+        });
+    });
   }
 }
 
