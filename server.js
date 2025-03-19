@@ -114,8 +114,8 @@ if (!vapidPublicKey || !vapidPrivateKey) {
 }
 // Set the keys used for encrypting the push messages.
 webPush.setVapidDetails(
-  //"https://localhost:8080",
-  "https://bustest.redhawks.us/",
+  "https://localhost:8080",
+  //"https://bustest.redhawks.us/",
   vapidPublicKey,
   vapidPrivateKey
 );

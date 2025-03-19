@@ -1,12 +1,7 @@
 self.addEventListener('install', async (event) => {
   try {
-    const response = await fetch('/firebase-app.js');
-    const script = await response.text();
-    eval(script);
-
-    const messagingResponse = await fetch('/firebase-messaging.js');
-    const messagingScript = await messagingResponse.text();
-    eval(messagingScript);
+    importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
+    importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js");
 
     // Initialize Firebase
     firebase.initializeApp({
@@ -45,9 +40,9 @@ self.addEventListener("push", function(event) {
     return;
   }
 
-  let payload = {};
+  let payload;
   try {
-    payload = event.data.json();
+    payload = event.data ? event.data.json(): null;
   } catch (error) {
     console.error("❌ Error parsing push event data:", error);
   }
