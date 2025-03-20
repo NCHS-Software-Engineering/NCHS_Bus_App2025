@@ -11,8 +11,6 @@ Administrators will automatically see the Bus Status Changes page, with a menu o
 
 The Bus Changes page is the second option on the left-side menu. There are two tabs at the top of the page: Edit Bus Changes and View Bus Changes. Here administrators can change the bus numbers which will be displayed on the Bus Status page for students to see, and clearly see all of the bus changes, isolated from other information. 
 
-The Logs page is the third button on the left side menu. On this page, administrators can see all of the changes that have been made by themselves and other administrators that day, which can be useful to go back to if ever needed. 
-
 The Settings page is the fourth button on the left-side menu. This is where administrators can change what the list of buses is, if there are any permanent changes for that year. There are two text boxes available, one for adding buses, and one for deleting buses, and administrators have to submit the change for it to be saved and reflected on all other pages. On this page there is also a Reset All Buses button in case that is needed.  
 
 The last button on the left-side menu, when pressed, will take the administrator back to the Bus Status page. If administrators want to go back to the admin side, they will have to login with google once again. 

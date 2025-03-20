@@ -230,22 +230,6 @@ function newBus(text) {
     let div = document.createElement("div");
     div.classList.add('flex-fill');
     div.textContent = text;
-
-    /*fetch('/getbus')
-    .then(response => {
-        if(response.ok) {
-            return response.json();
-        }
-        }).then(data => {
-        if(data) {
-            console.log(data);
-            fs = require('fs'); //add to logs.json
-            var filename = 'logs.json';
-            var json = '{"bus":0, "description":"Bus Created", "timestamp":"' + time + '"}'
-            fs.writeFileSync(filename, JSON.stringify(json)); 
-        }
-    }).catch(err => console.error(err));*/
-
     
 }
 
