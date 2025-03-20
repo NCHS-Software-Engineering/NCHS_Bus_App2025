@@ -23,62 +23,13 @@
         <meta name="google-site-verification" content="Ylp0UBYDFaaNsDJs8DcM8Cw1ImHAHrgMfkQmdg7Y2As" />
         <meta name="description" content="Displays the Statuses of Busses at NCHS after school days.">
         
-
-        <style>
-            html {
-                height: 100%;
-            }          
-            body {
-                height: 100%;
-                margin: 0;
-                background-repeat: no-repeat;
-                background-attachment: fixed;
-                background-color: rgb(249, 254, 255);
-                /*background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(204,204,204,1) 100%);*/
-            }
-            h1, a {
-                color: white;
-                font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-            }
-
-            table, th, td{
-                border-bottom: 1px solid rgb(0,0,0);
-                padding: 5px;
-                margin-left: auto;
-                margin-right: auto;
-                width: 85%;
-                border-collapse: collapse;
-                
-                table-layout: fixed;
-                margin-top: 15px;
-                margin-bottom: 15px;
-            }
-            .e-star-filled{
-                border: 1px solid;
-                color: black;
-            }
-
-            .e-star-filled:hover{
-                background-color: yellow;            
-            }
-                /*
-            table.PerformanceTable {
-                table-layout: fixed; 
-                width: 500px; 
-            }
-            table.PerformanceTable tr.PerformanceCell {
-                width: 75px;
-            }*/
-            tr:nth-child(even){background-color: #ebebeb;}
-            tr:hover {background-color: #ff928e;}
-            th{background-color: rgb(230, 55, 72); color: black;}
-        </style>
+        <link rel="stylesheet" href="/css/index.css">
     </head>
 
     <body>
-        <nav id="navbar" class="navbar navbar-expand navbar-dark" style="box-shadow: 0px 0px 20px rgb(18, 18, 18); background-color: rgb(220, 53, 69);">
+        <nav id="navbar" class="navbar navbar-expand navbar-dark">
             <a class="navbar-brand">
-                <img src="/images/Naperville_Central_Logo.png" alt="NCHS Logo" style="width: 80px; border: 3px solid white; border-radius: 100%/100%; margin-left: 5px">
+                <img src="/images/Naperville_Central_Logo.png" id = "nchsLogo" alt="NCHS Logo">
             </a>
             <h1>NCHS Bus Status Page<br></h1>
             
@@ -90,7 +41,7 @@
                     data-login_uri="https://nchsbusapp.org/auth"
                     data-auto_prompt="false">
                 </div>
-
+                <div><button id="permission"type="button">🔔</button></div>
                 <div class="g_id_signin"
                     data-type="standard"
                     data-shape="rectangular"
@@ -102,13 +53,7 @@
                 </div>
             </div>
         </nav>
-
-
-            <div id="returntohome" style="position:absolute; top: 0px; height: 116px; width:50%; cursor: pointer;" onclick="location.href='/'"></div>
-
-        <!-- firebase stuff-->
-
-        
+        <div id="returntohome" onclick="location.href='/'"></div> 
         <script type="module">
             import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
             import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
@@ -678,6 +623,7 @@
 
         <script>
             const socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
+            const socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
             //const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
             //const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
@@ -1037,6 +983,7 @@
 //starred();
 
         </script>
+        
         <!-- Google sign in script-->
         <script src="https://accounts.google.com/gsi/client" async defer></script>
 
