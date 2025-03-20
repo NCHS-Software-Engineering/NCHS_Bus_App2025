@@ -105,7 +105,6 @@
 
 
             <div id="returntohome" style="position:absolute; top: 0px; height: 116px; width:50%; cursor: pointer;" onclick="location.href='/'"></div>
-            <div><button id="permission"type="button">Click here to receive notifications!</button></div>
 
         <!-- firebase stuff-->
 
@@ -285,10 +284,6 @@
                 }
 
                 // Request permission on page load
-                const permbutton = document.getElementById('permission');
-                permbutton.addEventListener('click', function(){
-                    requestPermission();   
-                })
         </script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
