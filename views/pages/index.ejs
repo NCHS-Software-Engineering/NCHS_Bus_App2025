@@ -136,10 +136,17 @@
                 const permission = await Notification.requestPermission();
                 if (permission === "granted") {
                     console.log("Notification permission granted.");
-                    new Notification ('Star a Bus', {
-                        body: "You will only receive notifications for the busses you star. :)"
-                    })
-                    getFCMToken(); // Fetch FCM Token
+                    fetch('./send-notification', {
+                        method: "POST",
+                        headers: { "Content-type": "application/json" },
+                        body: JSON.stringify({
+                            title: "Starred Buses",
+                            body: "Starred buses will now receive notifications.",
+                        })
+                        })
+                        .then(res => res.json())
+                        .then(response => console.log("✅ Notification request sent to server:", response))
+                        .catch(error => console.error("❌ Error sending notification request:", error));
                 } else {
                 console.log("Notification permission denied.");
                 }
@@ -233,29 +240,55 @@
                         })
 
                 });
+                // safari compatibility
+                if ('safari' in window && 'pushNotification' in window.safari) {
+                    console.log("Safari push notifications are supported!");
 
-
-            function urlBase64ToUint8Array(base64String) {
-                var padding = '='.repeat((4 - base64String.length % 4) % 4);
-                var base64 = (base64String + padding)
-                    .replace(/\-/g, '+')
-                    .replace(/_/g, '/');
-                
-                var rawData = window.atob(base64);
-                var outputArray = new Uint8Array(rawData.length);
-                
-                for (var i = 0; i < rawData.length; ++i) {
-                    outputArray[i] = rawData.charCodeAt(i);
+                    // Ask for permission
+                    window.safari.pushNotification.requestPermission(
+                        "https://your-server.com", // Your web server
+                        "web.com.yourdomain.push", // Your Web Push ID from Apple
+                        {},
+                        function(permissionData) {
+                            if (permissionData.permission === 'granted') {
+                                console.log("Push Token:", permissionData.deviceToken);
+                                // Send this deviceToken to your backend
+                                fetch('/register-ios-token', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ token: permissionData.deviceToken })
+                                });
+                            } else {
+                                console.log("Push permission denied:", permissionData);
+                            }
+                        }
+                    );
+                } else {
+                    console.log("Safari push notifications are NOT supported on this browser.");
                 }
-                return outputArray;
-            }
 
-            // Request permission on page load
-            const permbutton = document.getElementById('permission');
-            permbutton.addEventListener('click', function(){
-                requestPermission();   
-            })
-                
+
+
+                function urlBase64ToUint8Array(base64String) {
+                    var padding = '='.repeat((4 - base64String.length % 4) % 4);
+                    var base64 = (base64String + padding)
+                        .replace(/\-/g, '+')
+                        .replace(/_/g, '/');
+                    
+                    var rawData = window.atob(base64);
+                    var outputArray = new Uint8Array(rawData.length);
+                    
+                    for (var i = 0; i < rawData.length; ++i) {
+                        outputArray[i] = rawData.charCodeAt(i);
+                    }
+                    return outputArray;
+                }
+
+                // Request permission on page load
+                const permbutton = document.getElementById('permission');
+                permbutton.addEventListener('click', function(){
+                    requestPermission();   
+                })
         </script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -649,9 +682,9 @@
         
 
         <script>
-            //const socket = new WebSocket("ws://localhost:8080"); // Connect to WebSocket server
+            const socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
             //const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
-            const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
+            //const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
 
             socket.addEventListener("open", () => {
@@ -696,7 +729,8 @@
                             });
                             
                             // By assigning busses[i].status to previousStatus[busses[i].number], we are updating the previousStatus object to reflect the current status of the bus.
-                            previousStatus[busses[i].number] = busses[i].status;
+                            //what is this????????????????
+                            //previousStatus[busses[i].number] = busses[i].status;
                         }
                     } 
                     });

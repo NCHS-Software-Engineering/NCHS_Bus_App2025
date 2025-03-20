@@ -1,12 +1,7 @@
 self.addEventListener('install', async (event) => {
   try {
-    const response = await fetch('/firebase-app.js');
-    const script = await response.text();
-    eval(script);
-
-    const messagingResponse = await fetch('/firebase-messaging.js');
-    const messagingScript = await messagingResponse.text();
-    eval(messagingScript);
+    importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
+    importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js");
 
     // Initialize Firebase
     firebase.initializeApp({
@@ -28,7 +23,7 @@ self.addEventListener('install', async (event) => {
       const notificationTitle = payload.notification.title;
       const notificationOptions = {
         body: payload.notification.body,
-        icon: payload.notification.icon
+        icon: "/images/Naperville_Central_Logo.png"
       };
 
       // Show the notification
@@ -39,20 +34,28 @@ self.addEventListener('install', async (event) => {
   }
 });
 
-self.addEventListener('push', function(event) {
-  // Retrieve the textual payload from event.data (a PushMessageData object).
-  // Other formats are supported (ArrayBuffer, Blob, JSON), check out the documentation
-  // on https://developer.mozilla.org/en-US/docs/Web/API/PushMessageData.
-  const payload = event.data ? event.data.text() : 'no payload';
-  console.log(payload);
-  // Keep the service worker alive until the notification is created.
-  event.waitUntil(
-    // Show a notification with title 'ServiceWorker Cookbook' and use the payload
-    // as the body.
-    self.registration.showNotification('ServiceWorker Cookbook', {
-      body: payload,
-    })
+self.addEventListener("push", function(event) {
+  if (!event.data) {
+    console.warn("❌ Push event received with no data.");
+    return;
+  }
 
+  let payload;
+  try {
+    payload = event.data ? event.data.json(): null;
+  } catch (error) {
+    console.error("❌ Error parsing push event data:", error);
+  }
+
+  console.log("📩 Push event received:", payload);
+
+  const notificationTitle = payload.notification?.title || "Bus Update";
+  const notificationOptions = {
+    body: payload.notification?.body || "Bus status updated.",
+    icon: "/images/Naperville_Central_Logo.png",
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(notificationTitle, notificationOptions)
   );
-  
 });

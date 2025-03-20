@@ -9,6 +9,7 @@
     "acorn-globals": "^1.0.9",
     "align-text": "^0.1.4",
     "amdefine": "^1.0.1",
+    "apn": "^2.2.0",
     "array-flatten": "^1.1.1",
     "asap": "^1.0.0",
     "aws-sdk": "^2.1609.0",
