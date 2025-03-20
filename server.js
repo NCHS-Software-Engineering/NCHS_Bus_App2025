@@ -194,17 +194,17 @@ const messaging = admin.messaging();
 
 app.use(express.static(__dirname));
 
-// app.get('/firebase-app.js', (req, res) => {
-//   res.sendFile(__dirname + '/node_modules/firebase/app.js');
-// });
+app.get('/firebase-app.js', (req, res) => {
+  res.sendFile(__dirname + '/node_modules/firebase/app.js');
+});
 
-// app.get('/firebase-messaging.js', (req, res) => {
-//   res.sendFile(__dirname + '/node_modules/firebase/messaging.js');
-// });
+app.get('/firebase-messaging.js', (req, res) => {
+  res.sendFile(__dirname + '/node_modules/firebase/messaging.js');
+});
 
-/*app.get('/firebase-messaging-sw.js', (req,res)=>{
+app.get('/firebase-messaging-sw.js', (req,res)=>{
   res.sendFile(__dirname + '/firebase-messaging-sw.js');
-});*/
+});
 
 
 // retrives buslist
@@ -304,7 +304,7 @@ function sendNotification(data) {
   } else {
     const subscriptions = getSubscriptions(); // Get all stored subscriptions
     let validSubscriptions = [];
-
+    if(data.number && data.newStatus){//doesnt send noti for departed->not arrived
     subscriptions.forEach((sub) => {
       webPush
         .sendNotification(sub.subscription, JSON.stringify({
@@ -314,13 +314,13 @@ function sendNotification(data) {
           }
         }))
         .then(() => {
-          console.log(`✅ Notification sent to ${sub.subscription.endpoint}`);
+          console.log(`Notification sent to ${sub.subscription.endpoint}`);
           validSubscriptions.push(sub); // Keep valid subscriptions
         })
         .catch((err) => {
-          console.error("❌ Error sending push notification:", err);
+          console.error("Error sending push notification:", err);
           if (err.statusCode === 410) {
-            console.log("🚨 Removing expired subscription:", sub.subscription.endpoint);
+            console.log("Removing expired subscription:", sub.subscription.endpoint);
           } else {
             validSubscriptions.push(sub); // Keep non-expired subscriptions
           }
@@ -329,7 +329,7 @@ function sendNotification(data) {
           fs.writeFileSync("subscriptions.json", JSON.stringify(validSubscriptions, null, 2));
         });
     });
-  }
+  }}
 }
 
 function isIOSUser(data) {
