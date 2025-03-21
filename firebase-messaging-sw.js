@@ -1,4 +1,5 @@
-importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
+self.addEventListener("install", function(){
+  importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
 importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js");
 
 // Initialize Firebase
@@ -14,9 +15,9 @@ firebase.initializeApp({
 
 // Retrieve Firebase Messaging instance
 const messaging = firebase.messaging();
+})
 
 self.addEventListener("push", function(event) {
-  console.log("📩 Push event received!"); // Debugging log
 
   if (!event.data) {
     console.warn("❌ Push event received but no data.");
@@ -31,7 +32,6 @@ self.addEventListener("push", function(event) {
     return;
   }
 
-  console.log("📩 Push event payload:", payload);
 
   const notificationTitle = payload.notification?.title || "Bus Update";
   const notificationOptions = {
