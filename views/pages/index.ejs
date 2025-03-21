@@ -11,8 +11,8 @@
         <!-- Latest compiled JavaScript -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
-        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js" type="module"></script>
-        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js" type="module"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js"></script>
     
 
         <link href="https://cdn.syncfusion.com/ej2/22.1.34/ej2-icons/styles/bootstrap5.css" rel="stylesheet"/>
@@ -170,13 +170,7 @@
             }
 
             // Handle Incoming Notifications
-            onMessage(messaging, (payload) => {
-                console.log("Message received:", payload);
-                new Notification(payload.notification.title, {
-                    body: payload.notification.body,
-                    icon: payload.notification.icon
-                });
-            });
+           
 
             if ("serviceWorker" in navigator) {
                 navigator.serviceWorker.register("/firebase-messaging-sw.js")
@@ -188,57 +182,32 @@
                 }); 
             }
 
-            navigator.serviceWorker.ready
-                .then(function(registration) {
-                // Use the PushManager to get the user's subscription to the push service.
-                    return registration.pushManager.getSubscription()
-                .then(async function(subscription) {
-                    // If a subscription was found, return it.
+            navigator.serviceWorker.ready.then(reg => 
+                reg.pushManager.getSubscription().then(async function(subscription) {
                     if (subscription) {
-                        return subscription;
+                    console.log("✅ Already subscribed:", subscription);
+                    return subscription;
                     }
 
-                    // Get the server's public key
                     const response = await fetch('/vapidPublicKey');
                     const vapidPublicKey = await response.text();
-                    // Chrome doesn't accept the base64-encoded (string) vapidPublicKey yet
-                    // urlBase64ToUint8Array() is defined in /tools.js
                     const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
 
-                    // Otherwise, subscribe the user (userVisibleOnly allows to specify that we don't plan to
-                    // send notifications that don't have a visible effect for the user).
-                    return registration.pushManager.subscribe({
+                    return reg.pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: convertedVapidKey
-                    });
-                });
-                }).then(function(subscription) {
-                // Send the subscription details to the server using the Fetch API.
-                    fetch('./check-subscription',{
+                    }).then(newSubscription => {
+                    console.log("🔄 New Subscription:", JSON.stringify(newSubscription));
+                    fetch('./register', {
                         method: 'post',
                         headers: {
-                            'Content-type': 'application/json',
+                        'Content-type': 'application/json'
                         },
-                        body: JSON.stringify({
-                            subscription:subscription,
-                        }),
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if(!data.exists){
-                                fetch('./register', {
-                                    method: 'post',
-                                    headers: {
-                                    'Content-type': 'application/json'
-                                    },
-                                    body: JSON.stringify({
-                                    subscription: subscription
-                                }),
-                            });
-                            }
-                        })
-
-                });
+                        body: JSON.stringify({ subscription: newSubscription })
+                    });
+                    });
+                })
+                );
                 // safari compatibility
                 if ('safari' in window && 'pushNotification' in window.safari) {
                     console.log("Safari push notifications are supported!");
@@ -708,26 +677,6 @@
                   // Check if the user has starred the bus
                     const starredBuses = JSON.parse(localStorage.getItem('starredBuses'));
                     console.log(starredBuses);
-                    if (starredBuses && starredBuses.includes(data.number)) {
-                        // Send notification for starred bus!
-                        if (Notification.permission === 'granted'){
-                            let body;
-
-                            // Check if the bus number has changed
-                            if (data.change && data.change !== "" && data.change !== data.number) {
-                                body = `Bus #${data.number}, which is Bus #${data.change} today, has ${data.status}!`;
-                            } else {
-                                body = `Bus #${data.number} has ${data.status}!`;
-                            }
-                            new Notification ('Bus Update', {
-                                body
-                            });
-                            
-                            // By assigning busses[i].status to previousStatus[busses[i].number], we are updating the previousStatus object to reflect the current status of the bus.
-                            //what is this????????????????
-                            //previousStatus[busses[i].number] = busses[i].status;
-                        }
-                    } 
                     });
 
             //let starredBusNumbers = new Set(); // Store starred buses globally

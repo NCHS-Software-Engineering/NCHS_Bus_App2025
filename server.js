@@ -114,7 +114,7 @@ if (!vapidPublicKey || !vapidPrivateKey) {
 }
 // Set the keys used for encrypting the push messages.
 webPush.setVapidDetails(
-  "https://localhost:8080",
+  "mailto:rnkeough47@gmail.com",
   //"https://bustest.redhawks.us/",
   vapidPublicKey,
   vapidPrivateKey
@@ -314,7 +314,7 @@ function sendNotification(data) {
           }
         }))
         .then(() => {
-          console.log(`Notification sent to ${sub.subscription.endpoint}`);
+          console.log(`✅Notification sent to ${sub.subscription.endpoint}`);
           validSubscriptions.push(sub); // Keep valid subscriptions
         })
         .catch((err) => {
