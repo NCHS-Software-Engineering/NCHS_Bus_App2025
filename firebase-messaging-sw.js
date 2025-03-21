@@ -2,7 +2,7 @@ importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
 importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js");
 
 // Initialize Firebase
-firebas.initializeApp({
+firebase.initializeApp({
   apiKey: "AIzaSyDtqhN1RQkLp-g-IjQWPJs6CudIysqH8BU",
   authDomain: "nchs-bus-app.firebaseapp.com",
   projectId: "nchs-bus-app",
@@ -12,31 +12,33 @@ firebas.initializeApp({
   measurementId: "G-TGBYMSQ1BY"
 });
 
-// Retrieve an instance of Firebase Messaging
+// Retrieve Firebase Messaging instance
 const messaging = firebase.messaging();
 
-    
-
 self.addEventListener("push", function(event) {
+  console.log("📩 Push event received!"); // Debugging log
+
   if (!event.data) {
-    console.warn("❌ Push event received with no data.");
+    console.warn("❌ Push event received but no data.");
     return;
   }
+
   let payload;
   try {
-    payload = event.data ? event.data.json(): null;
+    payload = event.data.json();
   } catch (error) {
     console.error("❌ Error parsing push event data:", error);
+    return;
   }
 
-  console.log("📩 Push event received:", payload);
+  console.log("📩 Push event payload:", payload);
 
-  const notificationTitle = "Bus Update";
+  const notificationTitle = payload.notification?.title || "Bus Update";
   const notificationOptions = {
     body: payload.notification?.body || "Bus status updated.",
     icon: "/images/Naperville_Central_Logo.png",
   };
-  
+
   event.waitUntil(
     self.registration.showNotification(notificationTitle, notificationOptions)
   );
