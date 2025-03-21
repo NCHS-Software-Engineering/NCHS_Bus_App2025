@@ -693,30 +693,6 @@
 
         </script>
 
-        <!--Notifiactions Stuff
-        <script>
-            const button = document.getElementById("notifications");
-            document.addEventListener("DOMContentLoaded", () => {
-                Notification.requestPermission()
-            });
-            button.addEventListener("click", () => {
-                if (Notification.permission === 'granted'){
-                    new Notification ('Hello from your webAkp1pjo!', {
-                        body: "asdlkasjdlkasjdlkasjdlkajsldkajsldjal"
-                    })
-                }
-            });
-
-            navigator.serviceWorker.register("service-worker.js").then((registration) => {
-                return registration.pushManager.getSubscription().then(/* ... */);
-            });
-
-
-            self.addEventListener("push", (res) =>{
-
-            });
-        </script>-->
-
         <script>
             makeTable();
             var smallestBus = 0;
