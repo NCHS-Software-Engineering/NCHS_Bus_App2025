@@ -1,4 +1,3 @@
-self.addEventListener("install", function(){
 importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
 importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js");
 
@@ -15,7 +14,6 @@ firebase.initializeApp({
 
 // Retrieve Firebase Messaging instance
 const messaging = firebase.messaging();
-})
 
 self.addEventListener("push", function(event) {
 
