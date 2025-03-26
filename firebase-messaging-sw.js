@@ -1,5 +1,5 @@
-importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
-importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js");
+importScripts("https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js");
+importScripts("https://www.gstatic.com/firebasejs/11.5.0/firebase-messaging.js");
 
 // Initialize Firebase
 firebase.initializeApp({
