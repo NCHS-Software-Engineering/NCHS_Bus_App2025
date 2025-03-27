@@ -306,8 +306,7 @@ function sendNotification(data) {
     let validSubscriptions = [];
     if(data.number && data.newStatus){//doesnt send noti for departed->not arrived
     subscriptions.forEach((sub) => {
-      webPush
-        .sendNotification(sub.subscription, JSON.stringify({
+      webPush.sendNotification(sub.subscription, JSON.stringify({
           notification: {
             title: "Bus Update",
             body: `Bus #${data.number} has ${data.newStatus}`,

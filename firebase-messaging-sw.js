@@ -20,7 +20,7 @@ self.addEventListener('install', function(event){
   const messaging = firebase.messaging();
 })
 self.addEventListener("push", function(event) {
-
+  console.log("Sending notificaiton");
   if (!event.data) {
     console.warn("❌ Push event received but no data.");
     return;
@@ -28,7 +28,7 @@ self.addEventListener("push", function(event) {
 
   let payload;
   try {
-    payload = event.data.json();
+    payload = event.data;
   } catch (error) {
     console.error("❌ Error parsing push event data:", error);
     return;
