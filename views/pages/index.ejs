@@ -587,9 +587,9 @@
         <small>Version 3 Created by  Priya Agrawal ('25), Ryan Keough ('25), and Andy Liang ('26)</small></p>
         
         <script>
-            const socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
+            //const socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
             //const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
-            //const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
+            const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
 
             socket.addEventListener("open", () => {
