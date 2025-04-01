@@ -1,22 +1,22 @@
-self.addEventListener("install", function(){
-importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
-importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js");
+self.addEventListener('install', function(event){
+  importScripts("https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js");
+  importScripts("https://www.gstatic.com/firebasejs/11.5.0/firebase-messaging.js");
+  
 
-// Initialize Firebase
-firebase.initializeApp({
-  apiKey: "AIzaSyDtqhN1RQkLp-g-IjQWPJs6CudIysqH8BU",
-  authDomain: "nchs-bus-app.firebaseapp.com",
-  projectId: "nchs-bus-app",
-  storageBucket: "nchs-bus-app.firebasestorage.app",
-  messagingSenderId: "488283227454",
-  appId: "1:488283227454:web:3c0e60d5e474392fb1986f",
-  measurementId: "G-TGBYMSQ1BY"
-});
+  // Initialize Firebase
+  firebase.initializeApp({
+    apiKey: "AIzaSyDtqhN1RQkLp-g-IjQWPJs6CudIysqH8BU",
+    authDomain: "nchs-bus-app.firebaseapp.com",
+    projectId: "nchs-bus-app",
+    storageBucket: "nchs-bus-app.firebasestorage.app",
+    messagingSenderId: "488283227454",
+    appId: "1:488283227454:web:3c0e60d5e474392fb1986f",
+    measurementId: "G-TGBYMSQ1BY"
+  });
 
-// Retrieve Firebase Messaging instance
-const messaging = firebase.messaging();
-});
-
+  // Retrieve Firebase Messaging instance
+  const messaging = firebase.messaging();
+})
 self.addEventListener("push", function(event) {
 
   if (!event.data) {
@@ -26,7 +26,7 @@ self.addEventListener("push", function(event) {
 
   let payload;
   try {
-    payload = event.data();
+    payload = event.data.json();
   } catch (error) {
     console.error("❌ Error parsing push event data:", error);
     return;
