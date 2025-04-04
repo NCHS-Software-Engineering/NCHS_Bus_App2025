@@ -8,5 +8,15 @@
         "auth": "7vMZ6QwtzzKHmJR-E6Ir1w"
       }
     }
+  },
+  {
+    "subscription": {
+      "endpoint": "https://fcm.googleapis.com/fcm/send/dHjxdNo1v_w:APA91bG9GsqLbE1H4-sVXCTX6-W_sdZd4UUSE2wfh4RT37_28gVVQ7cu_7Gg6WCDoFNFgTqc44qDuGAw1os9GwP9nuz9aT71XCOBygutH2v9PBLoeTTTAAZILO3EMQqcKABM2LEJJIYb",
+      "expirationTime": null,
+      "keys": {
+        "p256dh": "BMzfowqZrg2Ydx2dXGX-_-NquWoPPOAzmcaU_5k2YUEBrCwKdJ8uX8JMB4F6Dp2f46dKsSIi4IYKd1ON_wRuutU",
+        "auth": "uqJ4Jt8UkbSNnHJl9rRy1Q"
+      }
+    }
   }
 ]

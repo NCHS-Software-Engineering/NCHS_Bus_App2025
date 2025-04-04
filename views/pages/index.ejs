@@ -28,7 +28,7 @@
             <a class="navbar-brand">
                 <img src="/images/Naperville_Central_Logo.png" id = "nchsLogo" alt="NCHS Logo">
             </a>
-            <h1>NCHS Bus Status Page<br></h1>
+            <h1>NCHS Bus Status Page</h1>
             
             <div class="navbar-nav ms-auto">
                 <div id="g_id_onload"
@@ -38,15 +38,22 @@
                     data-login_uri="https://nchsbusapp.org/auth"
                     data-auto_prompt="false">
                 </div>
-                <div><button id="permission" onclick = "requestPermission()" type="button">🔔</button></div>
+                <div><button class="navbuttons" onclick = "requestPermission()" type="button">🔔</button></div>
+                <div><button class="navbuttons" onclick = "togglePopup()" type="button">ℹ️</button></div>
+                <script>
+                    function togglePopup() {
+                        const popup = document.getElementById('popupOverlay');
+                        popup.style.display = (popup.style.display === 'flex') ? 'none' : 'flex';
+                    }
+                </script>
                 <div class="g_id_signin"
-                    data-type="standard"
+                    data-type="google"
                     data-shape="rectangular"
                     data-theme="outline"
                     data-text="signin"
                     data-size="large"
                     data-logo_alignment="left"
-                    style="margin-right: 10px;">
+                    style="margin-right: 10px; width: 43px;">
                 </div>
             </div>
         </nav>
@@ -57,18 +64,23 @@
                 <th>Bus Changes</th>
                 <th>Current Status</th>
                 <th>Time</th>
-                <th></th>
+                <th>Star</th>
             </tr>
-
         </table>
 
-        <p style="text-align: center; color: grey;"><small>Version 1 Created by Simi Kama ('23), Adesh Kumar ('23), Theodore Ng ('23), </small><small onclick="hmm()">Alex Remiasz ('23), </small><small> and Boris Rokhmanov ('23)<br>
-        <small>Version 2 Created by Vinay Narahari ('24), Tyler Browning ('24), and Peter Paik ('24)</small><br>
-        <small>Version 3 Created by  Priya Agrawal ('25), Ryan Keough ('25), and Andy Liang ('26)</small></p>
-        
+        <br>
+
+        <div class="popup-overlay" id="popupOverlay">
+            <div class="popup">
+                <p style="text-align: center; color: grey;"><small>Version 1 Created by Simi Kama ('23), Adesh Kumar ('23), Theodore Ng ('23), </small><small onclick="hmm()">Alex Remiasz ('23), </small><small> and Boris Rokhmanov ('23)</small><br>
+                <small>Version 2 Created by Vinay Narahari ('24), Tyler Browning ('24), and Peter Paik ('24)</small><br>
+                <small>Version 3 Created by  Priya Agrawal ('25), Ryan Keough ('25), and Andy Liang ('26)</small></p>
+                
+              <button class="close-btn" onclick="togglePopup()">Close</button>
+            </div>
+        </div>
         <!-- Google sign in script-->
         <script src="https://accounts.google.com/gsi/client" async defer></script>
-            LZLZLZLZLZZLZLZLZL
         <script src = "/public/js/main.js" type = "module"></script>
     </body>
 </html>

@@ -196,8 +196,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                      var element = row.cells[4].querySelector('span.starring');
 
-                     element.style.backgroundColor = 'yellow';
-                     element.style.border = '2px solid black';
+                     element.classList.add("e-star-selected");
 
                      //table.insertBefore(row, row.firstChild);
                      let tbody = table.querySelector('tbody');
@@ -360,9 +359,7 @@ window.updateStarredUI = function() {
    const row1 = clickedButton.parentNode.parentNode; // Get the row associated with the clicked button
    var element = row1.cells[4].querySelector('span.starring');
 
-   element.style.backgroundColor = 'yellow';
-   element.style.border = '2px solid black';
-
+   element.classList.add("e-star-selected");
 
    var table = document.createElement('table');
    table.setAttribute('id', 'myTable'); // Set an ID for the table
@@ -544,8 +541,7 @@ function starred() { //add isStarred
       const row1 = clickedButton.parentNode.parentNode; // Get the row associated with the clicked button
       var element = row1.cells[4].querySelector('span.starring');
 
-      element.style.backgroundColor = 'yellow';
-      element.style.border = '2px solid black';
+      element.classList.add("e-star-selected");
 
       table.insertBefore(row, table.firstChild.nextSibling);
    } else {
@@ -616,8 +612,7 @@ function starred() { //add isStarred
 
       var element = row1.cells[4].querySelector('span.starring');
 
-      element.style.backgroundColor = 'white';
-      element.style.border = '1px solid black';
+      element.classList.remove("e-star-selected");
 
       // console.log(location.reload())
       //location.reload();
