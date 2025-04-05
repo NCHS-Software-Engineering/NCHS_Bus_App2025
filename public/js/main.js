@@ -635,7 +635,9 @@ function getRandomInt(max) {
    return Math.floor(Math.random() * max);
 }
 
+let hmm = false;
 window.hmm = function() {
+   hmm = true;
    let c1 = getRandomInt(255)
    let c2 = getRandomInt(255)
    let c3 = getRandomInt(255)
@@ -691,7 +693,54 @@ function findHighest() {
       }).catch(err => console.error(err));
 }
 
-
-// document.addEventListener('DOMContentLoaded', function() {
-
-//starred();
+window.spawnmaxwell = function() {
+   const gif = document.createElement("img");
+   gif.src = "/public/images/maxwell.gif";
+   gif.id = "maxwell";
+   document.body.appendChild(gif);
+   
+   const audio = document.getElementById("maxwell-audio");
+   audio.play();
+   
+   let t = 0;
+   
+   // 🎲 Random loop params
+   const amplitudeX = 100 + Math.random() * 150;
+   const amplitudeY = 80 + Math.random() * 100;
+   const freqX = 0.005 + Math.random() * 0.005;
+   const freqY = 0.005 + Math.random() * 0.01;
+   
+   const offsetX = window.innerWidth/3;
+   const offsetY = window.innerHeight/3;
+   
+   let animationId;
+   
+   function animateMaxwell() {
+      if (hmm){
+         const hue = (t * 10) % 360; // This will smoothly cycle through 360 degrees
+         gif.style.filter = `hue-rotate(${hue}deg)`;
+      }
+      const x = offsetX + Math.sin(t * freqX) * amplitudeX;
+      const y = offsetY + Math.cos(t * freqY) * amplitudeY;
+   
+      gif.style.left = `${x}px`;
+      gif.style.top = `${y}px`;
+   
+      t += 1;
+      animationId = requestAnimationFrame(animateMaxwell);
+   }
+   
+   animateMaxwell();
+   
+   // ⏱️ After 28 seconds, fade out and remove
+   setTimeout(() => {
+      cancelAnimationFrame(animationId);
+      gif.style.transition = "opacity 2s ease";
+      gif.style.opacity = "0";
+   
+      // Remove from DOM after fade
+      setTimeout(() => {
+         gif.remove();
+      }, 2000); // match fade-out duration
+   }, 28000); // 28 seconds
+} 
