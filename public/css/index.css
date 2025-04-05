@@ -7,28 +7,75 @@ body {
     margin: 0;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    background-color: rgb(249, 254, 255);
+    background-color: #acb7c8;
     /*background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(204,204,204,1) 100%);*/
+}
+
+#nchsLogo {
+    width: 80px;
+    border-right: 1px solid white;
+    margin-left: 12px;
+    padding-right: 10px;
 }
 
 h1, a {
     color: white;
-    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    padding-right: 10px;
+    font-size: 5vw;
+    font-weight: 350;
+    padding-top: 4px;
+}
+
+@media screen and (min-width: 528px) {
+    h1, a {
+      font-size: 30px;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    h1, a {
+      font-size: 0px;
+    }
 }
 
 table, th, td{
-    border-bottom: 1px solid rgb(0,0,0);
+    border-bottom: 1px solid #dadce0;
+    
     padding: 5px;
     margin-left: auto;
     margin-right: auto;
-    width: 92%;
     border-collapse: collapse;
     
     table-layout: fixed;
-    margin: 4%;
+    margin: 10px;
+    width: calc(100% - 20px);
 
     text-align: center;
+    padding: 7px;
+}
+
+tr:nth-child(even){
+    background-color: #f0f0f0;
+}
+
+tr:nth-child(odd){
+    background-color: white;
+}
+
+th:nth-child(1){
+    border-collapse: separate;
+    border-radius: 10px 0px 0px 0px;
+}
+
+th:nth-child(5){
+    border-collapse: separate;
+    border-radius: 0px 10px 0px 0px;
+}
+
+tr:first-child{
+    position: sticky;
+    top: 0;
+    background-color: #d62921;
+    color: #f1f2f5;
 }
 
 .e-star-filled{
@@ -47,27 +94,13 @@ table, th, td{
     border: 1.5px solid;
 }
 
-tr:nth-child(even){
-    background-color: #ebebeb;
-}
-
 tr:hover {
     background-color: #ff928e;
 }
 
-th{
-    background-color: rgb(230, 55, 72); color: black;
-}
-
 #navbar{
-    background-color: rgb(220, 53, 69);
-}
-
-#nchsLogo {
-    width: 80px;
-    border: 3px solid white;
-    border-radius: 100%/100%;
-    margin-left: 10px;
+    background-color: #d62921;
+    height: 15vh;
 }
 
 #returntohome {
@@ -76,11 +109,6 @@ th{
     height: 116px;
     width:50%;
     cursor: pointer;
-}
-
-#footnote {
-    text-align: center;
-    color: grey;
 }
 
 .navbuttons {
