@@ -117,7 +117,6 @@ tr:hover {
     background-color: white;
     border: 1px solid #dadce0;
     border-radius: 4px;
-    padding: 10px 11px;
     font-size: 14px;
     font-weight: 500;
     color: #5f6368;
@@ -129,6 +128,8 @@ tr:hover {
     height: 40px;
     width: 43px;
     margin-right: 10px;
+    text-align: center;
+    display: inline-block
 }
 
 .navbuttons:hover {
