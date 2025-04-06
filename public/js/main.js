@@ -21,19 +21,25 @@ window.requestPermission = async function() {
       const permission = await Notification.requestPermission();
       if (permission === "granted") {
          console.log("Notification permission granted.");
-         fetch('./send-notification', {
-               method: "POST",
-               headers: {
-                  "Content-type": "application/json"
-               },
-               body: JSON.stringify({
-                  title: "Starred Buses",
-                  body: "Starred buses will now receive notifications.",
-               })
+         navigator.serviceWorker.ready.then(reg =>
+            reg.pushManager.getSubscription().then(async function (subscription) {
+               fetch('./send-notification', {
+                     method: "POST",
+                     headers: {
+                        "Content-type": "application/json"
+                     },
+                     body: JSON.stringify({
+                        notification:{
+                           title: "Starred Buses",
+                           body: "Starred buses will now receive notifications.",},
+                        subscription: subscription
+                     })
+                  })
+                  .then(res => res.json())
+                  .then(response => console.log("✅ Notification request sent to server:", response))
+                  .catch(error => console.error("❌ Error sending notification request:", error));
             })
-            .then(res => res.json())
-            .then(response => console.log("✅ Notification request sent to server:", response))
-            .catch(error => console.error("❌ Error sending notification request:", error));
+         )
       } else {
          console.log("Notification permission denied.");
       }

@@ -57,6 +57,10 @@
                         }
 
                     }
+                    function closeNotifs(){
+                        const popup = document.getElementById('popupNotifs');
+                        popup.style.display = (popup.style.display === 'flex') ? 'none' : 'flex';
+                    }
                 </script>
                 <div><button class="navbuttons" onclick = "toggleInfo()" type="button">❤️</button></div>
                 <script>
@@ -95,7 +99,7 @@
                     
                 </div>
                 
-              <button class="close-btn" onclick="toggleNotifs()">Close</button>
+              <button class="close-btn" onclick="closeNotifs()">Close</button>
             </div>
         </div>
         <div class="popup-overlay" id="popupInfo">

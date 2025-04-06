@@ -114,7 +114,6 @@ if (!vapidPublicKey || !vapidPrivateKey) {
 }
 // Set the keys used for encrypting the push messages.
 webPush.setVapidDetails(
-  //"mailto:rnkeough47@gmail.com",
   "https://bustest.redhawks.us/",
   vapidPublicKey,
   vapidPrivateKey
@@ -159,20 +158,15 @@ function storeSubscription(subscription, userId) {
 
 
 app.post("/send-notification", async (req, res) => {
-  const { title, body } = req.body;
-  const subscriptions = getSubscriptions(); // Get stored subscriptions
-
-  if (subscriptions.length === 0) {
-    return res.status(404).json({ error: "No subscribers found" });
-  }
+  const { title, body } = req.body.notification;
+  const subscriptions = req.body.subscription; // Get stored subscriptions
 
   const payload = JSON.stringify({ notification: { title, body } });
 
-  subscriptions.forEach(sub => {
-    webPush.sendNotification(sub.subscription, payload)
-      .then(() => console.log("Notification sent to:", sub.subscription.endpoint))
+  webPush.sendNotification(subscriptions, payload)
+      .then(() => console.log("Notification sent to:", subscriptions.endpoint))
       .catch(err => console.error("Error sending push notification:", err));
-  });
+ 
 
   res.status(200).json({ message: "Notifications sent" });
 });
