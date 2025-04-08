@@ -39,36 +39,7 @@
                     data-auto_prompt="false">
                 </div>
                 <div><button class="navbuttons" onclick = "toggleNotifs()" type="button">🔔</button></div>
-                <script>
-                    function toggleNotifs() {
-                        const popup = document.getElementById('popupNotifs');
-                        const notifStat = document.getElementById('notifStatus');
-                        popup.style.display = (popup.style.display === 'flex') ? 'none' : 'flex';
-                        requestPermission()
-
-                        if (Notification.permission === "denied"){
-                            notifStat.innerHTML = `It seems that the device has denied notification permissions. Try pressing the tune icon <image style='height: 23px; padding: 1px;' src='/public/images/tune.png'></image> in the top left of your screen, then reset all permissions. Reload the website and press the bell icon 🔔 again. Make sure to press 'allow' once the app request permissions for notifications.`
-                        }
-                        else if (Notification.permission === "granted"){
-                            notifStat.innerHTML = `Notifications are working! You are all good to go! If you have issues, try pressing the tune icon <image style='height: 23px; padding: 1px;' src='/public/images/tune.png'></image> in the top left of your screen, then reset all permissions. Reload the website and press the bell icon 🔔 again. Make sure to press "allow" once the app request permissions for notifications.`
-                        }
-                        else {
-                            notifStat.innerHTML = `Something doesn't seem right. We have sent a request to show notifications. If it doesn't show up, try pressing the tune icon <image style='height: 23px; padding: 1px;' src='/public/images/tune.png'></image> in the top left of your screen, then reset all permissions. Reload the website and press the bell icon 🔔 again. Make sure to press "allow" once the app request permissions for notifications.`
-                        }
-
-                    }
-                    function closeNotifs(){
-                        const popup = document.getElementById('popupNotifs');
-                        popup.style.display = (popup.style.display === 'flex') ? 'none' : 'flex';
-                    }
-                </script>
                 <div><button class="navbuttons" onclick = "toggleInfo()" type="button">❤️</button></div>
-                <script>
-                    function toggleInfo() {
-                        const popup = document.getElementById('popupInfo');
-                        popup.style.display = (popup.style.display === 'flex') ? 'none' : 'flex';
-                    }
-                </script>
                 <div class="g_id_signin"
                     data-type="google"
                     data-shape="rectangular"
@@ -94,7 +65,7 @@
 
         <div class="popup-overlay" id="popupNotifs">
             <div class="popup">
-                <h3 style = "padding-bottom: 10px;">Notifications</h3>
+                <h3>Notifications</h3>
                 <div id = "notifStatus">
                     
                 </div>
@@ -104,17 +75,18 @@
         </div>
         <div class="popup-overlay" id="popupInfo">
             <div class="popup">
-                <h3 style = "padding-bottom: 10px;">About The App</h3>
-                <p style="text-align: center; color: grey;">
-                    <small>This app tracks bus status, changes, arrival and departure times, and allows the user to star buses. When starring a bus, you receive live notifications for that specific bus, regardless if you have the browser open or not. Not receiving notifications? Click the bell icon 🔔!</small>
-                </p>
-                <h3 style = "padding: 10px;">Developers</h3>
-                <p style="text-align: center; color: grey;"><small>Version 1 Created by Simi Kama ('23), Adesh Kumar ('23), Theodore Ng ('23), </small><small class = "easteregg" onclick="hmm()">Alex Remiasz ('23), </small><small> and Boris Rokhmanov ('23)</small><br>
-                <small>Version 2 Created by Vinay Narahari ('24), Tyler Browning ('24), and Peter Paik ('24)</small><br>
-                <small>Version 3 Created by  Priya Agrawal ('25), Ryan Keough ('25), and </small><small class = "easteregg" onclick="spawnmaxwell()">Andy Liang ('26) </small></p>
-                <audio id="maxwell-audio" src="/public/music/maxwell.mp3"></audio>
-                
-              <button class="close-btn" onclick="toggleInfo()">Close</button>
+                <div class = "scrollContainer">
+                    <h3>About The App</h3>
+                    <p>
+                        <small>This app tracks bus status, changes, arrival and departure times, and allows the user to star buses. When starring a bus, you receive live notifications for that specific bus, regardless if you have the browser open or not. Not receiving notifications? Click the bell icon 🔔!</small>
+                    </p>
+                    <h3>Developers</h3>
+                    <p><small>Version 1 Created by Simi Kama ('23), Adesh Kumar ('23), Theodore Ng ('23), </small><small class = "easteregg" onclick="hmm()">Alex Remiasz ('23), </small><small> and Boris Rokhmanov ('23)</small><br>
+                    <small>Version 2 Created by Vinay Narahari ('24), Tyler Browning ('24), and Peter Paik ('24)</small><br>
+                    <small>Version 3 Created by  Priya Agrawal ('25), Ryan Keough ('25), and </small><small class = "easteregg" onclick="spawnmaxwell()">Andy Liang ('26) </small></p>
+                    <audio id="maxwell-audio" src="/public/music/maxwell.mp3"></audio>
+                    <button class="close-btn" onclick="toggleInfo()">Close</button>
+                </div>
             </div>
         </div>
         <div style = "padding-top: 10px;"></div>

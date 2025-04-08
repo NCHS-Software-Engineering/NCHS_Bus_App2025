@@ -769,3 +769,30 @@ window.spawnmaxwell = function() {
    }, 28000);
 };
 
+window.toggleNotifs = function() {
+   const popup = document.getElementById('popupNotifs');
+   const notifStat = document.getElementById('notifStatus');
+   popup.style.display = (popup.style.display === 'flex') ? 'none' : 'flex';
+   requestPermission()
+
+   if (Notification.permission === "denied"){
+       notifStat.innerHTML = `It seems that the device has denied notification permissions. Try pressing the tune icon <image style='height: 23px; padding: 1px;' src='/public/images/tune.png'></image> in the top left of your screen, then reset all permissions. Reload the website and press the bell icon 🔔 again. Make sure to press 'allow' once the app request permissions for notifications.`
+   }
+   else if (Notification.permission === "granted"){
+       notifStat.innerHTML = `Notifications are working! You are all good to go! If you have issues, try pressing the tune icon <image style='height: 23px; padding: 1px;' src='/public/images/tune.png'></image> in the top left of your screen, then reset all permissions. Reload the website and press the bell icon 🔔 again. Make sure to press "allow" once the app request permissions for notifications.`
+   }
+   else {
+       notifStat.innerHTML = `Something doesn't seem right. We have sent a request to show notifications. If it doesn't show up, try pressing the tune icon <image style='height: 23px; padding: 1px;' src='/public/images/tune.png'></image> in the top left of your screen, then reset all permissions. Reload the website and press the bell icon 🔔 again. Make sure to press "allow" once the app request permissions for notifications.`
+   }
+
+};
+
+window.closeNotifs = function() {
+   const popup = document.getElementById('popupNotifs');
+   popup.style.display = (popup.style.display === 'flex') ? 'none' : 'flex';
+};
+
+window.toggleInfo = function() {
+   const popup = document.getElementById('popupInfo');
+   popup.style.display = (popup.style.display === 'flex') ? 'none' : 'flex';
+};
