@@ -298,32 +298,62 @@ function sendNotification(data) {
   } else {
     const subscriptions = getSubscriptions(); // Get all stored subscriptions
     let validSubscriptions = [];
-    if(data.number && data.newStatus){//doesnt send noti for departed->not arrived
-    subscriptions.forEach((sub) => {
-      webPush
-        .sendNotification(sub.subscription, JSON.stringify({
-          notification: {
-            title: "Bus Update",
-            body: `Bus #${data.number} has ${data.newStatus}`,
-          }
-        }))
-        .then(() => {
-          console.log(`✅Notification sent to ${sub.subscription.endpoint}`);
-          validSubscriptions.push(sub); // Keep valid subscriptions
-        })
-        .catch((err) => {
-          console.error("Error sending push notification:", err);
-          if (err.statusCode === 410) {
-            console.log("Removing expired subscription:", sub.subscription.endpoint);
-          } else {
-            validSubscriptions.push(sub); // Keep non-expired subscriptions
-          }
-        })
-        .finally(() => {
-          fs.writeFileSync("subscriptions.json", JSON.stringify(validSubscriptions, null, 2));
-        });
-    });
-  }}
+    console.log(data.number);
+    console.log(data.newStatus);
+    console.log(data.change);
+    if(data.number && data.newStatus && data.change == 0){//doesnt send noti for departed->not arrived
+      subscriptions.forEach((sub) => {
+        webPush
+          .sendNotification(sub.subscription, JSON.stringify({
+            notification: {
+              title: "Bus Update",
+              body: `Bus #${data.number} has ${data.newStatus}`,
+            }
+          }))
+          .then(() => {
+            console.log(`✅Notification sent to ${sub.subscription.endpoint}`);
+            validSubscriptions.push(sub); // Keep valid subscriptions
+          })
+          .catch((err) => {
+            console.error("Error sending push notification:", err);
+            if (err.statusCode === 410) {
+              console.log("Removing expired subscription:", sub.subscription.endpoint);
+            } else {
+              validSubscriptions.push(sub); // Keep non-expired subscriptions
+            }
+          })
+          .finally(() => {
+            fs.writeFileSync("subscriptions.json", JSON.stringify(validSubscriptions, null, 2));
+          });
+      });
+    }
+    else if(data.number && data.newStatus){
+      subscriptions.forEach((sub) => {
+        webPush
+          .sendNotification(sub.subscription, JSON.stringify({
+            notification: {
+              title: "Bus Change",
+              body: `Bus #${data.number} has been changed to #${data.change}`,
+            }
+          }))
+          .then(() => {
+            console.log(`✅Notification sent to ${sub.subscription.endpoint}`);
+            validSubscriptions.push(sub); // Keep valid subscriptions
+          })
+          .catch((err) => {
+            console.error("Error sending push notification:", err);
+            if (err.statusCode === 410) {
+              console.log("Removing expired subscription:", sub.subscription.endpoint);
+            } else {
+              validSubscriptions.push(sub); // Keep non-expired subscriptions
+            }
+          })
+          .finally(() => {
+            fs.writeFileSync("subscriptions.json", JSON.stringify(validSubscriptions, null, 2));
+          });
+      });
+    }
+}
 }
 
 function isIOSUser(data) {
@@ -341,6 +371,7 @@ function getSubscriptions() {
 
 //broadcasts the
 function broadcast(data) {
+  console.log(data.newStatus)
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify({
@@ -708,8 +739,13 @@ app.post('/updateChange', express.json(), (req, res) => {
     fs.writeFile("buslist.json", final, (err) => {});
 
     res.redirect("buslist");
-
-    broadcast(busList);
+    let broadcastData = {
+      number: bus.number,
+      newStatus: bus.newStatus,
+      change: bus.change
+    };
+    console.log("givenbus status:" + givenbus.newStatus);
+    broadcast(broadcastData);
     } 
     catch (parseError) {
       console.error("Error parsing buslist.json:", parseError);

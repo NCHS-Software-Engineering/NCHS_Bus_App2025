@@ -472,9 +472,9 @@ window.fetchBusses = function(){
       });
 }
 
-//const socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
+const socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
 //const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
-const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
+//const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
 
 socket.addEventListener("open", () => {

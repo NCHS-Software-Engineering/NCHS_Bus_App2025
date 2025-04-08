@@ -1,6 +1,6 @@
-//const socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
+const socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
 //const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
-const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
+//const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
 socket.addEventListener("open", () => {
   console.log("Connected to WebSocket server");
@@ -185,7 +185,7 @@ function editBusses() {
             while(i < data.buslist.length) {
                 let div = document.createElement("div");
                 div.classList.add("editbuses");
-
+                let busStatus = data.buslist[i].status;
                 let busNumber = data.buslist[i].number;
                 if (data.buslist[i].change == null)
                     div.textContent = busNumber;
@@ -205,6 +205,7 @@ function editBusses() {
                     
                         let busdata = {
                             number: busNumber,
+                            newStatus: busStatus,
                             change: newChange
                         };
 
