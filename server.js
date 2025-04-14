@@ -22,7 +22,6 @@ server.listen(port, /*"0.0.0.0",*/ () => {
   console.log(`Server running on http://localhost:${port}`);
 });
 
-
 const bodyParser = require("body-parser");
 app.use(
   bodyParser.urlencoded({
@@ -30,7 +29,31 @@ app.use(
   })
 );
 
+const admin = require("firebase-admin");
+// Load Firebase service account credentials
+const serviceAccount = require("./serviceAccountKey.json"); // Download from Firebase Console
+const { Http2ServerRequest } = require("http2");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+const messaging = admin.messaging();
+app.use(express.static(__dirname));
 
+const webPush = require("web-push");
+const vapidPublicKey = process.env.VAPID_PUBLIC_KEY;
+const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+//mongoDB
+// const mongoose = require('mongoose');
+// mongoose.connect('mongodb+srv://bus_app:ItnLzT0qNasUrO7T@cluster0.mxygvad.mongodb.net/',{
+//   useNewUrlParser:true,
+//   useUndifinedTopology:true
+// }).then(() => console.log('MongoDB connected'))
+//   .catch(err => console.error('MongoDB connection error:', err));
+
+// const sub = mongoose.model('Subscriptions', new mongoose.Schema({
+//   subscription: Array,
+
+// }))
 
 
 const fs = require("fs");
@@ -50,39 +73,36 @@ app.get("/", function (req, res) {
 //creats websocket server
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ server });
-
-
+const privateKey = fs.readFileSync('./BusApp_947RQLGJMG.p8');
+const keyID= process.env.IOS_KEY_ID;
+const teamID = process.env.IOS_TEAM_ID;
 //IOS NOTIFICATIONS
+const apn = require("apn");
+const options = {
+    token: {
+      key: privateKey, 
+      keyId: keyID,
+      teamId: teamID
+    },
+    production: false
+}
+const apnProvider = new apn.Provider(options);
 
+function sendNotificationToiOS(title,body){
+  const tokens = JSON.parse(fs.readFileSync("ios-push-tokens.json", "utf8") || "[]");
 
-// const apn = require("apn");
-
-// const options = {
-//     token: {
-//       key: "add key here", 
-//       keyId: "add key id",// found in console
-//       teamId: "team id here"//found in console
-//     },
-//     production: false
-// }
-
-// const apnProvider = new apn.Provider(options);
-
-// function sendNotificationToiOS(title,body){
-//   const tokens = JSON.parse(fs.readFileSync("ios-push-tokens.json", "utf8") || "[]");
-
-//   tokens.forEach(deviceToken => {
-//     let notification = new apn.Notification();
-//     notification.alert = { title, body };
-//     notification.sound = "ping.aiff";
-//     notification.topic = "web.com.yourdomain.push";
+  tokens.forEach(deviceToken => {
+    let notification = new apn.Notification();
+    notification.alert = { title, body };
+    notification.sound = "ping.aiff";
+    notification.topic = "web.com.yourdomain.push";
     
-//     apnProvider.send(notification, deviceToken).then(result =>{
-//       console.log("Sent: ", result.sent.length);
-//       console.log("Failed:", result.failed.length, result.failed);
-//     });
-//   });
-// }
+    apnProvider.send(notification, deviceToken).then(result =>{
+      console.log("Sent: ", result.sent.length);
+      console.log("Failed:", result.failed.length, result.failed);
+    });
+  });
+}
 
 app.post("/register-ios-token", (req, res) => {
   const { token } = req.body;
@@ -101,9 +121,7 @@ app.post("/register-ios-token", (req, res) => {
 
 // PUSH STUFF -----------------------------------
 
-const webPush = require("web-push");
-const vapidPublicKey = process.env.VAPID_PUBLIC_KEY;
-const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+
 if (!vapidPublicKey || !vapidPrivateKey) {
   console.log(
     "You must set the VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY " +
@@ -174,19 +192,7 @@ app.post("/send-notification", async (req, res) => {
 
 
 //Firebase stuff -------------------------------------------------------
-const admin = require("firebase-admin");
 
-// Load Firebase service account credentials
-const serviceAccount = require("./serviceAccountKey.json"); // Download from Firebase Console
-const { Http2ServerRequest } = require("http2");
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
-
-const messaging = admin.messaging();
-
-app.use(express.static(__dirname));
 
 app.get('/firebase-app.js', (req, res) => {
   res.sendFile(__dirname + '/node_modules/firebase/app.js');
