@@ -82,7 +82,8 @@ Here’s the different parts
 - Uses firebase-admin out of node modules
 - How it works generally:
     - In index.js the user is prompted with a pop-up for notification permissions. When allowed they are added to the subscriptions file. When a notification is pushed, all subscriptions are sent a notification, then the firebase-messaging-sw.js service worker shows the notification on the device.
-    - 
+    - Notifications are now implemented on Android devices.
+      
 ## Websockets
 - Uses the websockets from nodejs
 - How it works:
