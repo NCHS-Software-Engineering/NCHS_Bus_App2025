@@ -94,7 +94,8 @@ navigator.serviceWorker.ready.then(reg =>
                'Content-type': 'application/json'
             },
             body: JSON.stringify({
-               subscription: newSubscription
+               subscription: newSubscription,
+               starred: starredBussesArray
             })
          });
       });
@@ -107,7 +108,7 @@ if ('safari' in window && 'pushNotification' in window.safari) {
 
    // Ask for permission
    window.safari.pushNotification.requestPermission(
-      "https://your-server.com", // Your web server
+      "bustest.redhawks.us", // Your web server
       "web.com.yourdomain.push", // Your Web Push ID from Apple
       {},
       function (permissionData) {

@@ -31,6 +31,20 @@ app.use(
 );
 
 
+<<<<<<< Updated upstream
+=======
+const webPush = require("web-push");
+const vapidPublicKey = process.env.VAPID_PUBLIC_KEY;
+const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+
+
+//mongoDB
+const {connectDB} = require("./server/database/connection.js");
+connectDB();
+const {sub} = require("./server/database/connection.js")
+
+
+>>>>>>> Stashed changes
 
 
 const fs = require("fs");
@@ -55,6 +69,7 @@ const wss = new WebSocket.Server({ server });
 //IOS NOTIFICATIONS
 
 
+<<<<<<< Updated upstream
 // const apn = require("apn");
 
 // const options = {
@@ -76,6 +91,13 @@ const wss = new WebSocket.Server({ server });
 //     notification.alert = { title, body };
 //     notification.sound = "ping.aiff";
 //     notification.topic = "web.com.yourdomain.push";
+=======
+  tokens.forEach(deviceToken => {
+    let notification = new apn.Notification();
+    notification.alert = { title, body };
+    notification.sound = "ping.aiff";
+    notification.topic = "bustest";
+>>>>>>> Stashed changes
     
 //     apnProvider.send(notification, deviceToken).then(result =>{
 //       console.log("Sent: ", result.sent.length);
@@ -127,7 +149,8 @@ app.get('/vapidPublicKey', function (req, res) {
 app.post("/register", (req, res) => {
   const subscription = req.body.subscription;
   const userId = req.cookies.c_email;
-  storeSubscription(subscription, userId);
+  const starred = req.body.starredBussesArray;
+  storeSubscription(subscription, userId, starred);
   res.sendStatus(201);
 });
 
@@ -139,10 +162,8 @@ function storeSubscription(subscription, userId) {
   }
 
   try {
-    const subscriptions = fs.existsSync("subscriptions.json")
-      ? JSON.parse(fs.readFileSync("subscriptions.json", "utf8"))
-      : [];
-
+    const subscriptions = fs.existsSync("subscriptions.json") ? JSON.parse(fs.readFileSync("subscriptions.json", "utf8")) : [];
+    sub.create()
     const existingSubscription = subscriptions.find((sub) => sub.subscription.endpoint === subscription.endpoint);
 
     if (!existingSubscription) {
