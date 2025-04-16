@@ -42,18 +42,20 @@ app.use(express.static(__dirname));
 const webPush = require("web-push");
 const vapidPublicKey = process.env.VAPID_PUBLIC_KEY;
 const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+
+
 //mongoDB
-// const mongoose = require('mongoose');
-// mongoose.connect('mongodb+srv://bus_app:ItnLzT0qNasUrO7T@cluster0.mxygvad.mongodb.net/',{
-//   useNewUrlParser:true,
-//   useUndifinedTopology:true
-// }).then(() => console.log('MongoDB connected'))
-//   .catch(err => console.error('MongoDB connection error:', err));
+const {connectDB} = require("./server/database/connection.js");
+connectDB();
+const {Subscription} = reqiure('./database/connection.js');
 
-// const sub = mongoose.model('Subscriptions', new mongoose.Schema({
-//   subscription: Array,
 
-// }))
+
+
+
+
+
+
 
 
 const fs = require("fs");
@@ -71,6 +73,16 @@ app.get("/", function (req, res) {
 });
 
 //creats websocket server
+
+
+
+
+
+
+
+
+
+
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ server });
 const privateKey = fs.readFileSync('./BusApp_947RQLGJMG.p8');
