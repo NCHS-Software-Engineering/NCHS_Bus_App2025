@@ -156,27 +156,32 @@ app.get('/vapidPublicKey', function (req, res) {
 app.post("/register", (req, res) => {
   const subscription = req.body.subscription;
   const userId = req.cookies.c_email;
-  storeSubscription(subscription, userId);
+  const starred = req.body.starred;
+  storeSubscription(subscription, userId,starred);
   res.sendStatus(201);
 });
 
 
-function storeSubscription(subscription, userId) {
+async function storeSubscription(subscription, userId, starred) {
   if (!subscription || !subscription.endpoint) {
     console.error("Invalid subscription received:", subscription);
     return;
   }
 
   try {
-    const subscriptions = fs.existsSync("subscriptions.json")
-      ? JSON.parse(fs.readFileSync("subscriptions.json", "utf8"))
-      : [];
-
-    const existingSubscription = subscriptions.find((sub) => sub.subscription.endpoint === subscription.endpoint);
+    // Check if the subscription already exists in the database
+    const existingSubscription = await Subscription.findOne({ "subscription.endpoint": subscription.endpoint });
 
     if (!existingSubscription) {
-      subscriptions.push({ subscription, userId });
-      fs.writeFileSync("subscriptions.json", JSON.stringify(subscriptions, null, 2));
+      // Create a new subscription document
+      const newSubscription = new Subscription({
+        subscription,
+        userId,
+        starred
+      });
+
+      // Save the new subscription to the database
+      await newSubscription.save();
       console.log("New subscription added:", subscription.endpoint);
     } else {
       console.log("Subscription already exists for:", subscription.endpoint);
