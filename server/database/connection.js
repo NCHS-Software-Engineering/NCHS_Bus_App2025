@@ -5,19 +5,23 @@ const connectDB = () => {
   .catch(err => console.error('MongoDB connection error:', err));
 
 }
-const userSchema = new mongoose.Schema({
-    userId: String,
-    subscriptions: [
-      {
-        endpoint: String,
-        keys: {
-          p256dh: String,
-          auth: String
-        }
-      }
-    ],
-    starred: [Number]
-  });
-const Subscription = mongoose.model('Subscription', userSchema);
+const subscriptionSchema = new mongoose.Schema({
+  subscription: {
+    type: Object,
+    required: true
+  },
+  userId: {
+    type: String,
+    required: true
+  },
+  starred: {
+    type: Boolean,
+    default: false
+  }
+});
 
-module.exports = {connectDB,Subscription}
+
+const Subscription = mongoose.model("Subscription", subscriptionSchema);
+const iOSSubscription = mongoose.model("iOSSubscription", subscriptionSchema);
+
+module.exports = {connectDB,Subscription,iOSSubscription}

@@ -48,8 +48,7 @@ const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
 const {connectDB} = require("./server/database/connection.js");
 connectDB();
 const {Subscription} = reqiure('./database/connection.js');
-
-
+const {iOSsubscription} = require('./database/connection.js');
 
 
 
@@ -100,12 +99,12 @@ const options = {
 }
 const apnProvider = new apn.Provider(options);
 
-function sendNotificationToiOS(title,body){
-  const tokens = JSON.parse(fs.readFileSync("ios-push-tokens.json", "utf8") || "[]");
+async function sendNotificationToiOS(title,body){
+  const tokens = await iOSsubscription.find({ starred: { $in: [body.number] } });
 
-  tokens.forEach(deviceToken => {
+  for (const token of tokens) {
     let notification = new apn.Notification();
-    notification.alert = { title, body };
+    notification.alert = { title, body};
     notification.sound = "ping.aiff";
     notification.topic = "web.com.yourdomain.push";
     
@@ -113,22 +112,24 @@ function sendNotificationToiOS(title,body){
       console.log("Sent: ", result.sent.length);
       console.log("Failed:", result.failed.length, result.failed);
     });
-  });
+  }
 }
 
-app.post("/register-ios-token", (req, res) => {
-  const { token } = req.body;
-  if (!token) {
-      return res.status(400).json({ error: "Token is required" });
+app.post('/check-subscription', async (req, res) => {
+  const subscription = req.body.subscription;
+
+  if (!subscription || !subscription.endpoint) {
+    return res.status(400).json({ error: "Invalid subscription data provided" });
   }
 
-  const tokens = JSON.parse(fs.readFileSync("ios-push-tokens.json", "utf8") || "[]");
-  if (!tokens.includes(token)) {
-      tokens.push(token);
-      fs.writeFileSync("ios-push-tokens.json", JSON.stringify(tokens));
-  }
+  try {
+    const exists = await Subscription.findOne({ "subscription.endpoint": subscription.endpoint });
 
-  res.status(200).json({ message: "iOS Token Registered" });
+    res.json({ exists: !!exists });
+  } catch (error) {
+    console.error("Error checking subscription:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 // PUSH STUFF -----------------------------------
@@ -306,90 +307,76 @@ app.post("/updateStatus", (req, res) => {
   });
 });
 
-app.post('/check-subscription', (req,res) =>{
+app.post('/check-subscription', async (req, res) => {
   const subscription = req.body.subscription;
-  const subscriptions = getSubscriptions();
-  const exists = subscriptions.some(s => s.endpoint === subscription.endpoint);
-  res.json({ exists });
-})
+  if (!subscription || !subscription.endpoint) {
+    return res.status(400).json({ error: "Invalid subscription data provided" });
+  }
+  try {
+    // Check if the subscription exists in the database
+    const exists = await Subscription.findOne({ "subscription.endpoint": subscription.endpoint });
+
+    res.json({ exists: !!exists }); // Return true if it exists, false otherwise
+  } catch (error) {
+    console.error("Error checking subscription:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 
 
-function sendNotification(data) {
+async function sendNotification(data) {
   if (isIOSUser(data)) {
     sendNotificationToiOS("Bus Update", `Bus #${data.number} has ${data.newStatus}`);
   } else {
-    const subscriptions = getSubscriptions(); // Get all stored subscriptions
-    let validSubscriptions = [];
+    const subscriptions = await Subscription.find({ starred: { $in: [data.number] } }); // Gets all subs that have this bus starred
     console.log(data.number);
     console.log(data.newStatus);
     console.log(data.change);
     if(data.number && data.newStatus && data.change == 0){//doesnt send noti for departed->not arrived
-      subscriptions.forEach((sub) => {
-        webPush
-          .sendNotification(sub.subscription, JSON.stringify({
+      for(const sub of subscriptions){
+        try{
+          await webPush.sendNotification(sub.subscription, JSON.stringify({
             notification: {
               title: "Bus Update",
               body: `Bus #${data.number} has ${data.newStatus}`,
             }
-          }))
-          .then(() => {
+          }));
             console.log(`✅Notification sent to ${sub.subscription.endpoint}`);
             validSubscriptions.push(sub); // Keep valid subscriptions
-          })
-          .catch((err) => {
+        } catch (err) {
             console.error("Error sending push notification:", err);
             if (err.statusCode === 410) {
               console.log("Removing expired subscription:", sub.subscription.endpoint);
-            } else {
-              validSubscriptions.push(sub); // Keep non-expired subscriptions
-            }
-          })
-          .finally(() => {
-            fs.writeFileSync("subscriptions.json", JSON.stringify(validSubscriptions, null, 2));
-          });
-      });
+              await Subscription.deleteOne({ "subscription.endpoint": sub.subscription.endpoint });
+            } 
+        }
+      }
     }
     else if(data.number && data.newStatus){
-      subscriptions.forEach((sub) => {
-        webPush
-          .sendNotification(sub.subscription, JSON.stringify({
+      for(const sub of subscriptions){
+        try{
+          await webPush.sendNotification(sub.subscription, JSON.stringify({
             notification: {
-              title: "Bus Change",
-              body: `Bus #${data.number} has been changed to #${data.change}`,
+              title: "Bus Update",
+              body: `Bus #${data.number} has ${data.newStatus}`,
             }
-          }))
-          .then(() => {
+          }));
             console.log(`✅Notification sent to ${sub.subscription.endpoint}`);
             validSubscriptions.push(sub); // Keep valid subscriptions
-          })
-          .catch((err) => {
+        } catch (err) {
             console.error("Error sending push notification:", err);
             if (err.statusCode === 410) {
               console.log("Removing expired subscription:", sub.subscription.endpoint);
-            } else {
-              validSubscriptions.push(sub); // Keep non-expired subscriptions
+              await Subscription.deleteOne({ _id: sub._id });
             }
-          })
-          .finally(() => {
-            fs.writeFileSync("subscriptions.json", JSON.stringify(validSubscriptions, null, 2));
-          });
-      });
+        }
+      }
     }
+  }
 }
-}
-
 function isIOSUser(data) {
   return data.device === "ios"; // Modify based on how you track users
-}
-
-
-
-function getSubscriptions() {
-  // Read subscriptions from a file or database
-  // For example, you can read from a file named 'subscriptions.json'
-  const subscriptions = fs.readFileSync("subscriptions.json");
-  return JSON.parse(subscriptions);
 }
 
 //broadcasts the
