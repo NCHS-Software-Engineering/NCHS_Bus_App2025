@@ -195,11 +195,11 @@ app.post("/send-notification", async (req, res) => {
 
 
 app.get('/firebase-app.js', (req, res) => {
-  res.sendFile(__dirname + '/node_modules/firebase/app.js');
+  res.sendFile(__dirname + '/node_modules/firebase/firebase-app.js');
 });
 
 app.get('/firebase-messaging.js', (req, res) => {
-  res.sendFile(__dirname + '/node_modules/firebase/messaging.js');
+  res.sendFile(__dirname + '/node_modules/firebase/firebase-messaging.js');
 });
 
 app.get('/firebase-messaging-sw.js', (req,res)=>{
