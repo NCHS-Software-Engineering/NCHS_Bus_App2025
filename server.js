@@ -194,7 +194,7 @@ app.post("/send-notification", async (req, res) => {
 //Firebase stuff -------------------------------------------------------
 
 
-app.get('/firebase-app.js', (req, res) => {
+/*app.get('/firebase-app.js', (req, res) => {
   res.sendFile(__dirname + '/node_modules/firebase/firebase-app.js');
 });
 
@@ -204,6 +204,34 @@ app.get('/firebase-messaging.js', (req, res) => {
 
 app.get('/firebase-messaging-sw.js', (req,res)=>{
   res.sendFile(__dirname + '/firebase-messaging-sw.js');
+});*/
+
+// Ensuring we never let Express try to send a 404 or 500 without explicitly setting it
+app.get('/firebase-app.js', (req, res) => {
+  res.sendFile(__dirname + '/node_modules/firebase/firebase-app.js', (err) => {
+    if (err) {
+      console.error('Error sending /firebase-app.js:', err);
+      res.status(err.status || 500).send('File not found or server error');
+    }
+  });
+});
+
+app.get('/firebase-messaging.js', (req, res) => {
+  res.sendFile(__dirname + '/node_modules/firebase/firebase-messaging.js', (err) => {
+    if (err) {
+      console.error('Error sending /firebase-app.js:', err);
+      res.status(err.status || 500).send('File not found or server error');
+    }
+  });
+});
+
+app.get('/firebase-messaging-sw.js', (req,res)=>{
+  res.sendFile(__dirname + '/firebase-messaging-sw.js', (err) => {
+    if (err) {
+      console.error('Error sending /firebase-app.js:', err);
+      res.status(err.status || 500).send('File not found or server error');
+    }
+  });
 });
 
 
