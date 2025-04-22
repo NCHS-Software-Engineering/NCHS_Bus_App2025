@@ -10,18 +10,14 @@ const subscriptionSchema = new mongoose.Schema({
     type: Object,
     required: true
   },
-  userId: {
-    type: String,
-    required: true
-  },
   starred: {
-    type: Boolean,
-    default: false
+    type: [Number],
+    default: []
   }
 });
 
 
-const Subscription = mongoose.model("Subscription", subscriptionSchema);
-const iOSSubscription = mongoose.model("iOSSubscription", subscriptionSchema);
+const Subscription = mongoose.model("Subscriptions", subscriptionSchema);
+const iOSSubscription = mongoose.model("iOSSubscriptions", subscriptionSchema);
 
 module.exports = {connectDB,Subscription,iOSSubscription}

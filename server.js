@@ -45,10 +45,10 @@ const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
 
 
 //mongoDB
-const {connectDB} = require("./server/database/connection.js");
+const {connectDB,Subscription,iOSsubscription} = require('./server/database/connection.js');
 connectDB();
-const {Subscription} = reqiure('./database/connection.js');
-const {iOSsubscription} = require('./database/connection.js');
+
+
 
 
 
@@ -156,14 +156,13 @@ app.get('/vapidPublicKey', function (req, res) {
 
 app.post("/register", (req, res) => {
   const subscription = req.body.subscription;
-  const userId = req.cookies.c_email;
   const starred = req.body.starred;
-  storeSubscription(subscription, userId,starred);
+  storeSubscription(subscription ,starred);
   res.sendStatus(201);
 });
 
 
-async function storeSubscription(subscription, userId, starred) {
+async function storeSubscription(subscription, starred) {
   if (!subscription || !subscription.endpoint) {
     console.error("Invalid subscription received:", subscription);
     return;
@@ -177,7 +176,6 @@ async function storeSubscription(subscription, userId, starred) {
       // Create a new subscription document
       const newSubscription = new Subscription({
         subscription,
-        userId,
         starred
       });
 
@@ -343,7 +341,7 @@ async function sendNotification(data) {
             }
           }));
             console.log(`✅Notification sent to ${sub.subscription.endpoint}`);
-            validSubscriptions.push(sub); // Keep valid subscriptions
+             // Keep valid subscriptions
         } catch (err) {
             console.error("Error sending push notification:", err);
             if (err.statusCode === 410) {
@@ -363,7 +361,6 @@ async function sendNotification(data) {
             }
           }));
             console.log(`✅Notification sent to ${sub.subscription.endpoint}`);
-            validSubscriptions.push(sub); // Keep valid subscriptions
         } catch (err) {
             console.error("Error sending push notification:", err);
             if (err.statusCode === 410) {
