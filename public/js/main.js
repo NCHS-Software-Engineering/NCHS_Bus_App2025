@@ -113,8 +113,8 @@ if ('safari' in window && 'pushNotification' in window.safari) {
 
    // Ask for permission
    window.safari.pushNotification.requestPermission(
-      "https://your-server.com", // Your web server
-      "web.com.yourdomain.push", // Your Web Push ID from Apple
+      "https://bustest.redhawks.us", 
+      "web.com.nchsbusapp.push",
       {},
       function (permissionData) {
          if (permissionData.permission === 'granted') {
