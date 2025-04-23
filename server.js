@@ -73,51 +73,51 @@ app.get("/", function (req, res) {
 //creats websocket server
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ server });
-// const privateKey = fs.readFileSync('./BusApp_947RQLGJMG.p8');
-// const keyID= process.env.IOS_KEY_ID;
-// const teamID = process.env.IOS_TEAM_ID;
-// //IOS NOTIFICATIONS
-// const apn = require("apn");
-// const options = {
-//     token: {
-//       key: privateKey, 
-//       keyId: keyID,
-//       teamId: teamID
-//     },
-//     production: false
-// }
-// const apnProvider = new apn.Provider(options);
+const privateKey = fs.readFileSync('./BusApp_947RQLGJMG.p8');
+const keyID= process.env.IOS_KEY_ID;
+const teamID = process.env.IOS_TEAM_ID;
+//IOS NOTIFICATIONS
+const apn = require("apn");
+const options = {
+    token: {
+      key: privateKey, 
+      keyId: keyID,
+      teamId: teamID
+    },
+    production: false
+}
+const apnProvider = new apn.Provider(options);
 
-// function sendNotificationToiOS(title,body){
-//   const tokens = JSON.parse(fs.readFileSync("ios-push-tokens.json", "utf8") || "[]");
+function sendNotificationToiOS(title,body){
+  const tokens = JSON.parse(fs.readFileSync("ios-push-tokens.json", "utf8") || "[]");
 
-//   tokens.forEach(deviceToken => {
-//     let notification = new apn.Notification();
-//     notification.alert = { title, body };
-//     notification.sound = "ping.aiff";
-//     notification.topic = "web.com.nchsbusapp.push";
+  tokens.forEach(deviceToken => {
+    let notification = new apn.Notification();
+    notification.alert = { title, body };
+    notification.sound = "ping.aiff";
+    notification.topic = "web.com.nchsbusapp.push";
     
-//     apnProvider.send(notification, deviceToken).then(result =>{
-//       console.log("Sent: ", result.sent.length);
-//       console.log("Failed:", result.failed.length, result.failed);
-//     });
-//   });
-// }
+    apnProvider.send(notification, deviceToken).then(result =>{
+      console.log("Sent: ", result.sent.length);
+      console.log("Failed:", result.failed.length, result.failed);
+    });
+  });
+}
 
-// app.post("/register-ios-token", (req, res) => {
-//   const { token } = req.body;
-//   if (!token) {
-//       return res.status(400).json({ error: "Token is required" });
-//   }
+app.post("/register-ios-token", (req, res) => {
+  const { token } = req.body;
+  if (!token) {
+      return res.status(400).json({ error: "Token is required" });
+  }
 
-//   const tokens = JSON.parse(fs.readFileSync("ios-push-tokens.json", "utf8") || "[]");
-//   if (!tokens.includes(token)) {
-//       tokens.push(token);
-//       fs.writeFileSync("ios-push-tokens.json", JSON.stringify(tokens));
-//   }
+  const tokens = JSON.parse(fs.readFileSync("ios-push-tokens.json", "utf8") || "[]");
+  if (!tokens.includes(token)) {
+      tokens.push(token);
+      fs.writeFileSync("ios-push-tokens.json", JSON.stringify(tokens));
+  }
 
-//   res.status(200).json({ message: "iOS Token Registered" });
-// });
+  res.status(200).json({ message: "iOS Token Registered" });
+});
 
 // PUSH STUFF -----------------------------------
 
@@ -192,6 +192,7 @@ app.post("/send-notification", async (req, res) => {
 
 
 //Firebase stuff -------------------------------------------------------
+
 
 
 // Ensuring we never let Express try to send a 404 or 500 without explicitly setting it
