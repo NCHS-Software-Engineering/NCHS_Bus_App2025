@@ -113,7 +113,7 @@ navigator.serviceWorker.ready.then(reg =>
          console.log("✅ Already subscribed:", subscription);
          return subscription;
       }
-
+      
       const response = await fetch('/vapidPublicKey');
       const vapidPublicKey = await response.text();
       const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
@@ -129,7 +129,8 @@ navigator.serviceWorker.ready.then(reg =>
                'Content-type': 'application/json'
             },
             body: JSON.stringify({
-               subscription: newSubscription
+               subscription: newSubscription,
+               starred: Array.from(starredBusses) 
             })
          });
       });
@@ -137,6 +138,7 @@ navigator.serviceWorker.ready.then(reg =>
 );
 
 // safari compatibility
+
 
 
 function urlBase64ToUint8Array(base64String) {
@@ -472,9 +474,9 @@ window.fetchBusses = function(){
       });
 }
 
-//const socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
+const socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
 //const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
-const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
+//const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
 
 socket.addEventListener("open", () => {
