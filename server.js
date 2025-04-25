@@ -69,6 +69,35 @@ async function sendNotificationToiOS(title,body){
     });
   }
 }
+
+app.post("/register-ios-token", async (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({ error: "Token is required" });
+  }
+
+  try {
+    // Check if the token already exists in the database
+    const existingToken = await iOSsubscription.findOne({ token });
+
+    if (!existingToken) {
+      // Add the new token to the database
+      const newToken = new iOSsubscription({ token });
+      await newToken.save();
+      console.log("New iOS token registered:", token);
+    } else {
+      console.log("iOS token already exists:", token);
+    }
+
+    res.status(200).json({ message: "iOS Token Registered" });
+  } catch (error) {
+    console.error("Error registering iOS token:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 app.post('/check-subscription', async (req, res) => {
   const subscription = req.body.subscription;
 
