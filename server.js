@@ -50,13 +50,6 @@ connectDB();
 
 
 
-
-
-
-
-
-
-
 const fs = require("fs");
 const { ok } = require("assert");
 
@@ -106,7 +99,7 @@ async function sendNotificationToiOS(title,body){
     let notification = new apn.Notification();
     notification.alert = { title, body};
     notification.sound = "ping.aiff";
-    notification.topic = "web.com.yourdomain.push";
+    notification.topic = "web.com.nchsbusapp.push";
     
     apnProvider.send(notification, deviceToken).then(result =>{
       console.log("Sent: ", result.sent.length);
@@ -351,13 +344,32 @@ async function sendNotification(data) {
         }
       }
     }
-    else if(data.number && data.newStatus){
+    else if(data.number && data.newStatus != 'Not Arrived' && data.change != 0){
       for(const sub of subscriptions){
         try{
           await webPush.sendNotification(sub.subscription, JSON.stringify({
             notification: {
               title: "Bus Update",
-              body: `Bus #${data.number} has ${data.newStatus}`,
+              body: `Bus #${data.number}, which is #${data.change}, has ${data.newStatus}`,
+            }
+          }));
+            console.log(`✅Notification sent to ${sub.subscription.endpoint}`);
+        } catch (err) {
+            console.error("Error sending push notification:", err);
+            if (err.statusCode === 410) {
+              console.log("Removing expired subscription:", sub.subscription.endpoint);
+              await Subscription.deleteOne({ _id: sub._id });
+            }
+        }
+      }
+    }
+    else {
+      for(const sub of subscriptions){
+        try{
+          await webPush.sendNotification(sub.subscription, JSON.stringify({
+            notification: {
+              title: "Bus Update",
+              body: `Bus #${data.number} has been changed to #${data.change}`,
             }
           }));
             console.log(`✅Notification sent to ${sub.subscription.endpoint}`);
@@ -376,7 +388,7 @@ function isIOSUser(data) {
   return data.device === "ios"; // Modify based on how you track users
 }
 
-//broadcasts the
+//broadcasts thea
 function broadcast(data) {
   console.log(data.newStatus)
   wss.clients.forEach((client) => {
