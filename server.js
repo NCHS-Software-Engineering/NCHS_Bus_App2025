@@ -327,7 +327,7 @@ async function sendNotification(data) {
         }
       }
     }
-    else if(data.number && data.newStatus != 'Not Arrived' && data.change != 0){
+    else if(data.number && (data.newStatus === 'Arrived' || data.newStatus === 'Departed') && data.change != 0){
       for(const sub of subscriptions){
         try{
           await webPush.sendNotification(sub.subscription, JSON.stringify({
