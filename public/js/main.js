@@ -18,31 +18,60 @@ const messaging = getMessaging(app);
 // Asks for Notification Permission
 window.requestPermission = async function() {
    try {
-      const permission = await Notification.requestPermission();
-      if (permission === "granted") {
-         console.log("Notification permission granted.");
-         navigator.serviceWorker.ready.then(reg =>
-            reg.pushManager.getSubscription().then(async function (subscription) {
-               fetch('./send-notification', {
-                     method: "POST",
+      if ('safari' in window && 'pushNotification' in window.safari) {
+         console.log("Safari push notifications are supported!");
+      
+         // Ask for permission
+         window.safari.pushNotification.requestPermission(
+            "https://bustest.redhawks.us", 
+            "web.com.nchsbusapp.push",
+            {},
+            function (permissionData) {
+               if (permissionData.permission === 'granted') {
+                  console.log("Push Token:", permissionData.deviceToken);
+                  // Send this deviceToken to your backend
+                  fetch('/register-ios-token', {
+                     method: 'POST',
                      headers: {
-                        "Content-type": "application/json"
+                        'Content-Type': 'application/json'
                      },
                      body: JSON.stringify({
-                        notification:{
-                           title: "Starred Buses",
-                           body: "Starred buses will now receive notifications.",},
-                        subscription: subscription
+                        token: permissionData.deviceToken
                      })
-                  })
-                  .then(res => res.json())
-                  .then(response => console.log("✅ Notification request sent to server:", response))
-                  .catch(error => console.error("❌ Error sending notification request:", error));
-            })
-         )
+                  });
+               } else {
+                  console.log("Push permission denied:", permissionData);
+               }
+            }
+         );
       } else {
-         console.log("Notification permission denied.");
+         const permission = await Notification.requestPermission();
+         if (permission === "granted") {
+            console.log("Notification permission granted.");
+            navigator.serviceWorker.ready.then(reg =>
+               reg.pushManager.getSubscription().then(async function (subscription) {
+                  fetch('./send-notification', {
+                        method: "POST",
+                        headers: {
+                           "Content-type": "application/json"
+                        },
+                        body: JSON.stringify({
+                           notification:{
+                              title: "Starred Buses",
+                              body: "Starred buses will now receive notifications.",},
+                           subscription: subscription
+                        })
+                     })
+                     .then(res => res.json())
+                     .then(response => console.log("✅ Notification request sent to server:", response))
+                     .catch(error => console.error("❌ Error sending notification request:", error));
+               })
+            )
+         } else {
+            console.log("Notification permission denied.");
+         }
       }
+      
    } catch (error) {
       console.error("Error requesting permission:", error);
    }
@@ -109,35 +138,7 @@ navigator.serviceWorker.ready.then(reg =>
 );
 
 // safari compatibility
-if ('safari' in window && 'pushNotification' in window.safari) {
-   console.log("Safari push notifications are supported!");
 
-   // Ask for permission
-   window.safari.pushNotification.requestPermission(
-      "bustest.redhawks.us", // Your web server
-      "web.com.yourdomain.push", // Your Web Push ID from Apple
-      {},
-      function (permissionData) {
-         if (permissionData.permission === 'granted') {
-            console.log("Push Token:", permissionData.deviceToken);
-            // Send this deviceToken to your backend
-            fetch('/register-ios-token', {
-               method: 'POST',
-               headers: {
-                  'Content-Type': 'application/json'
-               },
-               body: JSON.stringify({
-                  token: permissionData.deviceToken
-               })
-            });
-         } else {
-            console.log("Push permission denied:", permissionData);
-         }
-      }
-   );
-} else {
-   console.log("Safari push notifications are NOT supported on this browser.");
-}
 
 
 function urlBase64ToUint8Array(base64String) {
