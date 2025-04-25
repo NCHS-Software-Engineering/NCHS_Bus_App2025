@@ -1,87 +1,49 @@
-// Load Node modules
 var express = require("express");
 const ejs = require("ejs");
-
-// Initialise Express
 var app = express();
-// Render static files
 app.use(express.static("public"));
-// Set the view engine to ejs
 app.set("view engine", "ejs");
-
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
 require('dotenv').config();
-
-// WEBSOCKET
 const http = require('http');
 const server = http.createServer(app);
-
 const port = 8080;
 server.listen(port, /*"0.0.0.0",*/ () => {
   console.log(`Server running on http://localhost:${port}`);
 });
-
 const bodyParser = require("body-parser");
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
-
-const admin = require("firebase-admin");
-// Load Firebase service account credentials
-const serviceAccount = require("./serviceAccountKey.json"); // Download from Firebase Console
+app.use(bodyParser.urlencoded({extended: true,}));
+const admin = require("firebase-admin");//firebase admin account
+const serviceAccount = require("./serviceAccountKey.json");
 const { Http2ServerRequest } = require("http2");
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
+admin.initializeApp({credential: admin.credential.cert(serviceAccount)});
 const messaging = admin.messaging();
 app.use(express.static(__dirname));
-
 const webPush = require("web-push");
-const vapidPublicKey = process.env.VAPID_PUBLIC_KEY;
+const vapidPublicKey = process.env.VAPID_PUBLIC_KEY;//push keys
 const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
-
-
-//mongoDB
-const {connectDB,Subscription,iOSsubscription} = require('./server/database/connection.js');
+const {connectDB,Subscription,iOSsubscription} = require('./server/database/connection.js');//mongodb connection
 connectDB();
+<<<<<<< Updated upstream
 
 
 
+=======
+>>>>>>> Stashed changes
 const fs = require("fs");
 const { ok } = require("assert");
-
 var crypto = require('crypto');
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
-
-// *** GET Routes - display pages ***
-// Root Route
 app.use(express.static("public"));
-app.get("/", function (req, res) {
-  res.render("pages/index");
-});
-
-//creats websocket server
-
-
-
-
-
-
-
-
-
-
+app.get("/", function (req, res) {res.render("pages/index");});//renders the bus table
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ server });
 const privateKey = fs.readFileSync('./BusApp_947RQLGJMG.p8');
-const keyID= process.env.IOS_KEY_ID;
+const keyID= process.env.IOS_KEY_ID;//ios keys
 const teamID = process.env.IOS_TEAM_ID;
-//IOS NOTIFICATIONS
-const apn = require("apn");
+const apn = require("apn");//IOS push provider
 const options = {
     token: {
       key: privateKey, 
@@ -90,11 +52,14 @@ const options = {
     },
     production: false
 }
+webPush.setVapidDetails(
+  "https://bustest.redhawks.us/",
+  vapidPublicKey,
+  vapidPrivateKey
+);
 const apnProvider = new apn.Provider(options);
-
 async function sendNotificationToiOS(title,body){
   const tokens = await iOSsubscription.find({ starred: { $in: [body.number] } });
-
   for (const token of tokens) {
     let notification = new apn.Notification();
     notification.alert = { title, body};
@@ -107,7 +72,6 @@ async function sendNotificationToiOS(title,body){
     });
   }
 }
-
 app.post('/check-subscription', async (req, res) => {
   const subscription = req.body.subscription;
 
@@ -116,7 +80,7 @@ app.post('/check-subscription', async (req, res) => {
   }
 
   try {
-    const exists = await Subscription.findOne({ "subscription.endpoint": subscription.endpoint });
+    const exists = await iOSsubscription.findOne({ "subscription.endpoint": subscription.endpoint });
 
     res.json({ exists: !!exists });
   } catch (error) {
@@ -127,21 +91,8 @@ app.post('/check-subscription', async (req, res) => {
 
 // PUSH STUFF -----------------------------------
 
-
-if (!vapidPublicKey || !vapidPrivateKey) {
-  console.log(
-    "You must set the VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY " +
-      "environment variables. You can use the following ones:"
-  );
-  console.log(webPush.generateVAPIDKeys());
-  return;
-}
 // Set the keys used for encrypting the push messages.
-webPush.setVapidDetails(
-  "https://bustest.redhawks.us/",
-  vapidPublicKey,
-  vapidPrivateKey
-);
+
 
 app.get('/vapidPublicKey', function (req, res) {
   res.send(vapidPublicKey);
@@ -153,7 +104,6 @@ app.post("/register", (req, res) => {
   storeSubscription(subscription ,starred);
   res.sendStatus(201);
 });
-
 
 async function storeSubscription(subscription, starred) {
   if (!subscription || !subscription.endpoint) {
@@ -183,13 +133,10 @@ async function storeSubscription(subscription, starred) {
   }
 }
 
-
 app.post("/send-notification", async (req, res) => {
   const { title, body } = req.body.notification;
-  const subscriptions = req.body.subscription; // Get stored subscriptions
-
+  const subscriptions = req.body.subscription;
   const payload = JSON.stringify({ notification: { title, body } });
-
   webPush.sendNotification(subscriptions, payload)
       .then(() => console.log("Notification sent to:", subscriptions.endpoint))
       .catch(err => console.error("Error sending push notification:", err));
@@ -197,24 +144,6 @@ app.post("/send-notification", async (req, res) => {
 
   res.status(200).json({ message: "Notifications sent" });
 });
-
-
-
-//Firebase stuff -------------------------------------------------------
-
-
-app.get('/firebase-app.js', (req, res) => {
-  res.sendFile(__dirname + '/node_modules/firebase/app.js');
-});
-
-app.get('/firebase-messaging.js', (req, res) => {
-  res.sendFile(__dirname + '/node_modules/firebase/messaging.js');
-});
-
-app.get('/firebase-messaging-sw.js', (req,res)=>{
-  res.sendFile(__dirname + '/firebase-messaging-sw.js');
-});
-
 
 // retrives buslist
 app.get("/getbus", (req, res) => {
@@ -226,11 +155,9 @@ app.get("/getbus", (req, res) => {
 //updates the buslist.json file after being called in buslist.js
 app.post("/updateStatus", (req, res) => {
   let bus = req.body;
-  // Validate incoming request
   if (!bus || !bus.number || !bus.newStatus) {
     return res.status(400).json({ error: "Invalid bus data provided" });
   }
-  //console.log()
   let change = bus.newStatus;
   let time = getTime();
 
@@ -289,9 +216,6 @@ app.post("/updateStatus", (req, res) => {
       };
       // Brodcast updated data using the websockets
       broadcast(broadcastData);
-
-      //sendNotification(broadcastData);
-
       res.status(200).json({ message: "Bus status updated successfully" });
     });
     
@@ -314,8 +238,6 @@ app.post('/check-subscription', async (req, res) => {
   }
 });
 
-
-
 async function sendNotification(data) {
   if (isIOSUser(data)) {
     sendNotificationToiOS("Bus Update", `Bus #${data.number} has ${data.newStatus}`);
@@ -334,7 +256,6 @@ async function sendNotification(data) {
             }
           }));
             console.log(`✅Notification sent to ${sub.subscription.endpoint}`);
-             // Keep valid subscriptions
         } catch (err) {
             console.error("Error sending push notification:", err);
             if (err.statusCode === 410) {
@@ -384,11 +305,16 @@ async function sendNotification(data) {
     }
   }
 }
+
 function isIOSUser(data) {
   return data.device === "ios"; // Modify based on how you track users
 }
 
+<<<<<<< Updated upstream
 //broadcasts thea
+=======
+//broadcast data does not really matter, when a message is recived it updates the bustable on the client side
+>>>>>>> Stashed changes
 function broadcast(data) {
   console.log(data.newStatus)
   wss.clients.forEach((client) => {
@@ -400,14 +326,8 @@ function broadcast(data) {
       })); // Send updated data as stringified JSON!
     }
   });
-
   sendNotification(data);
 }
-
-// WebSocket handling
-
-
-
 
 // resets the buslist.json file
 function reset(condition) {
@@ -429,11 +349,9 @@ function reset(condition) {
     });
   }
 }
-reset(false);
+
+reset(false);//resets the buslist at this interval 
 setInterval(reset, 1000 * 60 * 60, false);
-
-
-//let busNum = Number(req.body.busnum);
 
 var time;
 function getTime() {
@@ -476,7 +394,7 @@ function verifyToken(req, res) {
   return false;
 }
 
-// All of these gets are called only if an authorized user calls them
+// All of these methods are called when the user has a email on the whitelist
 app.get("/reset", (req, res) => {
   //if (verifyToken(req, res)){
     reset(true);
@@ -495,7 +413,6 @@ app.get("/buslist", function (req, res) {
  //}
 });
 
-
 app.get("/buschanges", function (req, res) {
   //if (verifyToken(req, res)) 
   res.render("pages/buschanges");
@@ -507,14 +424,13 @@ app.get("/settings", function (req, res) {
   res.render("pages/settings");
   //else res.redirect('/');
 });
-
+// need to add verify token to all of these routes.
 app.get("/getemails", (req, res) => {
   fs.readFile("whitelist.json", "utf-8", (err, jsonString) => {
     let emails = JSON.parse(jsonString);
     res.send(emails)
   })
 })
-
 
 app.post("/addemail", (req, res) => {
   action_done = "Email Added";
