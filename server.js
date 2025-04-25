@@ -25,12 +25,9 @@ const vapidPublicKey = process.env.VAPID_PUBLIC_KEY;//push keys
 const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
 const {connectDB,Subscription,iOSsubscription} = require('./server/database/connection.js');//mongodb connection
 connectDB();
-<<<<<<< Updated upstream
 
 
 
-=======
->>>>>>> Stashed changes
 const fs = require("fs");
 const { ok } = require("assert");
 var crypto = require('crypto');
@@ -310,11 +307,7 @@ function isIOSUser(data) {
   return data.device === "ios"; // Modify based on how you track users
 }
 
-<<<<<<< Updated upstream
-//broadcasts thea
-=======
 //broadcast data does not really matter, when a message is recived it updates the bustable on the client side
->>>>>>> Stashed changes
 function broadcast(data) {
   console.log(data.newStatus)
   wss.clients.forEach((client) => {
