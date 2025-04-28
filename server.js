@@ -308,7 +308,7 @@ async function sendNotification(data) {
     console.log(data.number);
     console.log(data.newStatus);
     console.log(data.change);
-    if(data.number && data.newStatus && data.change == 0){//doesnt send noti for departed->not arrived
+    if(data.number && data.newStatus && data.change === 0){//doesnt send noti for departed->not arrived
       for(const sub of subscriptions){
         try{
           await webPush.sendNotification(sub.subscription, JSON.stringify({
@@ -326,8 +326,9 @@ async function sendNotification(data) {
             } 
         }
       }
+      
     }
-    else if(data.number && (data.newStatus === 'Arrived' || data.newStatus === 'Departed') && data.change != 0){
+    else if(data.number && (data.newStatus === 'Arrived' || data.newStatus === 'Departed') && data.change !== 0){
       for(const sub of subscriptions){
         try{
           await webPush.sendNotification(sub.subscription, JSON.stringify({
@@ -345,6 +346,7 @@ async function sendNotification(data) {
             }
         }
       }
+      
     }
     else {
       for(const sub of subscriptions){
@@ -364,6 +366,7 @@ async function sendNotification(data) {
             }
         }
       }
+      
     }
   }
 }
