@@ -304,7 +304,7 @@ async function sendNotification(data) {
   if (isIOSUser(data)) {
     sendNotificationToiOS("Bus Update", `Bus #${data.number} has ${data.newStatus}`);
   } else {
-    const subscriptions = await Subscription.find({ starred: { $in: [Number(data.number)] } });
+    const subscriptions = await Subscription.find({ starred: { $in: [String(data.number)] } });
 
    // const subscriptions = await Subscription.find({ starred: { $in: [data.number] } }); // Gets all subs that have this bus starred
     console.log(data.number);
