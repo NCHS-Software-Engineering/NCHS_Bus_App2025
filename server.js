@@ -304,11 +304,15 @@ async function sendNotification(data) {
   if (isIOSUser(data)) {
     sendNotificationToiOS("Bus Update", `Bus #${data.number} has ${data.newStatus}`);
   } else {
-    const subscriptions = await Subscription.find({ starred: { $in: [data.number] } }); // Gets all subs that have this bus starred
+    //const subscriptions = await Subscription.find({ starred: { $in: [data.number] } }); // Gets all subs that have this bus starred
+
+    const subscriptions = await Subscription.find({ starred: { $in: [data.number.toString()] } }); // Gets all subs that have this bus starred
+
     console.log(data.number);
     console.log(data.newStatus);
     console.log(data.change);
-    if(data.number && data.newStatus && data.change == 0){//doesnt send noti for departed->not arrived
+    if(data.number && data.newStatus && data.change === 0){//doesnt send noti for departed->not arrived
+      
       for(const sub of subscriptions){
         try{
           await webPush.sendNotification(sub.subscription, JSON.stringify({
@@ -324,10 +328,12 @@ async function sendNotification(data) {
               console.log("Removing expired subscription:", sub.subscription.endpoint);
               await Subscription.deleteOne({ "subscription.endpoint": sub.subscription.endpoint });
             } 
-        }
+        }console.log("normal sent");
       }
+      
     }
-    else if(data.number && (data.newStatus === 'Arrived' || data.newStatus === 'Departed') && data.change != 0){
+    else if(data.number && (data.newStatus === 'Arrived' || data.newStatus === 'Departed') && data.change !== 0){
+      
       for(const sub of subscriptions){
         try{
           await webPush.sendNotification(sub.subscription, JSON.stringify({
@@ -343,10 +349,11 @@ async function sendNotification(data) {
               console.log("Removing expired subscription:", sub.subscription.endpoint);
               await Subscription.deleteOne({ _id: sub._id });
             }
-        }
+        }console.log("bus change to status sent");
       }
     }
     else {
+      
       for(const sub of subscriptions){
         try{
           await webPush.sendNotification(sub.subscription, JSON.stringify({
@@ -362,8 +369,9 @@ async function sendNotification(data) {
               console.log("Removing expired subscription:", sub.subscription.endpoint);
               await Subscription.deleteOne({ _id: sub._id });
             }
-        }
+        }console.log("bus change sent");
       }
+      
     }
   }
 }
