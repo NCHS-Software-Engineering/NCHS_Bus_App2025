@@ -283,6 +283,33 @@ app.post("/updateStatus", (req, res) => {
     
   });
 });
+//updates the starred field in the database for the subscription
+app.post('/starred', async (req, res) => {
+  const subscription = req.body.subscription;
+  const starred = req.body.starred;
+  if (!subscription || !subscription.endpoint) {
+    return res.status(400).json({ error: "Invalid subscription data provided" });
+  }
+  try {
+    // Check if the subscription exists in the database
+    const existingSubscription = await Subscription.findOne({ "subscription.endpoint": subscription.endpoint });
+
+    if (existingSubscription) {
+      // Update the starred field for the existing subscription
+      existingSubscription.starred = starred;
+      await existingSubscription.save();
+      console.log("Starred status updated for:", subscription.endpoint);
+    } else {
+      console.log("Subscription not found:", subscription.endpoint);
+    }
+
+    res.status(200).json({ message: "Starred status updated" });
+  }
+  catch (error) {
+    console.error("Error updating starred status:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 app.post('/check-subscription', async (req, res) => {
   const subscription = req.body.subscription;
@@ -309,7 +336,7 @@ async function sendNotification(data) {
     console.log(data.newStatus);
     console.log(data.change);
     if(data.number && data.newStatus && data.change === 0){//doesnt send noti for departed->not arrived
-      
+      console.log("normal sent");
       for(const sub of subscriptions){
         try{
           await webPush.sendNotification(sub.subscription, JSON.stringify({
@@ -325,12 +352,12 @@ async function sendNotification(data) {
               console.log("Removing expired subscription:", sub.subscription.endpoint);
               await Subscription.deleteOne({ "subscription.endpoint": sub.subscription.endpoint });
             } 
-        }console.log("normal sent");
+        }
       }
       
     }
     else if(data.number && (data.newStatus === 'Arrived' || data.newStatus === 'Departed') && data.change !== 0){
-      
+      console.log("bus change to status sent");
       for(const sub of subscriptions){
         try{
           await webPush.sendNotification(sub.subscription, JSON.stringify({
@@ -346,11 +373,11 @@ async function sendNotification(data) {
               console.log("Removing expired subscription:", sub.subscription.endpoint);
               await Subscription.deleteOne({ _id: sub._id });
             }
-        }console.log("bus change to status sent");
+        }
       }
     }
     else {
-      
+      console.log("bus change sent");
       for(const sub of subscriptions){
         try{
           await webPush.sendNotification(sub.subscription, JSON.stringify({
@@ -366,7 +393,7 @@ async function sendNotification(data) {
               console.log("Removing expired subscription:", sub.subscription.endpoint);
               await Subscription.deleteOne({ _id: sub._id });
             }
-        }console.log("bus change sent");
+        }
       }
       
     }

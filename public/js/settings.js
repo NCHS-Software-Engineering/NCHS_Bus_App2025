@@ -38,6 +38,9 @@ function listBus() {
     }).catch(err => console.error(err));
 }
 
+function switchView(){
+    
+}
 
 function listEmails() {
     fetch('/getemails')

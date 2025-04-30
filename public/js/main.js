@@ -243,21 +243,47 @@ function getCookie(name) {
 }
 
 function updateCookie() {
-   // Convert starredBusses set to an array and then to a string
    const starredBussesArray = Array.from(starredBusses);
    const starredBussesString = JSON.stringify(starredBussesArray);
-   // Set the cookie with the name 'starredBusses' and the value as the stringified array
-   // NEW CHNAGE -- not in ORIGINAL STARRED BUSSES
    const expirationDate = new Date();
    expirationDate.setFullYear(expirationDate.getFullYear() + 10); // 10 years from now
 
    //for local host below
-   document.cookie = `starredBusses=${starredBussesString}; expires=${expirationDate.toUTCString()}; SameSite=None; Secure;`;
-   //     for dev:           document.cookie = `starredBusses=${starredBussesString}; expires=${expirationDate.toUTCString()}; SameSite=None; Secure; domain=https://bus-dev.redhawks.us/`;
+   //document.cookie = `starredBusses=${starredBussesString}; expires=${expirationDate.toUTCString()}; SameSite=None; Secure;`;
+   //for dev:           
+   document.cookie = `starredBusses=${starredBussesString}; expires=${expirationDate.toUTCString()}; SameSite=None; Secure; domain=https://bus-dev.redhawks.us/`;
 
-   //console.log('starredBusses cookie value:', starredBussesString);
+   //update database starredBusses
 
-   //console.log(starredBussesArray)
+   navigator.serviceWorker.ready.then(reg =>
+      reg.pushManager.getSubscription().then(async function (subscription) {
+        if (!subscription) {
+           console.log("✅ Not yet subscibed:", subscription);
+           return subscription;
+        }
+        
+        const response = await fetch('/vapidPublicKey');
+        const vapidPublicKey = await response.text();
+        const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+  
+        return reg.pushManager.subscribe({
+           userVisibleOnly: true,
+           applicationServerKey: convertedVapidKey
+        }).then(newSubscription => {
+           console.log("🔄 refreshing starred for this subscription:", JSON.stringify(newSubscription));
+           fetch('./starred', {
+              method: 'post',
+              headers: {
+                 'Content-type': 'application/json'
+              },
+              body: JSON.stringify({
+                 subscription: newSubscription,
+                 starred: Array.from(starredBusses) 
+              })
+           });
+        });
+     })
+  );
 }
 
 function getStarredBussesArray(starredBussesString) {
