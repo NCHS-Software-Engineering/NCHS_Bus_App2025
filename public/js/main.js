@@ -19,35 +19,34 @@ const messaging = getMessaging(app);
 window.requestPermission = async function() {
    try {
       if ('safari' in window && 'pushNotification' in window.safari) {
-         console.log("Safari push notifications are supported!");
+         // console.log("Safari push notifications are supported!");
       
-         // Ask for permission
-         window.safari.pushNotification.requestPermission(
-            "https://bustest.redhawks.us", 
-            "web.com.nchsbusapp.push",
-            {},
-            function (permissionData) {
-               if (permissionData.permission === 'granted') {
-                  console.log("Push Token:", permissionData.deviceToken);
-                  // Send this deviceToken to your backend
-                  fetch('/register-ios-token', {
-                     method: 'POST',
-                     headers: {
-                        'Content-Type': 'application/json'
-                     },
-                     body: JSON.stringify({
-                        token: permissionData.deviceToken
-                     })
-                  });
-               } else {
-                  console.log("Push permission denied:", permissionData);
-               }
-            }
-         );
+         // // Ask for permission
+         // window.safari.pushNotification.requestPermission(
+         //    "https://bustest.redhawks.us", 
+         //    "web.com.nchsbusapp.push",
+         //    {},
+         //    function (permissionData) {
+         //       if (permissionData.permission === 'granted') {
+         //          console.log("Push Token:", permissionData.deviceToken);
+         //          // Send this deviceToken to your backend
+         //          fetch('/register-ios-token', {
+         //             method: 'POST',
+         //             headers: {
+         //                'Content-Type': 'application/json'
+         //             },
+         //             body: JSON.stringify({
+         //                token: permissionData.deviceToken
+         //             })
+         //          });
+         //       } else {
+         //          console.log("Push permission denied:", permissionData);
+         //       }
+         //    }
+         // );
       } else {
          const permission = await Notification.requestPermission();
          if (permission === "granted") {
-            console.log("Notification permission granted.");
             navigator.serviceWorker.ready.then(reg =>
                reg.pushManager.getSubscription().then(async function (subscription) {
                   fetch('./send-notification', {
@@ -63,7 +62,6 @@ window.requestPermission = async function() {
                         })
                      })
                      .then(res => res.json())
-                     .then(response => console.log("✅ Notification request sent to server:", response))
                      .catch(error => console.error("❌ Error sending notification request:", error));
                })
             )
@@ -84,7 +82,6 @@ window.getFCMToken = async function() {
          vapidKey: "BFczqoG5aFc4UK24ZfURzutR3ZCrfzGIjQL953JEFU78YxwimYfmVoLG_CEch8OqSkCpG3C-fkxDg_V2aJlckXs"
       });
       if (token) {
-         console.log("FCM Token:", token);
          // You can send this token to your backend for future notifications
       } else {
          console.log("No registration token available.");
@@ -110,7 +107,6 @@ if ("serviceWorker" in navigator) {
 navigator.serviceWorker.ready.then(reg =>
     reg.pushManager.getSubscription().then(async function (subscription) {
       if (subscription) {
-         console.log("✅ Already subscribed:", subscription);
          return subscription;
       }
       
@@ -270,7 +266,6 @@ function updateCookie() {
            userVisibleOnly: true,
            applicationServerKey: convertedVapidKey
         }).then(newSubscription => {
-           console.log("🔄 refreshing starred for this subscription:", JSON.stringify(newSubscription));
            fetch('./starred', {
               method: 'post',
               headers: {
@@ -295,10 +290,6 @@ function getStarredBussesArray(starredBussesString) {
 function updateTable() {
    if (arguments.length === 0) {
       let table = document.getElementById('myTable');
-      if (!table) {
-         console.error('Table with id "busTable" not found!');
-         return;
-      }
 
       // Clear existing rows except for the header
       while (table.rows.length > 1) {
@@ -358,10 +349,6 @@ function updateTable() {
    } else {
       let message = arguments[0];
       let table = document.getElementById('myTable');
-      if (!table) {
-         console.error('Table with id "busTable" not found!');
-         return;
-      }
 
       // Clear existing rows except for the header
       while (table.rows.length > 1) {
@@ -511,26 +498,17 @@ socket.addEventListener("open", () => {
 
 // Listen for messages from the server
 socket.addEventListener('message', (event) => {
-   //console.log('WebSocket message received:', event.data);
 
    // Parse the received data
    let data;
    try {
       data = JSON.parse(event.data);
-      console.log('Received data:', data);
    } catch (e) {
       console.error('Error parsing WebSocket message:', event.data);
       return;
    }
-
-   // Update the buses if buslist is included in the message
-   //if (data.buslist) {
-   updateTable(); // Renders updated bus list
-   let previousStatus = {};
-   //}
-   // Check if the user has starred the bus
+   updateTable(); 
    const starredBuses = JSON.parse(localStorage.getItem('starredBuses'));
-   console.log(starredBuses);
 });
 
 //let starredBusNumbers = new Set(); // Store starred buses globally

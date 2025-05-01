@@ -25,9 +25,6 @@ const vapidPublicKey = process.env.VAPID_PUBLIC_KEY;//push keys
 const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
 const {connectDB,Subscription,iOSsubscription} = require('./server/database/connection.js');//mongodb connection
 connectDB();
-
-
-
 const fs = require("fs");
 const { ok } = require("assert");
 var crypto = require('crypto');
@@ -54,48 +51,49 @@ webPush.setVapidDetails(
   vapidPublicKey,
   vapidPrivateKey
 );
-const apnProvider = new apn.Provider(options);
-async function sendNotificationToiOS(title,body){
-  const tokens = await iOSsubscription.find({ starred: { $in: [body.number] } });
-  for (const token of tokens) {
-    let notification = new apn.Notification();
-    notification.alert = { title, body};
-    notification.sound = "ping.aiff";
-    notification.topic = "web.com.nchsbusapp.push";
+//ios notification provider not used yet
+// const apnProvider = new apn.Provider(options);
+// async function sendNotificationToiOS(title,body){
+//   const tokens = await iOSsubscription.find({ starred: { $in: [body.number] } });
+//   for (const token of tokens) {
+//     let notification = new apn.Notification();
+//     notification.alert = { title, body};
+//     notification.sound = "ping.aiff";
+//     notification.topic = "web.com.nchsbusapp.push";
     
-    apnProvider.send(notification, deviceToken).then(result =>{
-      console.log("Sent: ", result.sent.length);
-      console.log("Failed:", result.failed.length, result.failed);
-    });
-  }
-}
+//     apnProvider.send(notification, deviceToken).then(result =>{
+//       console.log("Sent: ", result.sent.length);
+//       console.log("Failed:", result.failed.length, result.failed);
+//     });
+//   }
+// }
 
-app.post("/register-ios-token", async (req, res) => {
-  const { token } = req.body;
+// app.post("/register-ios-token", async (req, res) => {
+//   const { token } = req.body;
 
-  if (!token) {
-    return res.status(400).json({ error: "Token is required" });
-  }
+//   if (!token) {
+//     return res.status(400).json({ error: "Token is required" });
+//   }
 
-  try {
-    // Check if the token already exists in the database
-    const existingToken = await iOSsubscription.findOne({ token });
+//   try {
+//     // Check if the token already exists in the database
+//     const existingToken = await iOSsubscription.findOne({ token });
 
-    if (!existingToken) {
-      // Add the new token to the database
-      const newToken = new iOSsubscription({ token });
-      await newToken.save();
-      console.log("New iOS token registered:", token);
-    } else {
-      console.log("iOS token already exists:", token);
-    }
+//     if (!existingToken) {
+//       // Add the new token to the database
+//       const newToken = new iOSsubscription({ token });
+//       await newToken.save();
+//       console.log("New iOS token registered:", token);
+//     } else {
+//       console.log("iOS token already exists:", token);
+//     }
 
-    res.status(200).json({ message: "iOS Token Registered" });
-  } catch (error) {
-    console.error("Error registering iOS token:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+//     res.status(200).json({ message: "iOS Token Registered" });
+//   } catch (error) {
+//     console.error("Error registering iOS token:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 
 app.post('/check-subscription', async (req, res) => {
@@ -150,7 +148,6 @@ async function storeSubscription(subscription, starred) {
 
       // Save the new subscription to the database
       await newSubscription.save();
-      console.log("New subscription added:", subscription.endpoint);
     } else {
       console.log("Subscription already exists for:", subscription.endpoint);
     }
@@ -164,7 +161,6 @@ app.post("/send-notification", async (req, res) => {
   const subscriptions = req.body.subscription;
   const payload = JSON.stringify({ notification: { title, body } });
   webPush.sendNotification(subscriptions, payload)
-      .then(() => console.log("Notification sent to:", subscriptions.endpoint))
       .catch(err => console.error("Error sending push notification:", err));
  
 
@@ -244,7 +240,6 @@ app.post("/updateStatus", (req, res) => {
 
     // Update the bus status
     let busFound = false;
-    console.log("bus change: "+ bus.newStatus);
     for (let i = 0; i < buslist.buslist.length; i++) {
       let iteratedbus = buslist.buslist[i].number;
       if (buslist.buslist[i].change != null) {
@@ -298,7 +293,6 @@ app.post('/starred', async (req, res) => {
       // Update the starred field for the existing subscription
       existingSubscription.starred = starred;
       await existingSubscription.save();
-      console.log("Starred status updated for:", subscription.endpoint);
     } else {
       console.log("Subscription not found:", subscription.endpoint);
     }
@@ -328,88 +322,70 @@ app.post('/check-subscription', async (req, res) => {
 });
 
 async function sendNotification(data) {
-  if (isIOSUser(data)) {
-    sendNotificationToiOS("Bus Update", `Bus #${data.number} has ${data.newStatus}`);
-  } else {
-    const subscriptions = await Subscription.find({ starred: { $in: [data.number] } }); // Gets all subs that have this bus starred
+  const subscriptions = await Subscription.find({ starred: { $in: [data.number] } }); // Gets all subs that have this bus starred
 
-    //const subscriptions = await Subscription.find({ starred: { $in: [data.number.toString()] } }); // Gets all subs that have this bus starred
-
-    console.log(data.number);
-    console.log(data.newStatus);
-    console.log(data.change);
-    if(data.number && data.newStatus && data.change === 0){//doesnt send noti for departed->not arrived
-      console.log("normal sent");
-      for(const sub of subscriptions){
-        try{
-          await webPush.sendNotification(sub.subscription, JSON.stringify({
-            notification: {
-              title: "Bus Update",
-              body: `Bus #${data.number} has ${data.newStatus}`,
-            }
-          }));
-            console.log(`✅Notification sent to ${sub.subscription.endpoint}`);
-        } catch (err) {
-            console.error("Error sending push notification:", err);
-            if (err.statusCode === 410) {
-              console.log("Removing expired subscription:", sub.subscription.endpoint);
-              await Subscription.deleteOne({ "subscription.endpoint": sub.subscription.endpoint });
-            } 
-        }
-      }
-      
-    }
-    else if(data.number && (data.newStatus === 'Arrived' || data.newStatus === 'Departed') && data.change !== 0){
-      console.log("bus change to status sent");
-      for(const sub of subscriptions){
-        try{
-          await webPush.sendNotification(sub.subscription, JSON.stringify({
-            notification: {
-              title: "Bus Update",
-              body: `Bus #${data.number}, which is #${data.change}, has ${data.newStatus}`,
-            }
-          }));
-            console.log(`✅Notification sent to ${sub.subscription.endpoint}`);
-        } catch (err) {
-            console.error("Error sending push notification:", err);
-            if (err.statusCode === 410) {
-              console.log("Removing expired subscription:", sub.subscription.endpoint);
-              await Subscription.deleteOne({ _id: sub._id });
-            }
-        }
+  if(data.number && data.newStatus && data.change === 0){//doesnt send noti for departed->not arrived
+    for(const sub of subscriptions){
+      try{
+        await webPush.sendNotification(sub.subscription, JSON.stringify({
+          notification: {
+            title: "Bus Update",
+            body: `Bus #${data.number} has ${data.newStatus}`,
+          }
+        }));
+      } catch (err) {
+          console.error("Error sending push notification:", err);
+          if (err.statusCode === 410) {
+            await Subscription.deleteOne({ "subscription.endpoint": sub.subscription.endpoint });
+          } 
       }
     }
-    else {
-      console.log("bus change sent");
-      for(const sub of subscriptions){
-        try{
-          await webPush.sendNotification(sub.subscription, JSON.stringify({
-            notification: {
-              title: "Bus Update",
-              body: `Bus #${data.number} has been changed to #${data.change}`,
-            }
-          }));
-            console.log(`✅Notification sent to ${sub.subscription.endpoint}`);
-        } catch (err) {
-            console.error("Error sending push notification:", err);
-            if (err.statusCode === 410) {
-              console.log("Removing expired subscription:", sub.subscription.endpoint);
-              await Subscription.deleteOne({ _id: sub._id });
-            }
-        }
+    
+  }
+  else if(data.number && (data.newStatus === 'Arrived' || data.newStatus === 'Departed') && data.change !== 0){
+    for(const sub of subscriptions){
+      try{
+        await webPush.sendNotification(sub.subscription, JSON.stringify({
+          notification: {
+            title: "Bus Update",
+            body: `Bus #${data.number}, which is #${data.change}, has ${data.newStatus}`,
+          }
+        }));
+      } catch (err) {
+          console.error("Error sending push notification:", err);
+          if (err.statusCode === 410) {
+            await Subscription.deleteOne({ _id: sub._id });
+          }
       }
-      
     }
   }
+  else {
+    for(const sub of subscriptions){
+      try{
+        await webPush.sendNotification(sub.subscription, JSON.stringify({
+          notification: {
+            title: "Bus Update",
+            body: `Bus #${data.number} has been changed to #${data.change}`,
+          }
+        }));
+      } catch (err) {
+          console.error("Error sending push notification:", err);
+          if (err.statusCode === 410) {
+            await Subscription.deleteOne({ _id: sub._id });
+          }
+      }
+    }
+    
+  }
+
 }
 
-function isIOSUser(data) {
-  return data.device === "ios"; // Modify based on how you track users
-}
+// function isIOSUser(data) {
+//   return data.device === "ios"; // Modify based on how you track users
+// }
 
 //broadcast data does not really matter, when a message is recived it updates the bustable on the client side
 function broadcast(data) {
-  console.log(data.newStatus)
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify({
