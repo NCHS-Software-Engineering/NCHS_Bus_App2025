@@ -9,13 +9,10 @@ socket.addEventListener("open", () => {
 
 // Listen for messages from the server
 socket.addEventListener('message', (event) => {
-    //console.log('WebSocket message received:', event.data);
-
     // Parse the received data
     let data;
     try {
         data = JSON.parse(event.data);
-        console.log('Received data:', data);
     } catch (e) {
         console.error('Error parsing WebSocket message:', event.data);
         return;
@@ -28,7 +25,6 @@ socket.addEventListener('message', (event) => {
     //}
         // Check if the user has starred the bus
         const starredBuses = JSON.parse(localStorage.getItem('starredBuses'));
-        console.log(starredBuses);
         if (starredBuses && starredBuses.includes(data.number)) {
             // Send notification for starred bus!
             if (Notification.permission === 'granted'){

@@ -3,12 +3,10 @@
 const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
 socket.addEventListener("open", () => {
-  console.log("Connected to WebSocket server");
 });
 
 // Listen for messages from the server
 socket.addEventListener('message', (event) => {
-    console.log('WebSocket message received:', event.data);
   
     // Parse the received data
     let data;
@@ -59,7 +57,6 @@ socket.addEventListener('message', (event) => {
             console.log('Bus status updated:', data);
         })
         .catch((error) => {
-            console.error('Error updating bus status:', error.message);
             alert(`Error updating bus status: ${error.message}`);
         });
 }
@@ -178,7 +175,6 @@ function getBusses() {
                             newStatus: "Departed",
                             change: change
                         };
-                        console.log(busdata);
                         // sends the busdata
                         fetch('/updateStatus', {
                             method: 'POST',

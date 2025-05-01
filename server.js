@@ -748,7 +748,6 @@ app.post('/updateChange', express.json(), (req, res) => {
       newStatus: bus.newStatus,
       change: bus.change
     };
-    console.log("givenbus status:" + givenbus.newStatus);
     broadcast(broadcastData);
     } 
     catch (parseError) {

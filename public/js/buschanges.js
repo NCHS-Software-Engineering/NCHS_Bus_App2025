@@ -3,12 +3,11 @@
 const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
 socket.addEventListener("open", () => {
-  console.log("Connected to WebSocket server");
 });
 
 // Listen for messages from the server
 socket.addEventListener('message', (event) => {
-    console.log('WebSocket message received:', event.data);
+    //console.log('WebSocket message received:', event.data);
   
     // Parse the received data
     let data;
@@ -59,7 +58,6 @@ function getBusses() {
                 let div = document.createElement("div");
                 div.classList.add('busObj')
                 div.classList.add('flex-fill');
-                console.log("HERE");
 
                 if(data.buslist[i].status == "Not Arrived") div.style.backgroundColor = "rgb(255, 44, 44)";
                 else if(data.buslist[i].status == "Arrived") div.style.backgroundColor = "green";
@@ -119,7 +117,6 @@ function getBusses() {
                             change: change,
                             changed: true
                         };
-                        console.log(busdata);
                         // sends the busdata
                         fetch('/updateStatus', {
                             method: 'POST',

@@ -4,7 +4,6 @@ function resize() {
 
     let loginbtn = document.getElementById('submitfield');
     let loginbox = document.getElementById('login-box');
-    console.log(loginbox.style.width)
 
 
     }
