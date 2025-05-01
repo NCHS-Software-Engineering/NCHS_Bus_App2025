@@ -101,14 +101,15 @@ tr:first-child{
 }
 
 .e-star-filled{
-    border: 1px solid;
+    border: 1.5px solid;
     color: black;
     border-radius: 5px;
     padding: 2px;
 }
 
 .e-star-filled:hover{
-    background-color: rgb(255, 241, 115);            
+    background-color: rgb(255, 241, 115); 
+    border: 1.5px solid;
 }
 
 .e-star-selected{
