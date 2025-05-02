@@ -493,6 +493,12 @@ app.get("/settings", function (req, res) {
   res.render("pages/settings");
   //else res.redirect('/');
 });
+
+app.get("/busmap",function (req, res) {
+  //if (verifyToken(req, res)) 
+  res.render("pages/busmap");
+  //else res.redirect('/');
+});
 // need to add verify token to all of these routes.
 app.get("/getemails", (req, res) => {
   fs.readFile("whitelist.json", "utf-8", (err, jsonString) => {
@@ -748,7 +754,6 @@ app.post('/updateChange', express.json(), (req, res) => {
       newStatus: bus.newStatus,
       change: bus.change
     };
-    console.log("givenbus status:" + givenbus.newStatus);
     broadcast(broadcastData);
     } 
     catch (parseError) {

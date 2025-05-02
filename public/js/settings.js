@@ -39,7 +39,13 @@ function listBus() {
 }
 
 function switchView(){
-    
+    let mode = document.getElementById("switch").checked;
+    let busmap = true;
+    if (mode){
+    }
+    else{
+
+    }
 }
 
 function listEmails() {
