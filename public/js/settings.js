@@ -2,7 +2,6 @@ function reset(){
     fetch('/reset')
     .then(response => {
         if(response.ok) {
-            console.log(response.json());
             return response.json();
         }
         }).then(data => {
@@ -24,7 +23,6 @@ function listBus() {
         }
         }).then(data => {
         if(data) {
-            console.log(data);
             let i = 0;
             while(i < data.length) {
                 let bus = document.createElement("h5"); 
@@ -72,7 +70,6 @@ function listEmails() {
 listEmails()
 
 function listBuswhitelist() {
-    console.log('hello')
     fetch('/getbus')
     .then(response => { 
         if(response.ok) {
@@ -82,7 +79,6 @@ function listBuswhitelist() {
         if(data) { // if there is data
             let i = 0;
             let busses = data.buslist;
-            console.log('busses')
             while(i < busses.length) { // busses[i]
                 let newOption = document.createElement("option");
                 newOption.value = busses[i].number;

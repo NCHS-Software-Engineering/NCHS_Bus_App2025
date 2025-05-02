@@ -19,7 +19,6 @@ const messaging = getMessaging(app);
 window.requestPermission = async function() {
    try {
       if ('safari' in window && 'pushNotification' in window.safari) {
-         // console.log("Safari push notifications are supported!");
       
          // // Ask for permission
          // window.safari.pushNotification.requestPermission(
@@ -157,7 +156,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
    // Check if cookies exist
    const starredBussesString = getCookie('starredBusses');
-   //console.log(starredBusses);
    let starredBussesArray = [];
    if (starredBussesString != undefined) {
       starredBussesArray = JSON.parse(starredBussesString)
@@ -171,15 +169,13 @@ document.addEventListener('DOMContentLoaded', function () {
          }
       }).then(data => {
          if (data) {
-            //console.log(findSmallest())
 
             let i = 1
             let busses = data.buslist;
             let table = document.getElementById('busTable');;
             let item = document.getElementById('star-selector');
             table.setAttribute('id', 'myTable'); // Set an ID for the table
-            //console.log(busses.length)
-            //console.log(starredBussesArray.length)
+
             for (var v = starredBussesArray.length - 1; v >= 0; v--) {
                while (i < busses.length + 1) { // busses[i]
 
@@ -192,10 +188,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                   if (intValue == starredBussesArray[v]) {
                      const table = row.parentNode.parentNode;
-                     //console.log(table)
-                     //console.log(starredBussesArray[v])
+
                      starredBusses.add(starredBussesArray[v])
-                     //console.log(starredBusses);
                      starredBussesArray.pop();
 
                      var element = row.cells[4].querySelector('span.starring');
@@ -405,7 +399,6 @@ window.updateStarredUI = function() {
                if (starredBussesString.has(intValue)) {
                   table.insertBefore(row, table.firstChild.nextSibling);
 
-                  //console.log('lol')
                }
 
             }
@@ -431,7 +424,6 @@ function makeTable() {
             let busses = data.buslist;
             let table = document.getElementById('busTable');
             let item = document.getElementById('star-selector');
-            //console.log("bus table:" + table);
 
             while (i < busses.length) { // busses[i]
                let row = table.insertRow(-1);
@@ -467,8 +459,7 @@ window.fetchBusses = function(){
 
 
             while (i < busses.length) { // busses[i]
-               //console.log(i);
-               //console.log("Busses.length: " + busses.length);
+
                let row = table.rows[i];
                row.cells[0].innerHTML = busses[i - 1].number;
                row.cells[1].innerHTML = busses[i - 1].change;
@@ -493,7 +484,6 @@ const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
 
 socket.addEventListener("open", () => {
-   //console.log("Connected to WebSocket server");
 });
 
 // Listen for messages from the server
@@ -520,16 +510,12 @@ var smallestBus = 0;
 function starred() { //add isStarred
    findSmallest();
    findHighest();
-   //console.log(starredBusses + "**************")
    const buttons = document.querySelectorAll('.starring');
    const clickedButton = event.target;
-   //console.log(clickedButton)
    const row = clickedButton.parentNode.parentNode; // Get the row associated with the clicked button
-   //console.log(row)
    var initelement = row.cells[0]
    var intValue = parseInt(initelement.textContent.trim(), 10);
    const table = row.parentNode; // Get the table element
-   //console.log(intValue)
    let noOtherStars = false;
 
 
@@ -569,29 +555,21 @@ function starred() { //add isStarred
             let rowint = table.rows[v];
             var initelement1 = rowint.cells[0];
             var intValue1 = parseInt(initelement1.textContent.trim(), 10);
-            //console.log("(((((((((" + intValue1)
          }
 
          findSmallest()
-
-         //console.log(intValue1)
-         //console.log(intValue)
-         //console.log(smallestBus)
-         //console.log( parseInt(table.rows[v+1].cells[0].textContent.trim(), 10)) // === undefined)
 
          if (intValue === smallestBus) {
             check = true;
          } else if (intValue === highestBus) {
             check = true;
          } else if (!(starredBusses.has(intValue1)) || isNaN(parseInt(table.rows[v + 1].cells[0].textContent.trim(), 10))) {
-            //console.log(parseInt(table.rows[v+1].cells[0].textContent.trim(), 10))
             let rowint1 = table.rows[v + 1];
             var initelement2 = rowint1.cells[0];
             var intValue2 = parseInt(initelement2.textContent.trim(), 10);
 
             if (intValue1 < intValue && intValue < intValue2) {
                check = true;
-               //console.log(intValue1);
             }
             //  v++;
 
@@ -605,12 +583,10 @@ function starred() { //add isStarred
       }
 
       const rowReference = table.rows[v];
-      //console.log(rowReference)
 
       starredBusses.delete(intValue)
       updateCookie();
-      //console.log()
-      //table.insertBefore(row, rowReference.nextSibling);
+
 
       if (noOtherStars || intValue == highestBus) {
          table.appendChild(row);
@@ -626,8 +602,6 @@ function starred() { //add isStarred
 
       element.classList.remove("e-star-selected");
 
-      // console.log(location.reload())
-      //location.reload();
 
    }
 
@@ -678,7 +652,6 @@ function findSmallest() {
       }).then(data => {
          if (data) { // if there is data
             smallestBus = data.buslist[0].number;
-            //console.log(smallestBus)
 
          }
       }).catch(err => console.error(err));
