@@ -36,15 +36,20 @@ function listBus() {
     }).catch(err => console.error(err));
 }
 
-function switchView(){
-    let mode = document.getElementById("switch").checked;
-    let busmap = true;
-    if (mode){
-    }
-    else{
+let isBusMapEnabled = true; // This can be dynamically set based on your logic
 
+// Set the value of the switch based on the variable
+document.addEventListener("DOMContentLoaded", () => {
+    const modeSwitch = document.getElementById("modeSwitch");
+    if (modeSwitch) {
+        modeSwitch.checked = isBusMapEnabled; // Set the checkbox state
     }
-}
+});
+
+document.getElementById("modeSwitch").addEventListener("change", (event) => {
+    isBusMapEnabled = event.target.checked; // Update the variable
+    console.log("Switch state:", isBusMapEnabled);
+});
 
 function listEmails() {
     fetch('/getemails')

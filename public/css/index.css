@@ -241,7 +241,7 @@ tr:hover {
     }
 
     #navbar {
-        height: 12vh; /* shrink slightly if needed for more vertical space */
+        height: 6vh; /* shrink slightly if needed for more vertical space */
     }
 
     .popup {
