@@ -48,7 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.getElementById("modeSwitch").addEventListener("change", (event) => {
     isBusMapEnabled = event.target.checked; // Update the variable
-    console.log("Switch state:", isBusMapEnabled);
 });
 
 function listEmails() {
@@ -78,7 +77,7 @@ function listBuswhitelist() {
     fetch('/getbus')
     .then(response => { 
         if(response.ok) {
-            return response.json(); // not important
+            return response.json();
         }
     }).then(data => {
         if(data) { // if there is data

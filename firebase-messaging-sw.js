@@ -20,7 +20,6 @@ self.addEventListener('install', function(event){
 self.addEventListener("push", function(event) {
 
   if (!event.data) {
-    console.warn("❌ Push event received but no data.");
     return;
   }
 

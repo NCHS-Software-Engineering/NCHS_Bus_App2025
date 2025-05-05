@@ -4,7 +4,6 @@ const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
 
 socket.addEventListener("open", () => {
-//console.log("Connected to WebSocket server");
 });
 
 // Listen for messages from the server
@@ -19,10 +18,8 @@ socket.addEventListener('message', (event) => {
     }
 
     // Update the buses if buslist is included in the message
-    //if (data.buslist) {
     updateTable(); // Renders updated bus list
     let previousStatus = {};
-    //}
         // Check if the user has starred the bus
         const starredBuses = JSON.parse(localStorage.getItem('starredBuses'));
         if (starredBuses && starredBuses.includes(data.number)) {

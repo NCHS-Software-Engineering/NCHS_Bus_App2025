@@ -82,7 +82,7 @@ Here’s the different parts
 - Uses firebase-admin out of node modules
 - How it works generally:
     - In index.js the user is prompted with a pop-up for notification permissions. When allowed they are added to the subscriptions file. When a notification is pushed, all subscriptions are sent a notification, then the firebase-messaging-sw.js service worker shows the notification on the device.
-    - Notifications are now implemented on Android devices and work in the background as long as permissions are a yes.
+    - Notifications are now implemented on Android devices and work in the background as long as permissions are a "yes."
  
 ## The Website
 - The admin side now features better-balanced buttons and displays animations to improve user feedback
@@ -106,3 +106,8 @@ Here’s the different parts
 - A power bank of some kind will likely be needed along with the Pi’s unless our school buses have power outlets in them
 - May want students to have to sign into their google account to access the bus tracking data for security reasons
 - If implementation goes well, this could be brought to the entire district 203 for implementation at other schools
+
+## Different Bus-Setup
+- 
+- How it works:
+    - 
