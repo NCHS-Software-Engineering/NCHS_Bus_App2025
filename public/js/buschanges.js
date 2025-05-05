@@ -24,7 +24,22 @@ socket.addEventListener('message', (event) => {
       location.reload();
     }
   });
-  
+
+document.addEventListener("DOMContentLoaded", () => {
+    const modeSwitch = document.getElementById("modeSwitch");
+    fetch('/getSwitchState')
+    .then(response => {
+        if(response.ok) {
+            return response.json();
+        }
+    }).then(data => {
+        if(data) {
+            isBusMapEnabled = data.state; // Update the variable based on server response    
+            modeSwitch.checked = isBusMapEnabled; 
+        }
+    }).catch(err => console.error(err));
+    
+});
 
 function viewBusEdit() {
     let viewTab = document.getElementById('viewBusses');

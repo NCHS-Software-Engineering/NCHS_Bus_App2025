@@ -36,19 +36,43 @@ function listBus() {
     }).catch(err => console.error(err));
 }
 
-let isBusMapEnabled = true; // This can be dynamically set based on your logic
+let isBusMapEnabled = false; // This can be dynamically set based on your logic
 
 // Set the value of the switch based on the variable
 document.addEventListener("DOMContentLoaded", () => {
     const modeSwitch = document.getElementById("modeSwitch");
-    if (modeSwitch) {
-        modeSwitch.checked = isBusMapEnabled; // Set the checkbox state
-    }
+    fetch('/getSwitchState')
+    .then(response => {
+        if(response.ok) {
+            return response.json();
+        }
+    }).then(data => {
+        if(data) {
+            isBusMapEnabled = data.state; // Update the variable based on server response    
+            modeSwitch.checked = isBusMapEnabled; 
+        }
+        if(isBusMapEnabled) {
+            busNavButton.setAttribute("onclick", "window.location.href='/busmap'");
+            busNavPicture.setAttribute("src", "/public/images/busmap.png"); 
+        }
+        else{
+            busNavButton.setAttribute("onclick", "window.location.href='/buslist'");
+            busNavPicture.setAttribute("src", "/public/images/buslist.png"); 
+        }
+    }).catch(err => console.error(err));
+    
 });
 
 document.getElementById("modeSwitch").addEventListener("change", (event) => {
-    isBusMapEnabled = event.target.checked; // Update the variable
-    console.log("Switch state:", isBusMapEnabled);
+    fetch('/set-switch-state', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ state: isBusMapEnabled }) // Send the updated state to the server
+    });
+    const modeSwitch = document.getElementById("modeSwitch");
+    modeSwitch.checked = isBusMapEndabled;
 });
 
 function listEmails() {

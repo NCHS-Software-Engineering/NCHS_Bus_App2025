@@ -38,6 +38,7 @@ const privateKey = fs.readFileSync('./BusApp_947RQLGJMG.p8');
 const keyID= process.env.IOS_KEY_ID;//ios keys
 const teamID = process.env.IOS_TEAM_ID;
 const apn = require("apn");//IOS push provider
+const { DataExchange } = require("aws-sdk");
 const options = {
     token: {
       key: privateKey, 
@@ -721,6 +722,57 @@ app.post("/updateStatusTime", (req, res) => {
     });
   });
 });
+
+app.get('/getSwitchState', (req, res) => {
+
+  fs.readFile("switch.json", "utf-8", (err, jsonString) => {
+    if (err) {
+      console.error("Error reading switch.json:", err);
+      return res.status(500).json({ error: "Error reading switch state" });
+    }
+
+    try {
+      const data = JSON.parse(jsonString);
+      res.status(200).json(data);
+    } catch (parseError) {
+      console.error("Error parsing switch.json:", parseError);
+      res.status(500).json({ error: "Invalid JSON in switch state file" });
+    }
+  });
+});
+
+app.post('/set-switch-state', (req, res) => {
+
+  // Read the current state from the file
+  fs.readFile("switch.json", "utf-8", (err, jsonString) => {
+    if (err) {
+      console.error("Error reading switch.json:", err);
+      return res.status(500).json({ error: "Error reading switch state" });
+    }
+
+    try {
+      // Parse the current state
+      let data = JSON.parse(jsonString);
+
+      // Toggle the value (true -> false or false -> true)
+      data.state = !data.state;
+
+      // Write the updated state back to the file
+      fs.writeFile("switch.json", JSON.stringify(data), (err) => {
+        if (err) {
+          console.error("Error writing to switch.json:", err);
+          return res.status(500).json({ error: "Error updating switch state" });
+        }
+        res.status(200).json({ message: "Switch state updated", state: data.state });
+      });
+    } catch (parseError) {
+      console.error("Error parsing switch.json:", parseError);
+      return res.status(500).json({ error: "Invalid JSON in switch state file" });
+    }
+  });
+});
+
+
 
 
 app.post('/updateChange', express.json(), (req, res) => {

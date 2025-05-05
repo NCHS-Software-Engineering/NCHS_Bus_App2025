@@ -1,0 +1,473 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    background: black;
+}
+
+#mapwindow {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    overflow: hidden;
+    touch-action: none;
+}
+
+#map-container {
+    position: absolute;
+    transform-origin: center center;
+}
+
+#map {
+    display: block;
+    user-select: none;
+    pointer-events: none;
+    max-width: none;
+    max-height: none;
+}
+
+/* Style for the carousel container */
+#carousel {
+    position: absolute;
+    height: 100vh;
+    width: 20vw;
+    left: 80vw;
+    overflow-y: auto; /* Make the carousel scrollable */
+    padding: 10px;
+    box-sizing: border-box;
+
+    background: rgba( 255, 255, 255, 0.25 );
+    box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+    border: 1px solid rgba( 255, 255, 255, 0.18 );
+}
+
+/* Style for individual bus cards */
+.bus-card {
+    background: rgba( 255, 255, 255, 0.6 );
+    box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+    border-radius: 10px;
+    border: 1px solid rgba( 255, 255, 255, 0.18 );
+
+    padding: 20px;
+    margin-bottom: 10px;
+    font-size: 25px;
+    color: #333;
+}
+
+/* Highlight the selected bus card */
+.bus-card.selected {
+  border: 2px solid #007bff;
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.bus-card .bus-number {
+    margin-bottom: 10px;
+}
+
+.bus-card .replacement-bus {
+    font-size: 20px;
+    color: #555;
+}
+
+#bus-container{
+    position: absolute;
+    top: 55%;
+    left: 40%;
+    rotate: -89deg;
+}
+
+.bus {
+    position: absolute;
+    width: 16px;
+    height: 78px;
+    background-color: #ffd800;
+    border-radius: 5px;
+}
+
+/* Style for the buffer zones around yellow bus divs */
+.bus-buffer {
+  background-color: transparent;
+  border: 2px dashed transparent;
+  pointer-events: all; /* Ensure the buffer is clickable */
+  transition: border-color 0.3s, background-color 0.3s;
+}
+
+/* Highlight the buffer zones when a bus is selected */
+.bus-buffer.highlight {
+  border-color: #007bff;
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+#A1 {
+    top: 10px;
+    right: -358px;
+    rotate: 62deg;
+}
+
+#A2 {
+    top: 38px;
+    left: 335px;
+    rotate: 62deg;
+}
+
+#B1 {
+    top: 55px;
+    right: -273px;
+    rotate: 62deg;
+}
+
+#B2 {
+    top: 83px;
+    left: 250px;
+    rotate: 62deg;
+}
+
+#C1 {
+    top: 103px;
+    right: -185px;
+    rotate: 59deg;
+}
+
+#C2{
+    top: 132px;
+    left: 166px;
+    rotate: 55deg;
+}
+
+#D1{
+    top: 170px;
+    right: -109px;
+    rotate: 35deg;
+}
+
+#D2{
+    top: 205px;
+    left: 106px;
+    rotate: 28deg;
+}
+
+#E1{
+    top: 272px;
+    right: -71px;
+    rotate: 6deg;
+}
+
+#E2{
+    top: 298px;
+    left: 84px;
+}
+
+#F1{
+    top: 375px;
+    right: -68px;
+}
+
+#F2{
+    top: 395px; 
+    left: 84px;
+}
+
+#G1{
+    top: 472px;
+    right: -68px;
+}
+
+#G2{
+    top: 492px; 
+    left: 84px;
+}
+
+#H1{
+    top: 569px;
+    right: -68px;
+}
+
+#H2{
+    top: 589px; 
+    left: 84px;
+}
+
+#I1{
+    top: 665.9px;
+    right: -68px;
+}
+
+#I2{
+    top: 686px; 
+    left: 84px;
+}
+
+#J1{
+    top: 763px;
+    right: -68px;
+}
+
+#J2{
+    top: 783px; 
+    left: 84px;
+}
+
+#K{
+    top: 880px;
+    left: 84px;
+}
+
+#L{
+    top: 977px;
+    left: 87px;
+    rotate: -6deg;
+}
+
+#M{
+    top: 1060px;
+    left: 120px;
+    rotate: -35deg;
+}
+
+#N{
+    top: 1128px;
+    left: 185px;
+    rotate: -43deg;
+}
+
+#O{
+    top: 1207px;
+    left: 202px;
+    rotate: 22deg;
+}
+
+#P{
+    top: 1258px;
+    left: 134px;
+    rotate: 87deg;
+}
+
+#Q{
+    top: 1212px;
+    right: -81px;
+    rotate: -20deg;
+}
+
+#R{
+    top: 1119px;
+    right: -68px;
+}
+
+#S{
+    top: 1020px;
+    right: -68px;
+}
+
+#overlaybar{
+    position: absolute;
+    background: rgba( 255, 255, 255, 0.05 );
+    backdrop-filter: blur( 1px );
+    -webkit-backdrop-filter: blur( 1px );
+    border-radius: 10px;
+    border: 1px solid rgba( 255, 255, 255, 0.18 );
+    margin: 20px;
+}
+
+.navbuttons {
+    background-color: white;
+    border: none;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    height: 45px;
+    width: 45px;
+}
+
+.navbuttons:hover {
+    background-color: rgb(199, 199, 199);
+}
+
+#cancelbutton {
+    background-color: rgb(255, 44, 44);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+#savebutton {
+    background-color: rgb(0, 148, 37);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+#cancelbutton:hover {
+    background-color: rgb(168, 29, 29);
+}
+
+#savebutton:hover {
+    background-color: rgb(2, 92, 25);
+}
+
+#overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999; /* Below modal */
+}
+
+#settingsModal {
+    display: none;
+    position: fixed;
+    left: 5vw;
+    top: 5vh;
+    height: 84vh;
+    width: 80vw;
+    max-width: 600px;
+    background: white;
+    border-radius: 10px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    z-index: 1000;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    background: rgb(255, 44, 44);
+    color: white;
+    padding: 12px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.modal-footer {
+    background: #f0f0f0;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-shrink: 0;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    border-top: 1px solid #ccc;
+}
+
+.modal-content {
+    padding: 20px;
+    flex-grow: 1;
+    padding: 15px;
+    min-height: 0;
+}
+    
+
+.bus-list label {
+    display: block;
+    margin: 0.5rem 0;
+    cursor: pointer;
+}
+
+input[type="checkbox"] {
+    margin-right: 0.5rem;
+}
+
+.modal-buttons {
+    text-align: center;
+    margin-top: 1.2rem;
+}
+
+.modal-buttons button {
+    margin: 0 0.5rem;
+}
+
+#overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+#busList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    font-family: sans-serif;
+    font-size: 16px;
+}
+
+.bus-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8f8f8;
+    padding: 6px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+/* Ultra-minimalist scrollbar */
+::-webkit-scrollbar {
+    width: 0px;
+    background: none;
+}
+
+.e-star-filled{
+    border: 1px solid;
+    color: black;
+    border-radius: 5px;
+    padding: 2px 6px 4px 6px;
+    border: 1.5px solid;
+    margin-right: 6px;
+}
+
+.e-star-filled:hover{
+    background-color: rgb(255, 241, 115);
+}
+
+.e-star-selected{
+    background-color: rgb(251, 230, 42);
+}
+
+/* Style for the delete button */
+.delete-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background-color: rgba(255, 0, 0, 0.9);
+  color: white;
+  display: flex;
+  align-items: center;
+  padding-bottom: 3px;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+  font-size: 18px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.delete-button:hover {
+  background-color: rgba(255, 0, 0, 1);
+  transform: translate(-50%, -50%) scale(1.1);
+}
