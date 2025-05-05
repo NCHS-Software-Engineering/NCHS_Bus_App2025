@@ -31,22 +31,30 @@ var crypto = require('crypto');
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 app.use(express.static("public"));
-app.get("/", function (req, res) {res.render("pages/index");});//renders the bus table
+
+app.get("/", function (req, res) {
+  const mode = getSwitchState(); // Dynamically fetch the current switch state
+  if (mode) {
+    res.render("pages/busmap"); // Render the bus map page if the switch is enabled
+  } else {
+    res.render("pages/index"); // Render the bus table page if the switch is disabled
+  }
+});
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ server });
-const privateKey = fs.readFileSync('./BusApp_947RQLGJMG.p8');
-const keyID= process.env.IOS_KEY_ID;//ios keys
-const teamID = process.env.IOS_TEAM_ID;
-const apn = require("apn");//IOS push provider
-const { DataExchange } = require("aws-sdk");
-const options = {
-    token: {
-      key: privateKey, 
-      keyId: keyID,
-      teamId: teamID
-    },
-    production: false
-}
+// const privateKey = fs.readFileSync('./BusApp_947RQLGJMG.p8');
+// const keyID= process.env.IOS_KEY_ID;//ios keys
+// const teamID = process.env.IOS_TEAM_ID;
+// const apn = require("apn");//IOS push provider
+// const { DataExchange } = require("aws-sdk");
+// const options = {
+//     token: {
+//       key: privateKey, 
+//       keyId: keyID,
+//       teamId: teamID
+//     },
+//     production: false
+// }
 webPush.setVapidDetails(
   "https://bustest.redhawks.us/",
   vapidPublicKey,
@@ -465,19 +473,10 @@ function verifyToken(req, res) {
 }
 
 // All of these methods are called when the user has a email on the whitelist
-app.get("/reset", (req, res) => {
-  //if (verifyToken(req, res)){
-    reset(true);
-    return res.render("pages/buslist");
-  //}
-  //else{
-   // return res.redirect('/');
-  //}
-});
 
 app.get("/buslist", function (req, res) {
  //if (verifyToken(req, res)) {
-    return res.render("pages/buslist");
+    res.render("pages/admin/buslist");
  // } else {
    //return res.redirect("/");
  //}
@@ -485,19 +484,19 @@ app.get("/buslist", function (req, res) {
 
 app.get("/buschanges", function (req, res) {
   //if (verifyToken(req, res)) 
-  res.render("pages/buschanges");
+  res.render("pages/admin/buschanges");
   //else res.redirect('/');
 });
 
 app.get("/settings", function (req, res) {
   //if (verifyToken(req, res))
-  res.render("pages/settings");
+  res.render("pages/admin/settings");
   //else res.redirect('/');
 });
 
-app.get("/busmap",function (req, res) {
+app.get("/busmapadmin",function (req, res) {
   //if (verifyToken(req, res)) 
-  res.render("pages/busmap");
+  res.render("pages/admin/busmapadmin");
   //else res.redirect('/');
 });
 // need to add verify token to all of these routes.
@@ -723,6 +722,17 @@ app.post("/updateStatusTime", (req, res) => {
   });
 });
 
+
+app.get('/getMap', (req, res) => {
+  let busmap = JSON.parse(fs.readFileSync("busInfo.json", "utf-8"));
+  res.send(busmap);
+});
+
+function getSwitchState() {
+  let switchState = JSON.parse(fs.readFileSync("switch.json", "utf-8"));
+  console.log(switchState.state);
+  return switchState.state;
+}
 app.get('/getSwitchState', (req, res) => {
 
   fs.readFile("switch.json", "utf-8", (err, jsonString) => {
@@ -753,11 +763,7 @@ app.post('/set-switch-state', (req, res) => {
     try {
       // Parse the current state
       let data = JSON.parse(jsonString);
-
-      // Toggle the value (true -> false or false -> true)
-      data.state = !data.state;
-
-      // Write the updated state back to the file
+      data.state = !data.state; 
       fs.writeFile("switch.json", JSON.stringify(data), (err) => {
         if (err) {
           console.error("Error writing to switch.json:", err);

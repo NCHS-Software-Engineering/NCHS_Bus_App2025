@@ -5,6 +5,28 @@ const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 socket.addEventListener("open", () => {
 });
 
+document.addEventListener("DOMContentLoaded", async () => {
+    const busNavButton = document.getElementById("busNavButton");
+    const busNavPicture = document.getElementById("BusNavPicture");
+
+    try {
+        // Fetch the state synchronously
+        const response = await fetch('/getSwitchState');
+        if (response.ok) {
+            const data = await response.json();
+            if (data.state) {
+                busNavButton.setAttribute("onclick", "window.location.href='/busmapadmin'");
+                busNavPicture.setAttribute("src", "/public/images/busmap.png");
+            } else {
+                busNavButton.setAttribute("onclick", "window.location.href='/buslist'");
+                busNavPicture.setAttribute("src", "/public/images/buslist.png");
+            }
+        }
+    } catch (err) {
+        console.error("Error fetching switch state:", err);
+    }
+});
+
 // Listen for messages from the server
 socket.addEventListener('message', (event) => {
     //console.log('WebSocket message received:', event.data);

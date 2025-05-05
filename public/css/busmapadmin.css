@@ -28,6 +28,53 @@ body {
     max-height: none;
 }
 
+/* Style for the carousel container */
+#carousel {
+    position: absolute;
+    height: 100vh;
+    width: 20vw;
+    left: 80vw;
+    overflow-y: auto; /* Make the carousel scrollable */
+    padding: 10px;
+    box-sizing: border-box;
+
+    background: rgba( 255, 255, 255, 0.25 );
+    box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+    border: 1px solid rgba( 255, 255, 255, 0.18 );
+}
+
+/* Style for individual bus cards */
+.bus-card {
+    background: rgba( 255, 255, 255, 0.6 );
+    box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+    border-radius: 10px;
+    border: 1px solid rgba( 255, 255, 255, 0.18 );
+
+    padding: 20px;
+    margin-bottom: 10px;
+    font-size: 25px;
+    color: #333;
+}
+
+/* Highlight the selected bus card */
+.bus-card.selected {
+  border: 2px solid #007bff;
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.bus-card .bus-number {
+    margin-bottom: 10px;
+}
+
+.bus-card .replacement-bus {
+    font-size: 20px;
+    color: #555;
+}
+
 #bus-container{
     position: absolute;
     top: 55%;
@@ -41,6 +88,20 @@ body {
     height: 78px;
     background-color: #ffd800;
     border-radius: 5px;
+}
+
+/* Style for the buffer zones around yellow bus divs */
+.bus-buffer {
+  background-color: transparent;
+  border: 2px dashed transparent;
+  pointer-events: all; /* Ensure the buffer is clickable */
+  transition: border-color 0.3s, background-color 0.3s;
+}
+
+/* Highlight the buffer zones when a bus is selected */
+.bus-buffer.highlight {
+  border-color: #007bff;
+  background-color: rgba(0, 123, 255, 0.1);
 }
 
 #A1 {
@@ -382,4 +443,31 @@ input[type="checkbox"] {
 
 .e-star-selected{
     background-color: rgb(251, 230, 42);
+}
+
+/* Style for the delete button */
+.delete-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background-color: rgba(255, 0, 0, 0.9);
+  color: white;
+  display: flex;
+  align-items: center;
+  padding-bottom: 3px;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+  font-size: 18px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.delete-button:hover {
+  background-color: rgba(255, 0, 0, 1);
+  transform: translate(-50%, -50%) scale(1.1);
 }

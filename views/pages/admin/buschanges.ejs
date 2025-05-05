@@ -18,7 +18,7 @@
 
     <body>
         <div id = "navbar">
-            <button onclick = "window.location.href = '/buslist'"><image src = "/images/buslist.png"></image></button> <!--Redirects to Bus List-->
+            <button id="busNavButton" onclick = "window.location.href = '/buslist'"><image id="BusNavPicture" src = "/images/buslist.png"></image></button> <!--Redirects to Bus List-->
             <button onclick = "window.location.href = '/buschanges'"><image src = "/images/buschange.png"></image></button> <!--Redirects to Bus Changes-->
             <button onclick = "window.location.href = '/settings'" id = "active"><image src = "/images/settings.png"></image></button> <!--Redirects to Settings-->
             <button onclick = "window.location.replace('https://nchsbusapp.org')"><image src = "/images/exit.png"></image></button> <!--Exits Admin Panel-->
@@ -28,5 +28,5 @@
         </div>
     </body>
 
-    <script src="/js/buschanges.js"></script>
+    <script src="/js/admin/buschanges.js"></script>
 </html>

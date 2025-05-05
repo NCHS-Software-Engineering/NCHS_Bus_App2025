@@ -61,6 +61,28 @@ socket.addEventListener('message', (event) => {
         });
 }
 
+document.addEventListener("DOMContentLoaded", async () => {
+    const busNavButton = document.getElementById("busNavButton");
+    const busNavPicture = document.getElementById("BusNavPicture");
+
+    try {
+        // Fetch the state synchronously
+        const response = await fetch('/getSwitchState');
+        if (response.ok) {
+            const data = await response.json();
+            if (data.state) {
+                busNavButton.setAttribute("onclick", "window.location.href='/busmap'");
+                busNavPicture.setAttribute("src", "/public/images/busmap.png");
+            } else {
+                busNavButton.setAttribute("onclick", "window.location.href='/buslist'");
+                busNavPicture.setAttribute("src", "/public/images/buslist.png");
+            }
+        }
+    } catch (err) {
+        console.error("Error fetching switch state:", err);
+    }
+});
+
 
 function newBtn() {
     let div = document.createElement("div");

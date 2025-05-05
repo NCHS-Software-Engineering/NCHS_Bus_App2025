@@ -47,6 +47,9 @@ socket.addEventListener('message', (event) => {
         });
 
 //let starredBusNumbers = new Set(); // Store starred buses globally
+
+
+
 function updateTable() {
     let table = document.getElementById('myTable');
     if (!table) {

@@ -1,44 +1,43 @@
+closeModal();
 const mapContainer = document.getElementById('map-container');
 const mapWindow = document.getElementById('mapwindow');
 
-let scale = 0.50;
+let scale = 0.45;
 let rotation = 89;
 let translate = { x: 0, y: 0 };
 
-let availbuses = {12: 25, 25: null, 17: null, 32: null, 102: null, 87: 103, 52: null, 69: 80, 45: 60, 22: null, 67: null, 73: 84, 91: 115, 74: null, 53: 70, 38: null, 11: 29, 64: null, 81: 97, 26: null, 83: null, 60: null, 95: null, 79: null, 19: 33, 50: null};
-
-
-// Bus information: [destination, replacement, left/right]
+/// list = {"Pos" : ["BusNum", "BusReplace", "Star?", "left?"]}
+// Only BusNum and BusReplace should be taken externally. Star and Left should never be modified.
 let busInfo = {
-  "A1": [null, null, true],
-  "A2": [null, null, false],
-  "B1": [null, null, true],
-  "B2": [null, null, false],
-  "C1": [null, null, true],
-  "C2": [null, null, false],
-  "D1": [null, null, true],
-  "D2": [null, null, false],
-  "E1": [null, null, true],
-  "E2": [null, null, false],
-  "F1": [null, null, true],
-  "F2": [null, null, false],
-  "G1": [null, null, true],
-  "G2": [null, null, false],
-  "H1": [null, null, true],
-  "H2": [null, null, false],
-  "I1": [null, null, true],
-  "I2": [null, null, false],
-  "J1": [null, null, true],
-  "J2": [null, null, false],
-  "K": [null, null, false],
-  "L": [null, null, false],
-  "M": [null, null, false],
-  "N": [null, null, false],
-  "O": [null, null, false],
-  "P": [null, null, false],
-  "Q": [null, null, true],
-  "R": [null, null, true],
-  "S": [null, null, true]
+  "A1": [12, 25, false, true],
+  "A2": [25, null, false, false],
+  "B1": [17, null, null, true],
+  "B2": [32, null, true, false],
+  "C1": [102, null, false, true],
+  "C2": [87, 103, true, false],
+  "D1": [52, null, null, true],
+  "D2": [69, 80, true, false],
+  "E1": [45, 60, true, true],
+  "E2": [22, null, false, false],
+  "F1": [67, null, true, true],
+  "F2": [73, 84, null, false],
+  "G1": [91, 115, false, true],
+  "G2": [74, null, true, false],
+  "H1": [53, 70, true, true],
+  "H2": [38, null, false, false],
+  "I1": [11, 29, true, true],
+  "I2": [64, null, null, false],
+  "J1": [81, 97, false, true],
+  "J2": [26, null, false, false],
+  "K": [83, 105, null, false],
+  "L": [60, null, true, false],
+  "M": [95, 110, false, false],
+  "N": [79, null, null, false],
+  "O": [19, 33, true, false],
+  "P": [50, null, false, false],
+  "Q": [null, null, null, null],
+  "R": [null, null, null, null],
+  "S": [null, null, null, null]
 }
 
 let pointers = new Map();
@@ -49,7 +48,6 @@ let lastTouchAngle = null;
 let isMultiTouch = false;
 let isDragging = false;
 let lastDragPos = { x: 0, y: 0 };
-let selectmode = false
 
 mapContainer.style.transformOrigin = '0 0';
 
@@ -233,12 +231,28 @@ window.addEventListener('load', () => {
   applyTransform();
 });
 
+var onlyStars = false;
+
+function starToggle(){
+  onlyStars = !onlyStars
+  busDisplay();
+}
+
 function busDisplay(rotation, zoom){
   for (const key in busInfo) {
     if (busInfo.hasOwnProperty(key)) { // Ensure it's not an inherited property
       const value = busInfo[key];
-      infoBox(key, value, rotation, zoom);
-    
+      if (value[2] === false && onlyStars === true){
+        document.getElementById(key).style.opacity = "0.2";
+      } else {
+        document.getElementById(key).style.opacity = "1"
+      }
+      if (value[0] === null){
+        document.getElementById(key).style.opacity = "0";
+      }
+      else{
+        infoBox(key, value, rotation, zoom);
+      }
     }
   }
 }
@@ -262,14 +276,9 @@ function infoBox(key, value, rotation, zoom) {
     busEl.appendChild(info);
   }
 
-  if (value[0] == null) {
-    info.style.display = 'none';
-  } else {
-    info.style.display = ''; // <-- FIX: always show when bus assigned
-    info.textContent = value[0];
-    if (value[1] !== null) {
-      info.textContent += " 🠒 " + value[1];
-    }
+  info.textContent = value[0];
+  if (value[1] !== null) {
+    info.textContent += " 🠒 " + value[1];
   }
 
   // Base styles
@@ -281,11 +290,11 @@ function infoBox(key, value, rotation, zoom) {
   info.style.fontSize = (zoom + 5) + 'px';
   info.style.pointerEvents = 'none';
   info.style.border = '1px solid #888';
-  if (value[0] == null){
-    info.style.display = 'none';
+  if (value[2] === false && onlyStars === true){
+    info.style.background = 'rgba(255,255,255,0.2)';
   } else {
     info.style.background = 'rgba(255,255,255,0.8)';
-  } 
+  }
 
   parentrotate = parseInt(window.getComputedStyle(busEl).getPropertyValue("rotate"));
   if (isNaN(parentrotate)) parentrotate = 0;
@@ -295,192 +304,84 @@ function infoBox(key, value, rotation, zoom) {
   else refX = Math.abs(rotation-89);
   refX = Math.round(refX/1.8);
 
+
   // Horizontal placement and rotation
-  if (value[2]) { // Left
+  if (value[3]) { // Left
     info.style.left = '-12px';
     info.style.right = 'auto';
     info.style.transform = `translateY(-50%) translateX(-100%) rotate(${-rotation}deg)`;
-    info.style.transformOrigin = `right center`;
+    info.style.transformOrigin = `center center`;
   } else { // Right
     info.style.right = '-12px';
     info.style.left = 'auto';
     info.style.transform = `translateY(-${refX}%) translateX(100%) rotate(${-rotation}deg)`;
-    info.style.transformOrigin = `left center`;
+    info.style.transformOrigin = `center center`;
   }
 
 }
 
-let selectedBus = null; // Track the currently selected bus
+function openModal() {
+  renderBusList();
+  document.getElementById('settingsModal').style.display = 'block';
+  document.getElementById('overlay').style.display = 'block';
+}
 
-// Sort the carousel by numerical order
-const sortedBuses = Object.keys(availbuses).sort((a, b) => parseInt(a) - parseInt(b));
+function closeModal() {
+  document.getElementById('settingsModal').style.display = 'none';
+  document.getElementById('overlay').style.display = 'none';
+}
 
-// Populate the carousel with sorted buses
-sortedBuses.forEach((bus) => {
-  const replacement = availbuses[bus];
-  const busCard = document.createElement("div");
-  busCard.className = "bus-card";
-  busCard.innerHTML = `
-    <div class="bus-number">Bus: ${bus}</div>
-    <div class="replacement-bus">Replacement: ${replacement || "None"}</div>
-  `;
+function renderBusList() {
+  const busListContainer = document.getElementById('busList');
+  busListContainer.innerHTML = ''; // Clear before render
 
-  // Add click event to select the bus
-  busCard.addEventListener("click", () => {
-    document.querySelectorAll(".bus-card").forEach((card) => card.classList.remove("selected"));
-    busCard.classList.add("selected");
-    selectedBus = bus;
+  for (const key in busInfo) {
+    if (busInfo.hasOwnProperty(key)) {
+      const value = busInfo[key];
 
-    // Highlight buffer zones
-    document.querySelectorAll(".bus-buffer").forEach((buffer) => {
-      buffer.classList.add("highlight");
-    });
-  });
+      const wrapper = document.createElement('label');
+      wrapper.className = 'bus-item';
 
-  carousel.appendChild(busCard);
-});
+      const star = document.createElement('span');
+      star.className = 'e-star-filled';
+      star.textContent = '★'; // Star character
+      star.dataset.busId = "check" + key;
+      star.dataset.busName = value[0];
 
-// Add buffer zones to yellow bus divs
-document.querySelectorAll(".bus").forEach((busDiv) => {
-  const buffer = document.createElement("div");
-  buffer.className = "bus-buffer";
-
-  // Adjust buffer size based on busInfo (left or right)
-  const busId = busDiv.id;
-  const isLeft = busInfo[busId][2]; // Check if the bus is on the left side
-  buffer.style.position = "absolute";
-  buffer.style.width = isLeft ? "300%" : "300%"; // Extend more to the left or right
-  buffer.style.height = "120%";
-  buffer.style.top = "-10%";
-  buffer.style.left = isLeft ? "-200%" : "0%";
-
-  // Append the buffer to the bus div
-  busDiv.appendChild(buffer);
-
-  // Add click event to the buffer
-  buffer.addEventListener("click", () => {
-    if (!selectedBus && !busInfo[busId][0]) {
-      alert("Please select a bus from the carousel first.");
-      return;
-    }
-    if (selectedBus) {
-      if (busInfo[busId][0]) {
-        addBusToCarousel(busInfo[busId][0], availbuses[busInfo[busId][0]]);
+      // Add selected class if previously marked as favorite
+      if (value[2]) {
+        star.classList.add('e-star-selected');
       }
-      busInfo[busId][0] = selectedBus;
-      busInfo[busId][1] = availbuses[selectedBus];
 
-      // Remove the bus card from the carousel
-      const busCard = Array.from(carousel.children).find(card =>
-        card.querySelector(".bus-number").textContent.includes(selectedBus)
-      );
-      if (busCard) busCard.remove();
-
-      busDisplay(rotation, (1 / scale) * 10);
-
-      // Remove any delete button if present
-      const deleteButton = busDiv.querySelector(".delete-button");
-      if (deleteButton) deleteButton.remove();
-
-      clearSelection();
-      applyTransform();
-    }
-  });
-
-  // Add click event to the yellow bus div for deletion
-  busDiv.addEventListener("click", () => {
-    // If a bus is selected, do nothing (user is trying to assign a bus)
-    if (selectedBus) return;
-
-    // If no bus is assigned to this div, do nothing
-    if (busInfo[busId][0] === null) return;
-
-    // Toggle the delete button
-    let deleteButton = busDiv.querySelector(".delete-button");
-    if (!deleteButton) {
-      // Create a delete button
-      deleteButton = document.createElement("div");
-      deleteButton.className = "delete-button";
-      deleteButton.textContent = "🗙";
-      busDiv.appendChild(deleteButton);
-
-      // Remove after 3 seconds
-      setTimeout(() => {
-        if (deleteButton.parentNode === busDiv) {
-          deleteButton.remove();
-        }
-      }, 3000);
-
-      // Handle delete button click
-      deleteButton.addEventListener("click", (e) => {
-        e.stopPropagation(); // Prevent triggering the busDiv click event
-
-        // Return the bus to the carousel
-        const removedBus = busInfo[busId][0];
-        addBusToCarousel(removedBus, availbuses[removedBus]);
-
-        // Clear the bus info
-        busInfo[busId][0] = null;
-        busInfo[busId][1] = null;
-
-        // Remove the delete button
-        deleteButton.remove();
-
-        busDisplay(rotation, (1 / scale) * 10);
+      // Toggle selection on click
+      star.addEventListener('click', () => {
+        star.classList.toggle('e-star-selected');
       });
-    } else {
-      // If the delete button already exists, remove it
-      deleteButton.remove();
+
+      let busText = value[0];
+      if (value[1] !== null) {
+        busText += " 🠒 " + value[1];
+      }
+
+      const textNode = document.createElement('span');
+      textNode.textContent = ' ' + busText;
+
+      if (value[0] === null) return;
+      wrapper.appendChild(star);
+      wrapper.appendChild(textNode);
+      busListContainer.appendChild(wrapper);
     }
-  });
-});
-
-// Add a global click listener to exit selection mode
-document.addEventListener("click", (e) => {
-  if (!e.target.closest(".bus-buffer") && !e.target.closest(".bus-card")) {
-    // Reset selection
-    selectedBus = null;
-    document.querySelectorAll(".bus-card").forEach((card) => card.classList.remove("selected"));
-
-    // Remove highlight from buffer zones
-    document.querySelectorAll(".bus-buffer").forEach((buffer) => {
-      buffer.classList.remove("highlight");
-    });
   }
-});
-
-// Function to add a bus back to the carousel
-function addBusToCarousel(bus, replacement) {
-  const busCard = document.createElement("div");
-  busCard.className = "bus-card";
-  busCard.innerHTML = `
-    <div class="bus-number">Bus: ${bus}</div>
-    <div class="replacement-bus">Replacement: ${replacement || "None"}</div>
-  `;
-
-  // Add click event to select the bus
-  busCard.addEventListener("click", () => {
-    document.querySelectorAll(".bus-card").forEach((card) => card.classList.remove("selected"));
-    busCard.classList.add("selected");
-    selectedBus = bus;
-
-    // Highlight buffer zones
-    document.querySelectorAll(".bus-buffer").forEach((buffer) => {
-      buffer.classList.add("highlight");
-    });
-  });
-
-  carousel.appendChild(busCard);
-
-  // Sort the carousel after adding the bus
-  Array.from(carousel.children)
-    .sort((a, b) => parseInt(a.querySelector(".bus-number").textContent.split(": ")[1]) - parseInt(b.querySelector(".bus-number").textContent.split(": ")[1]))
-    .forEach((node) => carousel.appendChild(node));
 }
 
-// Add this helper function somewhere above
-function clearSelection() {
-  selectedBus = null;
-  document.querySelectorAll(".bus-card").forEach(card => card.classList.remove("selected"));
-  document.querySelectorAll(".bus-buffer").forEach(buffer => buffer.classList.remove("highlight"));
+function saveFavorites() {
+  const selectedBuses = [];
+  document.querySelectorAll('#busList .e-star-selected').forEach(star => {
+    selectedBuses.push({
+      id: star.dataset.busId,
+      name: star.dataset.busName
+    });
+  });
+  console.log('⭐ Favorite Buses:', selectedBuses);
+  closeModal();
 }
