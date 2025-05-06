@@ -4,9 +4,32 @@ const mapWindow = document.getElementById('mapwindow');
 let scale = 0.50;
 let rotation = 89;
 let translate = { x: 0, y: 0 };
+let newbuslist = {}
+function getAvailBus() {
+  return fetch('/getbus')
+    .then(response => response.json())
+    .then(data => {
+      if (data) {
+        const buslist = data.buslist;
+        for (let i = 0; i < buslist.length; i++) {
+          let change = buslist[i].change === 0 ? null : buslist[i].change;
+          newbuslist[buslist[i].number] = change;
+        }
+        console.log(newbuslist);
+        return newbuslist;
+      }
+    })
+    .catch(error => {
+      console.error("Error fetching available buses:", error);
+    });
+}
 
-let availbuses = {12: 25, 25: null, 17: null, 32: null, 102: null, 87: 103, 52: null, 69: 80, 45: 60, 22: null, 67: null, 73: 84, 91: 115, 74: null, 53: 70, 38: null, 11: 29, 64: null, 81: 97, 26: null, 83: null, 60: null, 95: null, 79: null, 19: 33, 50: null};
+// Handle the Promise
 
+getAvailBus().then(result => {
+  availbuses = result;
+  console.log(availbuses); // Logs the fetched data
+});
 
 // Bus information: [destination, replacement, left/right]
 let busInfo = {
