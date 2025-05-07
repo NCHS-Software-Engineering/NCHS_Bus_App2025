@@ -83,6 +83,8 @@ Here’s the different parts
 - How it works generally:
     - In index.js the user is prompted with a pop-up for notification permissions. When allowed they are added to the subscriptions file. When a notification is pushed, all subscriptions are sent a notification, then the firebase-messaging-sw.js service worker shows the notification on the device.
     - Notifications are now implemented on Android devices and work in the background as long as permissions are a "yes."
+        - The notifications are properly customized now. This means if a bus #3 changes to bus #5. Users will receive the notification, "Bus #3, which has been changed to bus #5, has arrived."
+        - Users only receive notifications for the busses they have starred :) 
  
 ## The Website
 - The admin side now features better-balanced buttons and displays animations to improve user feedback
