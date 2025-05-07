@@ -107,6 +107,10 @@ Here’s the different parts
 - May want students to have to sign into their google account to access the bus tracking data for security reasons
 - If implementation goes well, this could be brought to the entire district 203 for implementation at other schools
 
+## MongoDB Database
+- 
+- How it works:
+
 ## Different Bus-Setup
 - 
 - How it works:
