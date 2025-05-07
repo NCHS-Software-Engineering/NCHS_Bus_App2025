@@ -111,7 +111,7 @@ Here’s the different parts
 - 
 - How it works:
 
-## Different Bus-Setup
-- 
-- How it works:
-    - 
+## Different Bus Schedules Set-Up
+- The administrator can toggle a switch that selects "map" or "table" mode. This change is reflected on both the administrator's side and the student's side
+- The user can choose to select starred buses in map mode, as well as choosing to exclusively only see buses that they have starred. This option is false by default...
+
