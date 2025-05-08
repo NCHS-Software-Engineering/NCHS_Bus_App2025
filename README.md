@@ -110,10 +110,16 @@ Here’s the different parts
 - If implementation goes well, this could be brought to the entire district 203 for implementation at other schools
 
 ## MongoDB Database
-- 
+- Uses mongoDB
 - How it works:
+    - A connections is made in server>database>connection.js, and is imported into server.js
+    - There are two models: iossubscriptions and subscriptions(for everything not iOS)
+    - Whenever a subscription is made in index.ejs, the register post method is called, where the subscription is saved to the database along with its starred busses
+    - When a bus changed/arrives, the server iterates through the database and finds the subscriptions that have the selected bus in their starred busses to send a notification
+    - Right now the iossubscriptions aren't being stored in the database
 
 ## Different Bus Schedules Set-Up
 - The administrator can toggle a switch that selects "map" or "table" mode. This change is reflected on both the administrator's side and the student's side
-- The user can choose to select starred buses in map mode, as well as choosing to exclusively only see buses that they have starred. This option is false by default...
-
+- The user can choose to select starred buses in map mode, as well as choosing to exclusively only see buses that they have starred. This option is false by default.
+- This feature is implemented using Javascript inside the /js/admin/busappadmin.js file. 
+- Information surrounding this feature is processed using dictionaries and a list for input/output into a central database or external json file, in which information get shuttled from server to clients and vice versa. 
