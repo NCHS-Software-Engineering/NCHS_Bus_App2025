@@ -31,21 +31,30 @@ var crypto = require('crypto');
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 app.use(express.static("public"));
-app.get("/", function (req, res) {res.render("pages/index");});//renders the bus table
+
+app.get("/", function (req, res) {
+  const mode = getSwitchState(); // Dynamically fetch the current switch state
+  if (mode) {
+    res.render("pages/busmap"); // Render the bus map page if the switch is enabled
+  } else {
+    res.render("pages/index"); // Render the bus table page if the switch is disabled
+  }
+});
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ server });
-const privateKey = fs.readFileSync('./BusApp_947RQLGJMG.p8');
-const keyID= process.env.IOS_KEY_ID;//ios keys
-const teamID = process.env.IOS_TEAM_ID;
-const apn = require("apn");//IOS push provider
-const options = {
-    token: {
-      key: privateKey, 
-      keyId: keyID,
-      teamId: teamID
-    },
-    production: false
-}
+// const privateKey = fs.readFileSync('./BusApp_947RQLGJMG.p8');
+// const keyID= process.env.IOS_KEY_ID;//ios keys
+// const teamID = process.env.IOS_TEAM_ID;
+// const apn = require("apn");//IOS push provider
+// const { DataExchange } = require("aws-sdk");
+// const options = {
+//     token: {
+//       key: privateKey, 
+//       keyId: keyID,
+//       teamId: teamID
+//     },
+//     production: false
+// }
 webPush.setVapidDetails(
   "https://bustest.redhawks.us/",
   vapidPublicKey,
@@ -461,27 +470,31 @@ function verifyToken(req, res) {
 }
 
 // All of these methods are called when the user has a email on the whitelist
-app.get("/reset", (req, res) => {
-  reset(true);
-  return res.render("pages/buslist");
-
-});
 
 app.get("/buslist", function (req, res) {
-  return res.render("pages/buslist");
-
+ //if (verifyToken(req, res)) {
+    res.render("pages/admin/buslist");
+ // } else {
+   //return res.redirect("/");
+ //}
 });
 
 app.get("/buschanges", function (req, res) {
-  res.render("pages/buschanges");
+  //if (verifyToken(req, res)) 
+  res.render("pages/admin/buschanges");
+  //else res.redirect('/');
 });
 
 app.get("/settings", function (req, res) {
-  res.render("pages/settings");
+  //if (verifyToken(req, res))
+  res.render("pages/admin/settings");
+  //else res.redirect('/');
 });
 
-app.get("/busmap",function (req, res) {
-  res.render("pages/busmap");
+app.get("/busmapadmin",function (req, res) {
+  //if (verifyToken(req, res)) 
+  res.render("pages/admin/busmapadmin");
+  //else res.redirect('/');
 });
 // need to add verify token to all of these routes.
 app.get("/getemails", (req, res) => {
@@ -702,6 +715,78 @@ app.post("/updateStatusTime", (req, res) => {
   });
 });
 
+
+app.get('/getMap', (req, res) => {
+  let busmap = JSON.parse(fs.readFileSync("busInfo.json", "utf-8"));
+  res.send(busmap);
+});
+
+function getSwitchState() {
+  let switchState = JSON.parse(fs.readFileSync("switch.json", "utf-8"));
+  console.log(switchState.state);
+  return switchState.state;
+}
+app.get('/getSwitchState', (req, res) => {
+
+  fs.readFile("switch.json", "utf-8", (err, jsonString) => {
+    if (err) {
+      console.error("Error reading switch.json:", err);
+      return res.status(500).json({ error: "Error reading switch state" });
+    }
+
+    try {
+      const data = JSON.parse(jsonString);
+      res.status(200).json(data);
+    } catch (parseError) {
+      console.error("Error parsing switch.json:", parseError);
+      res.status(500).json({ error: "Invalid JSON in switch state file" });
+    }
+  });
+});
+
+app.post('/set-switch-state', (req, res) => {
+
+  // Read the current state from the file
+  fs.readFile("switch.json", "utf-8", (err, jsonString) => {
+    if (err) {
+      console.error("Error reading switch.json:", err);
+      return res.status(500).json({ error: "Error reading switch state" });
+    }
+
+    try {
+      // Parse the current state
+      let data = JSON.parse(jsonString);
+      data.state = !data.state; 
+      fs.writeFile("switch.json", JSON.stringify(data), (err) => {
+        if (err) {
+          console.error("Error writing to switch.json:", err);
+          return res.status(500).json({ error: "Error updating switch state" });
+        }
+        res.status(200).json({ message: "Switch state updated", state: data.state });
+      });
+    } catch (parseError) {
+      console.error("Error parsing switch.json:", parseError);
+      return res.status(500).json({ error: "Invalid JSON in switch state file" });
+    }
+  });
+});
+
+
+app.post('/updatebusInfo', express.json(), (req, res) => {
+  const busInfo = JSON.stringify(req.body);
+  fs.writeFile("busInfo.json", busInfo, (err) => {
+    if (err) {
+      console.error("Error writing busInfo.json:", err);
+      return res.status(500).json({ message: "Error updating bus info" });
+    }
+    res.status(200).json({ message: "Bus info updated successfully" });
+  });
+});
+
+app.get('/getbusInfo', express.json(), (req, res) => {
+  const busInfo = JSON.parse(fs.readFileSync("busInfo.json", "utf-8"));
+  res.status(200).json(busInfo);
+});
 
 app.post('/updateChange', express.json(), (req, res) => {
   const givenbus = req.body;
