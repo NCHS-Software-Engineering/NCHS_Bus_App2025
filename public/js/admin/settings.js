@@ -120,7 +120,7 @@ function listBuswhitelist() {
     fetch('/getbus')
     .then(response => { 
         if(response.ok) {
-            return response.json(); // not important
+            return response.json();
         }
     }).then(data => {
         if(data) { // if there is data

@@ -54,7 +54,6 @@ socket.addEventListener('message', (event) => {
             return response.json();
         })
         .then((data) => {
-            console.log('Bus status updated:', data);
         })
         .catch((error) => {
             alert(`Error updating bus status: ${error.message}`);
@@ -123,7 +122,6 @@ function updateBusses() {
 
 //WEBSOCKET
 
-//
 function getBusses() {
     let o = document.getElementsByClassName('busObj');
     for (let i = 0; i < o.length; i++) {
@@ -146,9 +144,7 @@ function getBusses() {
                 if(data.buslist[i].status == "Not Arrived") div.style.backgroundColor = "rgb(255, 44, 44)";
                 else if(data.buslist[i].status == "Arrived") div.style.backgroundColor = "green";
                 else if(data.buslist[i].status == "Departed") div.style.backgroundColor = "grey";
-                /*if (data.buslist[i].status == "Departed" && data.buslist[i].number == 1234567890){
-                    div.style.backgroundColor = "rgb(60, 60, 200)";
-                }*/
+
 
 
                 let busNumber = data.buslist[i].number;
@@ -184,7 +180,6 @@ function getBusses() {
                         })
                         .then((response) => response.json())
                         .then((data) => {
-                            console.log('Success:', data);
                         })
                         .catch((error) => {
                             console.error('Error:', error);
@@ -207,7 +202,6 @@ function getBusses() {
                         })
                         .then((response) => response.json())
                         .then((data) => {
-                            console.log('Success:', data);
                         })
                         .catch((error) => {
                             console.error('Error:', error);
@@ -230,7 +224,6 @@ function getBusses() {
                         })
                         .then((response) => response.json())
                         .then((data) => {
-                            console.log('Success:', data);
                         })
                         .catch((error) => {
                             console.error('Error:', error);

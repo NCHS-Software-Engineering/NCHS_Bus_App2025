@@ -96,7 +96,6 @@ window.getFCMToken = async function() {
 if ("serviceWorker" in navigator) {
    navigator.serviceWorker.register("/firebase-messaging-sw.js")
       .then((registration) => {
-         console.log("Service Worker registered with scope:", registration.scope);
       })
       .catch((error) => {
          console.error("Service Worker registration failed:", error);
@@ -117,7 +116,6 @@ navigator.serviceWorker.ready.then(reg =>
          userVisibleOnly: true,
          applicationServerKey: convertedVapidKey
       }).then(newSubscription => {
-         console.log("🔄 New Subscription:", JSON.stringify(newSubscription));
          fetch('./register', {
             method: 'post',
             headers: {
@@ -152,7 +150,6 @@ function urlBase64ToUint8Array(base64String) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-   //let starredBusses = [];
 
    // Check if cookies exist
    const starredBussesString = getCookie('starredBusses');
@@ -501,7 +498,6 @@ socket.addEventListener('message', (event) => {
    const starredBuses = JSON.parse(localStorage.getItem('starredBuses'));
 });
 
-//let starredBusNumbers = new Set(); // Store starred buses globally
 
 
 makeTable();
@@ -529,9 +525,6 @@ function starred() { //add isStarred
             }
          }).then(data => {
 
-            /*if(starredBusses.size == data.buslist.length){
-                document.querySelector('h1').textContent = "Is Starring Done?";
-            }*/
          })
 
 

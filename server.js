@@ -124,7 +124,6 @@ app.post('/check-subscription', async (req, res) => {
 
 // PUSH STUFF -----------------------------------
 
-// Set the keys used for encrypting the push messages.
 
 
 app.get('/vapidPublicKey', function (req, res) {
@@ -280,7 +279,6 @@ app.post("/updateStatus", (req, res) => {
         newStatus: bus.newStatus,
         change: bus.change
       };
-      // Brodcast updated data using the websockets
       broadcast(broadcastData);
       res.status(200).json({ message: "Bus status updated successfully" });
     });
@@ -452,7 +450,6 @@ var action_done = "";
 
 function verifyToken(req, res) {
   let cookies = req.cookies;
-  //let c_email = cookies.slice(cookies.indexOf('=')+1, cookies.indexOf('%')) + '@' + cookies.slice(cookies.indexOf('%') + 3, cookies.indexOf(';'));
   if (cookies['c_email'] == undefined || cookies['c_token'] == undefined) return false
   let c_email = cookies['c_email'];
   let c_token = cookies['c_token'];
@@ -526,7 +523,6 @@ app.post("/addemail", (req, res) => {
 
 app.post("/delemail", (req, res) => {
   action_done = "Email Deleted";
-  //delete email
   let email = req.body.email;
 
   let emailist = { users: [] };
@@ -658,7 +654,6 @@ app.get("/logout", (req, res) => {
 
 app.post("/updateStatusTime", (req, res) => {
   let bus = req.body;
-  // Validate incoming request
   if (!bus || !bus.number || !bus.newStatus) {
     return res.status(400).json({ error: "Invalid bus data provided" });
   }
@@ -712,8 +707,6 @@ app.post("/updateStatusTime", (req, res) => {
         console.error("Error writing file:", err);
         return res.status(500).json({ error: "Internal Server Error" });
       }
-
-      // Brodcast updated data
       
       broadcast(buslist);
 
@@ -833,8 +826,6 @@ app.post('/updateChange', express.json(), (req, res) => {
       return res.status(500).json({ message: "Invalid JSON in bus list" });
     }
     });
-
-    //sendNotification(req.body);
   
 });
 
@@ -857,9 +848,7 @@ app.post('/auth', (req, res) => {
     });
     const payload = ticket.getPayload();
     const userid = payload['sub'];
-    // If request specified a G Suite domain:
-    // const domain = payload['hd']; 
-    //console.log(payload.email);
+
     let whitelist = JSON.parse(fs.readFileSync("whitelist.json", "utf-8")).users;
     for (i = 0; i < whitelist.length; i++) {
       if (whitelist[i].toLowerCase() == payload.email.toLowerCase()){

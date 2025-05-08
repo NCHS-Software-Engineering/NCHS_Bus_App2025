@@ -29,7 +29,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // Listen for messages from the server
 socket.addEventListener('message', (event) => {
-    //console.log('WebSocket message received:', event.data);
   
     // Parse the received data
     let data;
@@ -99,9 +98,7 @@ function getBusses() {
                 if(data.buslist[i].status == "Not Arrived") div.style.backgroundColor = "rgb(255, 44, 44)";
                 else if(data.buslist[i].status == "Arrived") div.style.backgroundColor = "green";
                 else if(data.buslist[i].status == "Departed") div.style.backgroundColor = "grey";
-                /*if (data.buslist[i].status == "Departed" && data.buslist[i].number == 1234567890){
-                    div.style.backgroundColor = "rgb(60, 60, 200)";
-                }*/
+
                 var h = window.innerHeight;
                 div.style.height = (h-180)/10+"px";
 
@@ -140,7 +137,6 @@ function getBusses() {
                         })
                         .then((response) => response.json())
                         .then((data) => {
-                            console.log('Success:', data);
                         })
                         .catch((error) => {
                             console.error('Error:', error);
@@ -164,7 +160,6 @@ function getBusses() {
                         })
                         .then((response) => response.json())
                         .then((data) => {
-                            console.log('Success:', data);
                         })
                         .catch((error) => {
                             console.error('Error:', error);
@@ -188,7 +183,6 @@ function getBusses() {
                         })
                         .then((response) => response.json())
                         .then((data) => {
-                            console.log('Success:', data);
                         })
                         .catch((error) => {
                             console.error('Error:', error);
@@ -252,7 +246,6 @@ function editBusses() {
                         })
                         .then((response) => response.json())
                         .then((data) => {
-                            console.log('Success:', data);
                         })
                         .catch((error) => {
                             console.error('Error:', error);
@@ -273,7 +266,7 @@ function updateBusses() {
     fetch('/getbus')
     .then(response => { 
         if(response.ok) {
-            return response.json(); // not important
+            return response.json(); 
         }
         }).then(data => {
         if(data) { // if there is data
