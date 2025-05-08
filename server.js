@@ -779,7 +779,21 @@ app.post('/set-switch-state', (req, res) => {
 });
 
 
+app.post('/updatebusInfo', express.json(), (req, res) => {
+  const busInfo = JSON.stringify(req.body);
+  fs.writeFile("busInfo.json", busInfo, (err) => {
+    if (err) {
+      console.error("Error writing busInfo.json:", err);
+      return res.status(500).json({ message: "Error updating bus info" });
+    }
+    res.status(200).json({ message: "Bus info updated successfully" });
+  });
+});
 
+app.get('/getbusInfo', express.json(), (req, res) => {
+  const busInfo = JSON.parse(fs.readFileSync("busInfo.json", "utf-8"));
+  res.status(200).json(busInfo);
+});
 
 app.post('/updateChange', express.json(), (req, res) => {
   const givenbus = req.body;

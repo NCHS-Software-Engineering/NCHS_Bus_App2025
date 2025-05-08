@@ -15,7 +15,7 @@ function getAvailBus() {
           let change = buslist[i].change === 0 ? null : buslist[i].change;
           newbuslist[buslist[i].number] = change;
         }
-        console.log(newbuslist);
+        //console.log(newbuslist);
         return newbuslist;
       }
     })
@@ -26,43 +26,25 @@ function getAvailBus() {
 
 // Handle the Promise
 
-getAvailBus().then(result => {
-  availbuses = result;
-  console.log(availbuses); // Logs the fetched data
-});
 
+let busInfo;
 // Bus information: [destination, replacement, left/right]
-let busInfo = {
-  "A1": [null, null, true],
-  "A2": [null, null, false],
-  "B1": [null, null, true],
-  "B2": [null, null, false],
-  "C1": [null, null, true],
-  "C2": [null, null, false],
-  "D1": [null, null, true],
-  "D2": [null, null, false],
-  "E1": [null, null, true],
-  "E2": [null, null, false],
-  "F1": [null, null, true],
-  "F2": [null, null, false],
-  "G1": [null, null, true],
-  "G2": [null, null, false],
-  "H1": [null, null, true],
-  "H2": [null, null, false],
-  "I1": [null, null, true],
-  "I2": [null, null, false],
-  "J1": [null, null, true],
-  "J2": [null, null, false],
-  "K": [null, null, false],
-  "L": [null, null, false],
-  "M": [null, null, false],
-  "N": [null, null, false],
-  "O": [null, null, false],
-  "P": [null, null, false],
-  "Q": [null, null, true],
-  "R": [null, null, true],
-  "S": [null, null, true]
+async function getBusInfo(){
+  return fetch('/getbusInfo')
+    .then(response => response.json())
+    .then(data => {
+      if (data) {
+        busInfo = data;
+        console.log(busInfo);
+        return busInfo;
+      }
+    })
+    .catch(error => {
+      console.error("Error fetching bus information:", error);
+    });
 }
+
+ 
 let pointers = new Map();
 let lastTouchMid = null;
 let lastTouchDist = null;
@@ -256,15 +238,17 @@ window.addEventListener('load', () => {
 });
 
 function busDisplay(rotation, zoom){
-  for (const key in busInfo) {
-    if (busInfo.hasOwnProperty(key)) { // Ensure it's not an inherited property
-      const value = busInfo[key];
-      infoBox(key, value, rotation, zoom);
-    
+  getBusInfo().then(result => {
+    busInfo = result;
+    for (const key in busInfo) {
+      if (busInfo.hasOwnProperty(key)) { // Ensure it's not an inherited property
+        const value = busInfo[key];
+        infoBox(key, value, rotation, zoom);
+      
+      }
     }
-  }
+  });
 }
-busDisplay(89, 20);
 
 function infoBox(key, value, rotation, zoom) {
   while (rotation < 0) rotation += 360;
@@ -335,127 +319,143 @@ function infoBox(key, value, rotation, zoom) {
 let selectedBus = null; // Track the currently selected bus
 
 // Sort the carousel by numerical order
-const sortedBuses = Object.keys(availbuses).sort((a, b) => parseInt(a) - parseInt(b));
-
-// Populate the carousel with sorted buses
-sortedBuses.forEach((bus) => {
-  const replacement = availbuses[bus];
-  const busCard = document.createElement("div");
-  busCard.className = "bus-card";
-  busCard.innerHTML = `
-    <div class="bus-number">Bus: ${bus}</div>
-    <div class="replacement-bus">Replacement: ${replacement || "None"}</div>
-  `;
-
-  // Add click event to select the bus
-  busCard.addEventListener("click", () => {
-    document.querySelectorAll(".bus-card").forEach((card) => card.classList.remove("selected"));
-    busCard.classList.add("selected");
-    selectedBus = bus;
-
-    // Highlight buffer zones
-    document.querySelectorAll(".bus-buffer").forEach((buffer) => {
-      buffer.classList.add("highlight");
+getAvailBus().then(result => {
+  availbuses = result; // Logs the fetched data
+  const sortedBuses = Object.keys(availbuses).sort((a, b) => parseInt(a) - parseInt(b));
+  sortedBuses.forEach((bus) => {
+    const replacement = availbuses[bus];
+    const busCard = document.createElement("div");
+    busCard.className = "bus-card";
+    busCard.innerHTML = `
+      <div class="bus-number">Bus: ${bus}</div>
+      <div class="replacement-bus">Replacement: ${replacement || "None"}</div>
+    `;
+  
+    // Add click event to select the bus
+    busCard.addEventListener("click", () => {
+      document.querySelectorAll(".bus-card").forEach((card) => card.classList.remove("selected"));
+      busCard.classList.add("selected");
+      selectedBus = bus;
+  
+      // Highlight buffer zones
+      document.querySelectorAll(".bus-buffer").forEach((buffer) => {
+        buffer.classList.add("highlight");
+      });
     });
+  
+    carousel.appendChild(busCard);
   });
 
-  carousel.appendChild(busCard);
 });
+
+
+// Populate the carousel with sorted buses
+
 
 // Add buffer zones to yellow bus divs
 document.querySelectorAll(".bus").forEach((busDiv) => {
   const buffer = document.createElement("div");
   buffer.className = "bus-buffer";
-
-  // Adjust buffer size based on busInfo (left or right)
-  const busId = busDiv.id;
-  const isLeft = busInfo[busId][2]; // Check if the bus is on the left side
-  buffer.style.position = "absolute";
-  buffer.style.width = isLeft ? "300%" : "300%"; // Extend more to the left or right
-  buffer.style.height = "120%";
-  buffer.style.top = "-10%";
-  buffer.style.left = isLeft ? "-200%" : "0%";
-
-  // Append the buffer to the bus div
-  busDiv.appendChild(buffer);
-
-  // Add click event to the buffer
-  buffer.addEventListener("click", () => {
-    if (!selectedBus && !busInfo[busId][0]) {
-      alert("Please select a bus from the carousel first.");
-      return;
-    }
-    if (selectedBus) {
-      if (busInfo[busId][0]) {
-        addBusToCarousel(busInfo[busId][0], availbuses[busInfo[busId][0]]);
+  getBusInfo().then(result =>{
+    busInfo = result;
+    console.log(busInfo);
+    // Adjust buffer size based on busInfo (left or right)
+    const busId = busDiv.id;
+    const isLeft = busInfo[busId][2]; // Check if the bus is on the left side
+    buffer.style.position = "absolute";
+    buffer.style.width = isLeft ? "300%" : "300%"; // Extend more to the left or right
+    buffer.style.height = "120%";
+    buffer.style.top = "-10%";
+    buffer.style.left = isLeft ? "-200%" : "0%";
+  
+    // Append the buffer to the bus div
+    busDiv.appendChild(buffer);
+  
+    // Add click event to the buffer
+    buffer.addEventListener("click", () => {
+      if (!selectedBus && !busInfo[busId][0]) {
+        alert("Please select a bus from the carousel first.");
+        return;
       }
-      busInfo[busId][0] = selectedBus;
-      busInfo[busId][1] = availbuses[selectedBus];
-
-      // Remove the bus card from the carousel
-      const busCard = Array.from(carousel.children).find(card =>
-        card.querySelector(".bus-number").textContent.includes(selectedBus)
-      );
-      if (busCard) busCard.remove();
-
-      busDisplay(rotation, (1 / scale) * 10);
-
-      // Remove any delete button if present
-      const deleteButton = busDiv.querySelector(".delete-button");
-      if (deleteButton) deleteButton.remove();
-
-      clearSelection();
-      applyTransform();
-    }
-  });
-
-  // Add click event to the yellow bus div for deletion
-  busDiv.addEventListener("click", () => {
-    // If a bus is selected, do nothing (user is trying to assign a bus)
-    if (selectedBus) return;
-
-    // If no bus is assigned to this div, do nothing
-    if (busInfo[busId][0] === null) return;
-
-    // Toggle the delete button
-    let deleteButton = busDiv.querySelector(".delete-button");
-    if (!deleteButton) {
-      // Create a delete button
-      deleteButton = document.createElement("div");
-      deleteButton.className = "delete-button";
-      deleteButton.textContent = "🗙";
-      busDiv.appendChild(deleteButton);
-
-      // Remove after 3 seconds
-      setTimeout(() => {
-        if (deleteButton.parentNode === busDiv) {
-          deleteButton.remove();
+      if (selectedBus) {
+        if (busInfo[busId][0]) {
+          addBusToCarousel(busInfo[busId][0], availbuses[busInfo[busId][0]]);
         }
-      }, 3000);
-
-      // Handle delete button click
-      deleteButton.addEventListener("click", (e) => {
-        e.stopPropagation(); // Prevent triggering the busDiv click event
-
-        // Return the bus to the carousel
-        const removedBus = busInfo[busId][0];
-        addBusToCarousel(removedBus, availbuses[removedBus]);
-
-        // Clear the bus info
-        busInfo[busId][0] = null;
-        busInfo[busId][1] = null;
-
-        // Remove the delete button
-        deleteButton.remove();
-
+        busInfo[busId][0] = selectedBus;
+        busInfo[busId][1] = availbuses[selectedBus];
+  
+        // Remove the bus card from the carousel
+        const busCard = Array.from(carousel.children).find(card =>
+          card.querySelector(".bus-number").textContent.includes(selectedBus)
+        );
+        if (busCard) busCard.remove();
+  
         busDisplay(rotation, (1 / scale) * 10);
-      });
-    } else {
-      // If the delete button already exists, remove it
-      deleteButton.remove();
-    }
+  
+        // Remove any delete button if present
+        const deleteButton = busDiv.querySelector(".delete-button");
+        if (deleteButton) deleteButton.remove();
+        fetch('/updatebusInfo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(busInfo)
+        });
+        clearSelection();
+        applyTransform();
+      }
+    });
+  
+    // Add click event to the yellow bus div for deletion
+    busDiv.addEventListener("click", () => {
+      // If a bus is selected, do nothing (user is trying to assign a bus)
+      if (selectedBus) return;
+  
+      // If no bus is assigned to this div, do nothing
+      if (busInfo[busId][0] === null) return;
+  
+      // Toggle the delete button
+      let deleteButton = busDiv.querySelector(".delete-button");
+      if (!deleteButton) {
+        // Create a delete button
+        deleteButton = document.createElement("div");
+        deleteButton.className = "delete-button";
+        deleteButton.textContent = "🗙";
+        busDiv.appendChild(deleteButton);
+  
+        // Remove after 3 seconds
+        setTimeout(() => {
+          if (deleteButton.parentNode === busDiv) {
+            deleteButton.remove();
+          }
+        }, 3000);
+  
+        // Handle delete button click
+        deleteButton.addEventListener("click", (e) => {
+          e.stopPropagation(); // Prevent triggering the busDiv click event
+  
+          // Return the bus to the carousel
+          const removedBus = busInfo[busId][0];
+          addBusToCarousel(removedBus, availbuses[removedBus]);
+  
+          // Clear the bus info
+          busInfo[busId][0] = null;
+          busInfo[busId][1] = null;
+  
+          // Remove the delete button
+          deleteButton.remove();
+  
+          busDisplay(rotation, (1 / scale) * 10);
+        });
+      } else {
+        // If the delete button already exists, remove it
+        deleteButton.remove();
+      }
+    });
   });
-});
+  });
+
 
 // Add a global click listener to exit selection mode
 document.addEventListener("click", (e) => {
@@ -506,3 +506,7 @@ function clearSelection() {
   document.querySelectorAll(".bus-card").forEach(card => card.classList.remove("selected"));
   document.querySelectorAll(".bus-buffer").forEach(buffer => buffer.classList.remove("highlight"));
 }
+
+
+applyTransform();
+busDisplay(89, 20);
