@@ -21,6 +21,8 @@ body {
 }
 
 #map {
+    position: relative;
+
     display: block;
     user-select: none;
     pointer-events: none;
@@ -102,6 +104,17 @@ body {
 .bus-buffer.highlight {
   border-color: #007bff;
   background-color: rgba(0, 123, 255, 0.1);
+}
+
+#clearAssignedBuses {
+  position: absolute; /* Ensure the button is positioned relative to the map container */
+  top: 10px; /* Adjust the position as needed */
+  left: 10px; /* Adjust the position as needed */
+  z-index: 10; /* Ensure it appears above the map */
+  background-color: #f0f0f0; 
+  border: 1px solid #ccc; 
+  padding: 10px; 
+  cursor: pointer; 
 }
 
 #A1 {

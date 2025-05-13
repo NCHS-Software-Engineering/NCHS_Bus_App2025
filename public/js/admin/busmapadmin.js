@@ -10,13 +10,35 @@ function getAvailBus() {
     .then(response => response.json())
     .then(data => {
       if (data) {
-        const buslist = data.buslist;
-        for (let i = 0; i < buslist.length; i++) {
-          let change = buslist[i].change === 0 ? null : buslist[i].change;
-          newbuslist[buslist[i].number] = change;
-        }
-        //console.log(newbuslist);
-        return newbuslist;
+        return getBusInfo().then(result => {
+          busInfo = result; // Populate busInfo
+          const buslist = data.buslist;
+
+          // Remove all buses from buslist that are already assigned in busInfo
+          for (const key in busInfo) {
+            if (busInfo.hasOwnProperty(key)) {
+              const assignedBus = busInfo[key][0]; // Get the assigned bus
+              if (assignedBus !== null) {
+                //console.log("current bus: " + assignedBus);
+                // Remove the assigned bus from the buslist
+                const index = buslist.findIndex(bus => String(bus.number) === String(assignedBus));
+                //console.log("index: " + index);
+                if (index !== -1) {
+                  //console.log("Removing bus: " + buslist[index].number);
+                  buslist.splice(index, 1); // Remove the bus from the available list
+                }
+              }
+            }
+          }
+          console.log(buslist);
+          // Populate newbuslist with the remaining available buses
+          for (let i = 0; i < buslist.length; i++) {
+            let change = buslist[i].change === 0 ? null : buslist[i].change;
+            newbuslist[buslist[i].number] = change;
+          }
+
+          return newbuslist; // Return the filtered list of available buses
+        });
       }
     })
     .catch(error => {
@@ -35,7 +57,7 @@ async function getBusInfo(){
     .then(data => {
       if (data) {
         busInfo = data;
-        console.log(busInfo);
+        //console.log(busInfo);
         return busInfo;
       }
     })
@@ -358,7 +380,7 @@ document.querySelectorAll(".bus").forEach((busDiv) => {
   buffer.className = "bus-buffer";
   getBusInfo().then(result =>{
     busInfo = result;
-    console.log(busInfo);
+    //console.log(busInfo);
     // Adjust buffer size based on busInfo (left or right)
     const busId = busDiv.id;
     const isLeft = busInfo[busId][2]; // Check if the bus is on the left side
@@ -442,7 +464,12 @@ document.querySelectorAll(".bus").forEach((busDiv) => {
           // Clear the bus info
           busInfo[busId][0] = null;
           busInfo[busId][1] = null;
-  
+          fetch('/updatebusInfo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(busInfo)});
           // Remove the delete button
           deleteButton.remove();
   

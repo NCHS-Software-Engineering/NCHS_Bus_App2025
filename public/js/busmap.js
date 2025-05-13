@@ -8,36 +8,19 @@ let translate = { x: 0, y: 0 };
 
 /// list = {"Pos" : ["BusNum", "BusReplace", "Star?", "left?"]}
 // Only BusNum and BusReplace should be taken externally. Star and Left should never be modified.
-let busInfo = {
-  "A1": [12, 25, false, true],
-  "A2": [25, null, false, false],
-  "B1": [17, null, null, true],
-  "B2": [32, null, true, false],
-  "C1": [102, null, false, true],
-  "C2": [87, 103, true, false],
-  "D1": [52, null, null, true],
-  "D2": [69, 80, true, false],
-  "E1": [45, 60, true, true],
-  "E2": [22, null, false, false],
-  "F1": [67, null, true, true],
-  "F2": [73, 84, null, false],
-  "G1": [91, 115, false, true],
-  "G2": [74, null, true, false],
-  "H1": [53, 70, true, true],
-  "H2": [38, null, false, false],
-  "I1": [11, 29, true, true],
-  "I2": [64, null, null, false],
-  "J1": [81, 97, false, true],
-  "J2": [26, null, false, false],
-  "K": [83, 105, null, false],
-  "L": [60, null, true, false],
-  "M": [95, 110, false, false],
-  "N": [79, null, null, false],
-  "O": [19, 33, true, false],
-  "P": [50, null, false, false],
-  "Q": [null, null, null, null],
-  "R": [null, null, null, null],
-  "S": [null, null, null, null]
+async function getBusInfo(){
+  return fetch('/getbusInfo')
+    .then(response => response.json())
+    .then(data => {
+      if (data) {
+        busInfo = data;
+        //console.log(busInfo);
+        return busInfo;
+      }
+    })
+    .catch(error => {
+      console.error("Error fetching bus information:", error);
+    });
 }
 
 let pointers = new Map();
@@ -153,6 +136,9 @@ mapWindow.addEventListener('pointermove', (e) => {
   }
 });
 
+
+
+
 function handlePointerEnd(e) {
   pointers.delete(e.pointerId);
 
@@ -228,6 +214,8 @@ window.addEventListener('load', () => {
   // Calculate the translation to center the map
   translate.x = screenCenter.x - rotatedX + 30;
   translate.y = screenCenter.y - rotatedY + 50;
+
+  busDisplay(rotation, (1/scale)*10);
   applyTransform();
 });
 
@@ -239,6 +227,9 @@ function starToggle(){
 }
 
 function busDisplay(rotation, zoom){
+  getBusInfo().then(result =>{busInfo = result;
+
+ 
   for (const key in busInfo) {
     if (busInfo.hasOwnProperty(key)) { // Ensure it's not an inherited property
       const value = busInfo[key];
@@ -255,6 +246,7 @@ function busDisplay(rotation, zoom){
       }
     }
   }
+  });
 }
 busDisplay(89, 20);
 
@@ -334,7 +326,7 @@ function closeModal() {
 function renderBusList() {
   const busListContainer = document.getElementById('busList');
   busListContainer.innerHTML = ''; // Clear before render
-
+  getBusInfo().then(result => {busInfo = result;});
   for (const key in busInfo) {
     if (busInfo.hasOwnProperty(key)) {
       const value = busInfo[key];
@@ -349,7 +341,7 @@ function renderBusList() {
       star.dataset.busName = value[0];
 
       // Add selected class if previously marked as favorite
-      if (value[2]) {
+      if (starredBusses.has(key)) {
         star.classList.add('e-star-selected');
       }
 
@@ -373,15 +365,93 @@ function renderBusList() {
     }
   }
 }
+const starredBusses = new Set();
 
 function saveFavorites() {
-  const selectedBuses = [];
+  starredBussses = getCookie('starredBusses');
+  starredBussesArray = Array.from(starredBusses);
   document.querySelectorAll('#busList .e-star-selected').forEach(star => {
-    selectedBuses.push({
+    starredBussesArray.push({
       id: star.dataset.busId,
       name: star.dataset.busName
     });
   });
-  console.log('⭐ Favorite Buses:', selectedBuses);
+  updateCookie();
+  console.log('⭐ Favorite Buses:', starredBussesArray);
   closeModal();
+}
+
+
+//starred busses
+function getCookie(name) {
+   const cookieString = document.cookie;
+   const cookies = cookieString.split(';');
+   for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      // Check if this cookie contains the name we're looking for
+      if (cookie.startsWith(name + '=')) {
+         // If it does, return the cookie value
+         return cookie.substring(name.length + 1);
+      }
+   }
+   // If the cookie with the specified name is not found, return null
+   return null;
+}
+
+function updateCookie() {
+   const starredBussesArray = Array.from(starredBusses);
+   const starredBussesString = JSON.stringify(starredBussesArray);
+   const expirationDate = new Date();
+   expirationDate.setFullYear(expirationDate.getFullYear() + 10); // 10 years from now
+
+   //for local host below
+   //document.cookie = `starredBusses=${starredBussesString}; expires=${expirationDate.toUTCString()}; SameSite=None; Secure;`;
+   //for dev:           
+   document.cookie = `starredBusses=${starredBussesString}; expires=${expirationDate.toUTCString()}; SameSite=None; Secure; domain=https://bus-dev.redhawks.us/`;
+
+   //update database starredBusses
+
+   navigator.serviceWorker.ready.then(reg =>
+      reg.pushManager.getSubscription().then(async function (subscription) {
+        if (!subscription) {
+           console.log("✅ Not yet subscibed:", subscription);
+           return subscription;
+        }
+        
+        const response = await fetch('/vapidPublicKey');
+        const vapidPublicKey = await response.text();
+        const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+  
+        return reg.pushManager.subscribe({
+           userVisibleOnly: true,
+           applicationServerKey: convertedVapidKey
+        }).then(newSubscription => {
+           fetch('./starred', {
+              method: 'post',
+              headers: {
+                 'Content-type': 'application/json'
+              },
+              body: JSON.stringify({
+                 subscription: newSubscription,
+                 starred: Array.from(starredBusses) 
+              })
+           });
+        });
+     })
+  );
+}
+
+function urlBase64ToUint8Array(base64String) {
+   var padding = '='.repeat((4 - base64String.length % 4) % 4);
+   var base64 = (base64String + padding)
+      .replace(/\-/g, '+')
+      .replace(/_/g, '/');
+
+   var rawData = window.atob(base64);
+   var outputArray = new Uint8Array(rawData.length);
+
+   for (var i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+   }
+   return outputArray;
 }

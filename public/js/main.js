@@ -594,7 +594,7 @@ function starred() { //add isStarred
       var element = row1.cells[4].querySelector('span.starring');
 
       element.classList.remove("e-star-selected");
-
+      
 
    }
 
@@ -768,3 +768,4 @@ window.toggleInfo = function() {
    const popup = document.getElementById('popupInfo');
    popup.style.display = (popup.style.display === 'flex') ? 'none' : 'flex';
 };
+module.exports = { urlBase64ToUint8Array}
