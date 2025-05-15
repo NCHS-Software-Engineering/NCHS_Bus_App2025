@@ -238,7 +238,7 @@ function updateCookie() {
    //for local host below
    //document.cookie = `starredBusses=${starredBussesString}; expires=${expirationDate.toUTCString()}; SameSite=None; Secure;`;
    //for dev:           
-   document.cookie = `starredBusses=${starredBussesString}; expires=${expirationDate.toUTCString()}; SameSite=None; Secure; domain=https://bus-dev.redhawks.us/`;
+   document.cookie = `starredBusses=${starredBussesString}; expires=${expirationDate.toUTCString()}; SameSite=None; Secure; domain=https://nchsbusapp.org; path=/`;
 
    //update database starredBusses
 
@@ -475,8 +475,8 @@ window.fetchBusses = function(){
       });
 }
 
-const socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
-//const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
+//const socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
+const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
 //const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
 
@@ -756,7 +756,7 @@ window.toggleNotifs = function() {
    else {
        notifStat.innerHTML = `Something doesn't seem right. We have sent a request to show notifications. If it doesn't show up, try pressing the tune icon <image style='height: 23px; padding: 1px;' src='/public/images/tune.png'></image> in the top left of your screen, then reset all permissions. Reload the website and press the bell icon 🔔 again. Make sure to press "allow" once the app request permissions for notifications.`
    }
-
+   notifStat.innerHTML += '<br> THIS CURRENTLY DOES NOT WORK WITH APPLE DEVICES!!!!!!😔😔😔'
 };
 
 window.closeNotifs = function() {
