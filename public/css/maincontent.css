@@ -172,7 +172,7 @@ input[type=submit], #resetbtn{
 
     /* When input is checked */
     .switch-wrapper input:checked + .switch-label + .slider {
-      background-color: #4CAF50;
+      background-color: rgb(255, 44, 44);
     }
 
     .switch-wrapper input:checked + .switch-label + .slider::before {
