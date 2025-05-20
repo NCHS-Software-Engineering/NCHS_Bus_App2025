@@ -15,10 +15,16 @@ The Settings page is the fourth button on the left-side menu. This is where admi
 
 The last button on the left-side menu, when pressed, will take the administrator back to the Bus Status page. If administrators want to go back to the admin side, they will have to login with google once again. 
 
+The Administrators can choose to toggle "map" mode and "table" mode, depending on the needs of the bus circle. "Table" mode shows the table with buses, changes, status and time, while "map" mode shows the physical location of each bus in the bus circle. The latter will be used when the buses are lined up in the bus circle.
+
+In map mode, everything stays the same except for the where bus statuses are assigned. Instead, the admin will see a map and can manually select a bus from a list and tap on a corresponding position on the map. This will be reflected on the student side.
+
 #### Student Experience
 Immediately upon opening the NCHS Bus App, students are able to see a table of the information they need on the Bus Status Page. This information includes all of the bus numbers, bus changes (if there are any), the current status of the bus, and the timestamp of the current status. The admin pages are not accessible to students. 
 
 As administrators make changes on their side, students will be able to see them live on the Bus Status within about 5 seconds. They should check their bus status periodically while waiting for their bus to arrive. 
+
+In map mode, students will still be able to select which buses to star, as well as being able to strictly only see the buses they star (as a "filter").
 
 ### Project Setup
 Follow these steps to set up the NCHS Bus App project:
@@ -26,9 +32,13 @@ Install node on your computer. Node download page: https://nodejs.org/en/downloa
 Clone the git repository onto your computer using git clone : https://github.com/NCHS-SE22-23/busApp.git. 
 Run npm install to install all dependencies.  
 
+MongoDB also requires the user to add their IP address to the whitelist. One can simply acquire their IP address from this website: https://whatsmyip.com/your-ip-address.
+
 ### Running the NCHS Bus App
 #### On Local Host
 To run the NCHS Bus App on local host, press F5 while on VS Code to debug and run the server. Then type localhost:8080 into your browser to go to the functional web app. 
+
+When running on localhost, make sure to go through JS files and the websocket address to the localhost address. All addresses you will need are in the files and can be commented/uncommented to choose the needed websocket address.
 
 ### Working with the NCHS Bus App
 The NCHS Bus App is built using Node, and works with Express. The entire project is started from the file server.js. 
@@ -42,8 +52,12 @@ Official documentation: https://expressjs.com/
 Javascript 
 Tutorial: https://www.w3schools.com/js/default.asp
 
-Ejs
+EJS:
 A form of html that allows javascript to be run during the creation of the html. The official documentation: https://ejs.co/
+
+Firebase: A service that allows the server to send out push notifications. Documentation: https://firebase.google.com/docs
+
+MongoDB: Software in which allows us to more securely store important information. Documentation: https://www.mongodb.com/docs/
 
 #### Starring
 Here’s the different parts
@@ -61,18 +75,13 @@ Here’s the different parts
 - Admin changes to settings not kept
     - Currently, the server resets each day by pulling the github repository when it restarts. Thus, if a change is made to the server, that change is not reflected in the repository, and will not be saved the next day or whenever the server restarts.
         - Temporary fix: If they need to add/remove bus, add/remove emails from whitelist, or anything else in the settings page, you will have to make the change and push it to the github repo.
-        - Future fix: Go to “Implementing a database” in this readme file.
+- Maps
+    - Currently, on the admin side, the side buttons do not show up.
+    - The map is not connected to WebSockets, so it does not update automatically.
+    - It looks ugly.
 
-#### The following are things some future developer can/should implement in starting with most to least importance and increasing difficulty
-## .env file
-- Currently there is an env file that contains sensitive keys for the aws server, they were originally going to be used for notifications but is no longer necessary if using web-push. Instead, the vapid keys, google oauth client id, and database user/password should be put in there, and the env file would have to added to the aws server separately via like USB drive or something
-
-## Implementing a database
-- As described earlier, the admins’ changes to settings on the app such as adding emails to the whitelist or adding/deleting buses wouldn’t be saved because the aws server pulls the code from the github repository and not the other way around, so changes to the running server wouldn’t be saved on the github and when the server restarts and pulls the code from the github again, the changes are not kept
-- The most straightforward solution would be to hold the information from a database, and when the server restarts, pull the information from the database, and when changes are made, reflect those changes in the database as well as the running server files.
-- For example, the list of buses are held in the buslist.json file, and so in the database, there’s a table of just bus numbers, and when the server starts, it pulls all the bus numbers from the server and puts it in the buslist.json file. Then, if an admin adds or removes a bus, add/remove in the bustlist.json file AND add/remove from the database. Thus the changes are kept every time the server restarts.
-- This should be applied for the buslist and whitelist
-    - This is roughly applied for the buslist in the trying-something-diff-2 branch of the development server github repo, however when tested on the main of the dev server, caused it to crash and unknown why, someone else can try implementing their own version or use the current code to build off of it.
+- Notifications
+    - Notifications do not work on Apple devices.
 
 ## Notifications
 - Notifications implemented using FCM(firebase cloud messaging) in the following files:
@@ -85,6 +94,7 @@ Here’s the different parts
     - Notifications are now implemented on Android devices and work in the background as long as permissions are a "yes."
         - The notifications are properly customized now. This means if a bus #3 changes to bus #5. Users will receive the notification, "Bus #3, which has been changed to bus #5, has arrived."
         - Users only receive notifications for the busses they have starred :) 
+- Due to differences in requirements, Apple devices may not receive notifications as of now.
  
 ## The Website
 - The admin side now features better-balanced buttons and displays animations to improve user feedback
