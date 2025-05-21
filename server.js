@@ -472,30 +472,35 @@ function verifyToken(req, res) {
 // All of these methods are called when the user has a email on the whitelist
 
 app.get("/buslist", function (req, res) {
- if (verifyToken(req, res)) {
+ //if (verifyToken(req, res)) {
     res.render("pages/admin/buslist");
-  } else {
+  //} else {
    return res.redirect("/");
- }
+ //}
 });
 
 app.get("/buschanges", function (req, res) {
-  if (verifyToken(req, res)) 
+  //if (verifyToken(req, res)) 
   res.render("pages/admin/buschanges");
-  else res.redirect('/');
+  //else {
+    res.redirect('/');
+  //}
 });
 
 app.get("/settings", function (req, res) {
-  if (verifyToken(req, res))
+  //if (verifyToken(req, res))
   res.render("pages/admin/settings");
-  else res.redirect('/');
+  //else 
+    res.redirect('/');
 });
 
 app.get("/busmapadmin",function (req, res) {
-  if (verifyToken(req, res)) 
+  //if (verifyToken(req, res)) 
   res.render("pages/admin/busmapadmin");
-  else res.redirect('/');
+  //else 
+    res.redirect('/');
 });
+
 // need to add verify token to all of these routes.
 app.get("/getemails", (req, res) => {
   fs.readFile("whitelist.json", "utf-8", (err, jsonString) => {
