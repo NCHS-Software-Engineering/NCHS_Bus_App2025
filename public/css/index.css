@@ -60,7 +60,7 @@ h1, a {
     }
 }
 
-table, th, td{
+.bus-table, th, td{
     border-bottom: 1px solid #dadce0;
     
     padding: 5px;
@@ -125,6 +125,7 @@ tr:hover {
 #navbar{
     background-color: #d62921;
     height: 15vh;
+    z-index: 1000;
 }
 
 #returntohome {
@@ -231,43 +232,4 @@ tr:hover {
 
 .easteregg{
     color: rgb(102, 84, 84);
-}
-
-@media (aspect-ratio: 9/16) {
-    body {
-        width: 100vw;
-        height: 100vh;
-        overflow: hidden; /* optional: to prevent scrolling if you want a fixed layout */
-        font-size: 1.2rem; /* or adjust based on your preference */
-    }
-
-    #navbar {
-        height: 6vh; /* shrink slightly if needed for more vertical space */
-    }
-
-    .popup {
-        width: 90vw;
-        height: 85vh;
-        font-size: 1rem;
-    }
-
-    h1, a {
-        font-size: 6vw; /* relative font sizing */
-    }
-
-    table {
-        font-size: 0.9rem;
-    }
-
-    .navbuttons {
-        width: 48px;
-        height: 48px;
-        font-size: 12px;
-    }
-
-    #maxwell {
-        width: 80px;
-    }
-
-    /* Add any specific element layout/spacing changes here */
 }

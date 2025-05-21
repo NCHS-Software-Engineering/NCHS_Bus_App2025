@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (response.ok) {
             const data = await response.json();
             if (data.state) {
-                busNavButton.setAttribute("onclick", "window.location.href='/busmap'");
+                busNavButton.setAttribute("onclick", "window.location.href='/busmapadmin'");
                 busNavPicture.setAttribute("src", "/public/images/busmap.png");
             } else {
                 busNavButton.setAttribute("onclick", "window.location.href='/buslist'");

@@ -5,8 +5,7 @@ body {
 }
 
 #navbar{
-    position: fixed;
-
+    position: absolute;
     background-color: rgb(255, 44, 44);
     width: 14vw;
     height: 100vh;

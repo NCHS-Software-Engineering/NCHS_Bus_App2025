@@ -6,12 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NCHS Bus Map Page</title>
     <link href = "public/css/busmapadmin.css" rel = "stylesheet"></link>
+    <link href = "public/css/navbar.css" rel = "stylesheet"></link>  
   </head>
   <body>
+    
     <div id="mapwindow">
+      
       <div id="map-container">
         <button id="clearAssignedBuses">Clear All Assigned Buses</button>
         <img id="map" src="/public/images/map.jpg"/>
+        
         <div id="bus-container">
           <div class="bus" id="A1"></div>
           <div class="bus" id="A2"></div>
@@ -45,7 +49,14 @@
         </div>        
       </div>
     </div>
+    
     <div id = "carousel"></div>
+    <div id = "navbar">
+            <button onclick = "window.location.href = '/busmapadmin'" id = "active" id="busNavButton"><image id="BusNavPicture" src = "/images/busmap.png"></image></button> <!--Redirects to Bus List-->
+            <button onclick = "window.location.href = '/buschanges'"><image src = "/images/buschange.png"></image></button> <!--Redirects to Bus Changes-->
+            <button onclick = "window.location.href = '/settings'"><image src = "/images/settings.png"></image></button> <!--Redirects to Settings-->
+            <button onclick = "window.location.replace('https://nchsbusapp.org')"><image src = "/images/exit.png"></image></button> <!--Exits Admin Panel-->
+        </div>
     <script src = "/public/js/admin/busmapadmin.js"></script>
   </body>
 </html>
