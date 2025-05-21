@@ -75,7 +75,18 @@
         </div>        
       </div>
     </div>
-
+            <div id="settingsModal">
+              <div class="modal-header">
+                <h2>🚌 Select Favorite Buses</h2>
+              </div>
+            
+              <div id="busList" class="modal-content">
+              </div>
+              <div class="modal-footer">
+                <button onclick="saveFavorites()" id = "savebutton">Save</button>
+                <button onclick="closeModal()" id = "cancelbutton">Cancel</button>
+              </div>
+            </div>
     <script src = "/public/js/busmap.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src = "/public/js/info.js" type = "module"></script>
