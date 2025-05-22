@@ -1,7 +1,7 @@
 //webscocket connection
 //const socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
-//const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
-const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
+const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
+//const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
 
 socket.addEventListener("open", () => {
@@ -10,8 +10,8 @@ socket.addEventListener("open", () => {
 
 // Listen for messages from the server
 socket.addEventListener('message', (event) => {
-  console.log("Received message:", event.data);
-   busDisplay(89, 20);
+  //console.log("Received message:", event.data);
+  busDisplay(89, 20);
 });
 
 
@@ -258,7 +258,7 @@ var onlyStars = false;
 
 function starToggle(){
   onlyStars = !onlyStars
-  console.log(onlyStars);
+  //console.log(onlyStars);
   busDisplay();
 }
 
@@ -367,7 +367,7 @@ function renderBusList() {
   busListContainer.innerHTML = ''; // Clear before render
   starredBussses = getCookie('starredBuses');
   starredBussesArray = Array.from(starredBusses);
-  console.log('⭐ Favorite Buses:', starredBussesArray);
+  //console.log('⭐ Favorite Buses:', starredBussesArray);
   getBusList().then(result => {buslist = result;
   for (const bus in buslist) {
     if (buslist.number !== null) {
@@ -419,7 +419,7 @@ function saveFavorites() {
     });
   });
   updateCookie();
-  console.log('⭐ Favorite Buses:', starredBussesArray);
+  //console.log('⭐ Favorite Buses:', starredBussesArray);
   closeModal();
 }
 

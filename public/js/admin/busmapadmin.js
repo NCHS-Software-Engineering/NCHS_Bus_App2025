@@ -30,7 +30,7 @@ function getAvailBus() {
               }
             }
           }
-          console.log(buslist);
+          //console.log(buslist);
           // Populate newbuslist with the remaining available buses
           for (let i = 0; i < buslist.length; i++) {
             let change = buslist[i].change === 0 ? null : buslist[i].change;
