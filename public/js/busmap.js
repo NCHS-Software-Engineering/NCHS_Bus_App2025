@@ -5,10 +5,12 @@ const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
 
 socket.addEventListener("open", () => {
+  console.log("Connected to WebSocket server");
 });
 
 // Listen for messages from the server
 socket.addEventListener('message', (event) => {
+  console.log("Received message:", event.data);
    busDisplay(89, 20);
 });
 
