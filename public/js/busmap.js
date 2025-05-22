@@ -1,3 +1,21 @@
+//webscocket connection
+//const socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
+//const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
+const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
+
+
+socket.addEventListener("open", () => {
+});
+
+// Listen for messages from the server
+socket.addEventListener('message', (event) => {
+   busDisplay(89, 20);
+});
+
+
+
+
+
 closeModal();
 const mapContainer = document.getElementById('map-container');
 const mapWindow = document.getElementById('mapwindow');

@@ -404,6 +404,15 @@ function broadcast(data) {
   });
   sendNotification(data);
 }
+function broadcastInfo(data){
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify({
+        busInfo: data
+      }));
+    }
+  });
+}
 
 // resets the buslist.json file
 function reset(condition) {
@@ -719,11 +728,6 @@ app.post("/updateStatusTime", (req, res) => {
 });
 
 
-app.get('/getMap', (req, res) => {
-  let busmap = JSON.parse(fs.readFileSync("busInfo.json", "utf-8"));
-  res.send(busmap);
-});
-
 function getSwitchState() {
   let switchState = JSON.parse(fs.readFileSync("switch.json", "utf-8"));
   console.log(switchState.state);
@@ -777,6 +781,7 @@ app.post('/set-switch-state', (req, res) => {
 
 app.post('/updatebusInfo', express.json(), (req, res) => {
   const busInfo = JSON.stringify(req.body);
+  broadcastInfo(busInfo);
   fs.writeFile("busInfo.json", busInfo, (err) => {
     if (err) {
       console.error("Error writing busInfo.json:", err);
