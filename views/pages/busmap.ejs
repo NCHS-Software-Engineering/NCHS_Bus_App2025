@@ -75,22 +75,19 @@
         </div>        
       </div>
     </div>
-    <div id="overlaybar">
-      <table>
+   <div id="overlaybar" style="opacity:0">
+      <table style="opacity:0">
         <tr>
           <td>
-            <button class = "navbuttons" id = "modtog" onclick="openModal()">⭐</button>
-            <button class = "navbuttons" id = "startog" onclick="starToggle()">👁️</button>
-
+            <!--<button class = "navbuttons" id = "modtog" onclick="openModal()">⭐</button>
+            <button class = "navbuttons" id = "startog" onclick="starToggle()">👁️</button> -->
             <div id="overlay"></div>
-
             <div id="settingsModal">
               <div class="modal-header">
                 <h2>🚌 Select Favorite Buses</h2>
               </div>
             
               <div id="busList" class="modal-content">
-                <!-- dynamically generated list goes here -->
               </div>
               <div class="modal-footer">
                 <button onclick="saveFavorites()" id = "savebutton">Save</button>
@@ -99,7 +96,6 @@
             </div>
           </td>
           <td>
-            
           </td>
         </tr>
       </table>

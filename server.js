@@ -482,7 +482,9 @@ app.get("/buslist", function (req, res) {
 app.get("/buschanges", function (req, res) {
   //if (verifyToken(req, res)) 
   res.render("pages/admin/buschanges");
-  //else res.redirect('/');
+ // else {
+   // res.redirect('/');
+  //}
 });
 
 app.get("/settings", function (req, res) {
@@ -496,6 +498,7 @@ app.get("/busmapadmin",function (req, res) {
   res.render("pages/admin/busmapadmin");
   //else res.redirect('/');
 });
+
 // need to add verify token to all of these routes.
 app.get("/getemails", (req, res) => {
   fs.readFile("whitelist.json", "utf-8", (err, jsonString) => {
