@@ -238,7 +238,7 @@ function updateCookie() {
    //for local host below
    //document.cookie = `starredBusses=${starredBussesString}; expires=${expirationDate.toUTCString()}; SameSite=None; Secure;`;
    //for dev:           
-   document.cookie = `starredBusses=${starredBussesString}; expires=${expirationDate.toUTCString()}; SameSite=None; Secure; domain=https://nchsbusapp.org; path=/`;
+   document.cookie = `starredBusses=${starredBussesString}; expires=${expirationDate.toUTCString()}; SameSite=None; Secure; domain=nchsbusapp.org; path=/`;
 
    //update database starredBusses
 
