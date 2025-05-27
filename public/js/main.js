@@ -476,7 +476,7 @@ window.fetchBusses = function(){
       });
 }
 
-//const socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
+//onst socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
 const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
 //const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
@@ -510,11 +510,10 @@ function starred() { //add isStarred
    const buttons = document.querySelectorAll('.starring');
    const clickedButton = event.target;
    const row = clickedButton.parentNode.parentNode; // Get the row associated with the clicked button
-   var initelement = row.cells[0]
+   var initelement = row.cells[0];
    var intValue = parseInt(initelement.textContent.trim(), 10);
    const table = row.parentNode; // Get the table element
-   let noOtherStars = false;
-
+   let noOtherStars = false
 
    if (!(starredBusses.has(intValue))) {
       starredBusses.add(intValue);

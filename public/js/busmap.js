@@ -258,23 +258,22 @@ var onlyStars = false;
 
 function starToggle(){
   onlyStars = !onlyStars
-  //console.log(onlyStars);
+  console.log(onlyStars);
   busDisplay();
 }
 
 function busDisplay(rotation, zoom){
   getBusInfo().then(result =>{busInfo = result; 
-  starredBussses = getCookie('starredBuses');
-  starredBussesArray = Array.from(starredBusses);  
-
   for (const key in busInfo) {
     if (busInfo.hasOwnProperty(key)) { // Ensure it's not an inherited property
       const value = busInfo[key];
-      //console.log(value[0] + " is stared " + starredBussesArray.includes(value[0]));
-      if (starredBussesArray.includes(value[0]) && onlyStars === true){
-        document.getElementById(key).style.opacity = "0.2";
-      } else {
-        document.getElementById(key).style.opacity = "1"
+      if (getStarredBussesArray().includes((parseInt(value[0]))) && onlyStars === true){
+        document.getElementById(key).style.opacity = "1";
+      } else if(onlyStars === true){
+        document.getElementById(key).style.opacity = ".2"
+      }
+      else{
+        document.getElementById(key).style.opacity = "1";
       }
       if (value[0] === null){
         document.getElementById(key).style.opacity = "0";
@@ -365,66 +364,67 @@ function closeModal() {
 function renderBusList() {
   const busListContainer = document.getElementById('busList');
   busListContainer.innerHTML = ''; // Clear before render
-  starredBussses = getCookie('starredBuses');
-  starredBussesArray = Array.from(starredBusses);
-  //console.log('⭐ Favorite Buses:', starredBussesArray);
-  getBusList().then(result => {buslist = result;
-  for (const bus in buslist) {
-    if (buslist.number !== null) {
-      const value = bus;
+  getStarredBussesArray();
+  console.log('⭐ Favorite Busses:', starredBussesArray);
+  
+  getBusList().then(result => {buslist = result.buslist;
+    //console.log('Bus List:', buslist);
+    for (const bus in buslist) {
+      if (buslist[bus] !== null) {
+        const value = buslist[bus];
+        //console.log('Bus:', value.number);
+        const wrapper = document.createElement('label');
+        wrapper.className = 'bus-item';
 
-      const wrapper = document.createElement('label');
-      wrapper.className = 'bus-item';
+        const star = document.createElement('span');
+        star.className = 'e-star-filled';
+        star.textContent = '★'; // Star character
+        star.dataset.busId = "check" + value.number;
+        star.dataset.busName = value.number;
 
-      const star = document.createElement('span');
-      star.className = 'e-star-filled';
-      star.textContent = '★'; // Star character
-      star.dataset.busId = "check" + value.number;
-      star.dataset.busName = value.number;
+        // Add selected class if previously marked as favorite
+        
+        if (starredBussesArray.includes(value.number)) {
+          star.classList.add('e-star-selected');
+        }
 
-      // Add selected class if previously marked as favorite
-      if (starredBusses.has(value.number)) {
-        star.classList.add('e-star-selected');
+        // Toggle selection on click
+        star.addEventListener('click', () => {
+          star.classList.toggle('e-star-selected');
+          if (star.classList.contains('e-star-selected')) {
+            starredBussesArray.push(value.number);
+          } else {
+            for(let starredBus of starredBussesArray) {
+              if (starredBus === value.number) {
+                starredBussesArray.splice(starredBussesArray.indexOf(starredBus), 1);
+                break;
+              }
+            }
+          }
+          console.log('Updated Favorite Busses:', starredBussesArray);
+          updateCookie(starredBussesArray);
+        });
+
+        let busText = value.number;
+        if (value.change !== null) {
+          busText += " 🠒 " + value.change;
+        }
+
+        const textNode = document.createElement('span');
+        textNode.textContent = ' ' + busText;
+
+        wrapper.appendChild(star);
+        wrapper.appendChild(textNode);
+        busListContainer.appendChild(wrapper);
       }
-
-      // Toggle selection on click
-      star.addEventListener('click', () => {
-        star.classList.toggle('e-star-selected');
-      });
-
-      let busText = value.number;
-      if (value.change !== null) {
-        busText += " 🠒 " + value.change;
-      }
-
-      const textNode = document.createElement('span');
-      textNode.textContent = ' ' + busText;
-
-      wrapper.appendChild(star);
-      wrapper.appendChild(textNode);
-      busListContainer.appendChild(wrapper);
     }
-  }
   });
 }
 const starredBusses = new Set();
 
-function saveFavorites() {
-  starredBussses = getCookie('starredBuses');
-  starredBussesArray = Array.from(starredBusses);
-  document.querySelectorAll('#busList .e-star-selected').forEach(star => {
-    starredBussesArray.push({
-      id: star.dataset.busId,
-      name: star.dataset.busName
-    });
-  });
-  updateCookie();
-  //console.log('⭐ Favorite Buses:', starredBussesArray);
-  closeModal();
-}
 
 function getStarredBussesArray(){
-    const starredBussesString = getCookie('starredBuses');
+    const starredBussesString = getCookie('starredBusses');
    let starredBussesArray = [];
    if (starredBussesString != undefined) {
       starredBussesArray = JSON.parse(starredBussesString)
@@ -447,8 +447,8 @@ function getCookie(name) {
    return null;
 }
 
-function updateCookie() {
-   const starredBussesArray = Array.from(starredBusses);
+function updateCookie(starredBussesArray) {
+   this.starredBussesArray = starredBussesArray
    const starredBussesString = JSON.stringify(starredBussesArray);
    const expirationDate = new Date();
    expirationDate.setFullYear(expirationDate.getFullYear() + 10); // 10 years from now
@@ -489,6 +489,42 @@ function updateCookie() {
      })
   );
 }
+
+function findSmallest() {
+   fetch('/getbus')
+      .then(response => {
+         if (response.ok) {
+            return response.json(); // not important
+         }
+      }).then(data => {
+         if (data) { // if there is data
+            smallestBus = data.buslist[0].number;
+
+         }
+      }).catch(err => console.error(err));
+}
+
+function findHighest() {
+   fetch('/getbus')
+      .then(response => {
+         if (response.ok) {
+            return response.json(); // not important
+         }
+      }).then(data => {
+         if (data) { // if there is data
+            var num = 0;
+            var i = 0;
+            while (i < data.buslist.length) {
+               if (data.buslist[i].number > num) {
+                  highestBus = data.buslist[i].number;
+               }
+               i++;
+            }
+
+         }
+      }).catch(err => console.error(err));
+}
+
 
 function urlBase64ToUint8Array(base64String) {
    var padding = '='.repeat((4 - base64String.length % 4) % 4);
