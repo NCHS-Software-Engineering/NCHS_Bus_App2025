@@ -95,6 +95,32 @@ style="margin-right: 10px; width: 43px;">
 </div>
 
 </div>
+<div class="popup-overlay" id="popupNotifs">
+            <div class="popup">
+                <h3>Notifications</h3>
+                <div id = "notifStatus">
+                    
+                </div>
+                
+              <button class="close-btn" onclick="closeNotifs()">Close</button>
+            </div>
+        </div>
+        <div class="popup-overlay" id="popupInfo">
+            <div class="popup">
+                <div class = "scrollContainer">
+                    <h3>About The App</h3>
+                    <p>
+                        <small>This app tracks bus status, changes, arrival and departure times, and allows the user to star buses. When starring a bus, you receive live notifications for that specific bus, regardless if you have the browser open or not. Not receiving notifications? Click the bell icon 🔔!</small>
+                    </p>
+                    <h3>Developers</h3>
+                    <p><small>Version 1 Created by Simi Kama ('23), Adesh Kumar ('23), Theodore Ng ('23), </small><small class = "easteregg" onclick="hmm()">Alex Remiasz ('23), </small><small> and Boris Rokhmanov ('23)</small><br>
+                    <small>Version 2 Created by Vinay Narahari ('24), Tyler Browning ('24), and Peter Paik ('24)</small><br>
+                    <small>Version 3 Created by  Priya Agrawal ('25), Ryan Keough ('25), and </small><small class = "easteregg" onclick="spawnmaxwell()">Andy Liang ('26) </small></p>
+                    <audio id="maxwell-audio" src="/public/music/maxwell.mp3"></audio>
+                    <button class="close-btn" onclick="toggleInfo()">Close</button>
+                </div>
+            </div>
+        </div>
 <script src = "/public/js/busmap.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src = "/public/js/info.js" type = "module"></script>

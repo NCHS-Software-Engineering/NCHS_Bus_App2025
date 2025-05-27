@@ -84,8 +84,67 @@ window.toggleNotifs = function() {
    else {
        notifStat.innerHTML = `Something doesn't seem right. We have sent a request to show notifications. If it doesn't show up, try pressing the tune icon <image style='height: 23px; padding: 1px;' src='/public/images/tune.png'></image> in the top left of your screen, then reset all permissions. Reload the website and press the bell icon 🔔 again. Make sure to press "allow" once the app request permissions for notifications.`
    }
-   notifStat.innerHTML += '<div>Notifications do not work on Apple Devices yet!</div>'
+   notifStat.innerHTML += '<div><br>Notifications do not work on Apple Devices yet!</div>'
 };
+
+async function requestPermission() {
+   try {
+      if ('safari' in window && 'pushNotification' in window.safari) {
+         //ios stuff
+         // // Ask for permission
+         // window.safari.pushNotification.requestPermission(
+         //    "https://bustest.redhawks.us", 
+         //    "web.com.nchsbusapp.push",
+         //    {},
+         //    function (permissionData) {
+         //       if (permissionData.permission === 'granted') {
+         //          console.log("Push Token:", permissionData.deviceToken);
+         //          // Send this deviceToken to your backend
+         //          fetch('/register-ios-token', {
+         //             method: 'POST',
+         //             headers: {
+         //                'Content-Type': 'application/json'
+         //             },
+         //             body: JSON.stringify({
+         //                token: permissionData.deviceToken
+         //             })
+         //          });
+         //       } else {
+         //          console.log("Push permission denied:", permissionData);
+         //       }
+         //    }
+         // );
+      } else {
+         const permission = await Notification.requestPermission();
+         if (permission === "granted") {
+            navigator.serviceWorker.ready.then(reg =>
+               reg.pushManager.getSubscription().then(async function (subscription) {
+                  fetch('./send-notification', {
+                        method: "POST",
+                        headers: {
+                           "Content-type": "application/json"
+                        },
+                        body: JSON.stringify({
+                           notification:{
+                              title: "Starred Buses",
+                              body: "Starred buses will now receive notifications.",},
+                           subscription: subscription
+                        })
+                     })
+                     .then(res => res.json())
+                     .catch(error => console.error("❌ Error sending notification request:", error));
+               })
+            )
+         } else {
+            console.log("Notification permission denied.");
+         }
+      }
+      
+   } catch (error) {
+      console.error("Error requesting permission:", error);
+   }
+}
+
 
 window.closeNotifs = function() {
    const popup = document.getElementById('popupNotifs');
