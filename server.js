@@ -497,7 +497,7 @@ app.get("/buschanges", function (req, res) {
   res.render("pages/admin/buschanges");
   //else {
     res.redirect('/');
-  }
+  //}
 });
 
 app.get("/settings", function (req, res) {
