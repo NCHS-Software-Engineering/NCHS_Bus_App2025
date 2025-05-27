@@ -1,5 +1,6 @@
 html {
     height: 100%;
+    overflow-x: hidden;
 }  
 
 body {
@@ -8,7 +9,6 @@ body {
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-color: #b3c0d3;
-    overflow-x: hidden;
 }
 
 /* Customize the scrollbar track */
