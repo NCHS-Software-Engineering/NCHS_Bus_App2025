@@ -120,7 +120,7 @@ Here’s the different parts
 - If implementation goes well, this could be brought to the entire district 203 for implementation at other schools
 
 ## MongoDB Database
-- Uses mongoDB
+- Uses mongoDB 
 - How it works:
     - A connections is made in server>database>connection.js, and is imported into server.js
     - There are two models: iossubscriptions and subscriptions(for everything not iOS)
