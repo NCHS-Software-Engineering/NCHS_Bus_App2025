@@ -165,7 +165,7 @@ async function storeSubscription(subscription, starred) {
 }
 
 app.post("/send-notification", async (req, res) => {
-  if(verifyToken(req,res)){
+  //if(verifyToken(req,res)){
   const { title, body } = req.body.notification;
   const subscriptions = req.body.subscription;
   const payload = JSON.stringify({ notification: { title, body } });
@@ -174,7 +174,7 @@ app.post("/send-notification", async (req, res) => {
  
 
   res.status(200).json({ message: "Notifications sent" });
-  }
+  //}
 });
 
 
@@ -222,7 +222,7 @@ app.get("/getbus", (req, res) => {
 
 //updates the buslist.json file after being called in buslist.js
 app.post("/updateStatus", (req, res) => {
-  if(verifyToken(req,res)){
+  //if(verifyToken(req,res)){
   let bus = req.body;
   if (!bus || !bus.number || !bus.newStatus) {
     return res.status(400).json({ error: "Invalid bus data provided" });
@@ -287,7 +287,7 @@ app.post("/updateStatus", (req, res) => {
     });
     
   });
-  }
+  //}
 });
 //updates the starred field in the database for the subscription
 app.post('/starred', async (req, res) => {
@@ -485,31 +485,31 @@ function verifyToken(req, res) {
 // All of these methods are called when the user has a email on the whitelist
 
 app.get("/buslist", function (req, res) {
-  if (verifyToken(req, res)) {
+  //if (verifyToken(req, res)) {
     res.render("pages/admin/buslist");
-  } else {
+  //} else {
    return res.redirect("/");
- }
+ //}
 });
 
 app.get("/buschanges", function (req, res) {
-  if (verifyToken(req, res)) 
+  //if (verifyToken(req, res)) 
   res.render("pages/admin/buschanges");
-  else {
+  //else {
     res.redirect('/');
   }
 });
 
 app.get("/settings", function (req, res) {
-  if (verifyToken(req, res))
+  //if (verifyToken(req, res))
   res.render("pages/admin/settings");
-  else res.redirect('/');
+  //else res.redirect('/');
 });
 
 app.get("/busmapadmin",function (req, res) {
-  if (verifyToken(req, res)) 
+  //if (verifyToken(req, res)) 
   res.render("pages/admin/busmapadmin");
-  else res.redirect('/');
+  //else res.redirect('/');
 });
 
 // need to add verify token to all of these routes.
@@ -521,7 +521,7 @@ app.get("/getemails", (req, res) => {
 })
 
 app.post("/addemail", (req, res) => {
-  if(verifyToken(req,res)){
+  //if(verifyToken(req,res)){
   action_done = "Email Added";
   let email = req.body.email;
 
@@ -536,11 +536,11 @@ app.post("/addemail", (req, res) => {
   });
   
   res.redirect("settings");
-  }
+  //}
 })
 
 app.post("/delemail", (req, res) => {
-  if(verifyToken(req,res)){
+  //if(verifyToken(req,res)){
   action_done = "Email Deleted";
   let email = req.body.email;
 
@@ -558,11 +558,11 @@ app.post("/delemail", (req, res) => {
     fs.writeFile("whitelist.json", JSON.stringify(emailist), (err) => {});
   });
   
-  res.redirect("settings");}
+  res.redirect("settings");//}
 });
 
 app.post("/addbus", (req, res) => {
-  if(verifyToken(req,res)){
+  //if(verifyToken(req,res)){
   action_done = "Bus Added";
   let busNum = Number(req.body.busnum);
 
@@ -596,11 +596,11 @@ app.post("/addbus", (req, res) => {
 
     res.redirect("settings");
   });
-  }
+  //}
 });
 
 app.post("/delbus", (req, res) => {
-  if(verifyToken(req,res)){
+  //if(verifyToken(req,res)){
   action_done = "Bus Deleted";
 
   let fullList = { buslist: [] };
@@ -630,13 +630,13 @@ app.post("/delbus", (req, res) => {
     fs.writeFile("buslist.json", final, (err) => {});
   });
   res.redirect("settings");
-  }
+  //}
 });
 
 app.get('/login', (req, res) => {
-  if (verifyToken(req, res)) 
+  //if (verifyToken(req, res)) 
     res.render("pages/buslist");
-  else res.render('pages/login');
+  //else res.render('pages/login');
 });
 
 app.post("/login-auth", (req, res) => {
@@ -676,7 +676,7 @@ app.get("/logout", (req, res) => {
 });
 
 app.post("/updateStatusTime", (req, res) => {
-  if(verifyToken(req,res)){
+  //if(verifyToken(req,res)){
   let bus = req.body;
   if (!bus || !bus.number || !bus.newStatus) {
     return res.status(400).json({ error: "Invalid bus data provided" });
@@ -737,7 +737,7 @@ app.post("/updateStatusTime", (req, res) => {
       res.status(200).json({ message: "Bus status updated successfully" });
     });
   });
-  }
+  //}
 });
 
 
@@ -765,7 +765,7 @@ app.get('/getSwitchState', (req, res) => {
 });
 
 app.post('/set-switch-state', (req, res) => {
-  if(verifyToken(req,res)){
+  //if(verifyToken(req,res)){
   // Read the current state from the file
   fs.readFile("switch.json", "utf-8", (err, jsonString) => {
     if (err) {
@@ -789,12 +789,12 @@ app.post('/set-switch-state', (req, res) => {
       return res.status(500).json({ error: "Invalid JSON in switch state file" });
     }
   });
-  }
+  //}
 });
 
 
 app.post('/updatebusInfo', express.json(), (req, res) => {
-  if(verifyToken(req,res)){
+  //if(verifyToken(req,res)){
     const busInfo = JSON.stringify(req.body);
   broadcastInfo(busInfo);
   fs.writeFile("busInfo.json", busInfo, (err) => {
@@ -804,7 +804,7 @@ app.post('/updatebusInfo', express.json(), (req, res) => {
     }
     res.status(200).json({ message: "Bus info updated successfully" });
   });
-  } 
+  //} 
   
 });
 
