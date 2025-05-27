@@ -236,9 +236,12 @@ function updateCookie() {
    expirationDate.setFullYear(expirationDate.getFullYear() + 10); // 10 years from now
 
    //for local host below
+
    //document.cookie = `starredBusses=${starredBussesString}; expires=${expirationDate.toUTCString()}; SameSite=None; Secure;`;
-   //for dev:           
-   document.cookie = `starredBusses=${starredBussesString}; expires=${expirationDate.toUTCString()}; SameSite=None; Secure; domain=nchsbusapp.org; path=/`;
+   //for live           
+   document.cookie = `starredBusses=${starredBussesString}; expires=${expirationDate.toUTCString()}; SameSite=None; Secure; domain=https://nchsbusapp.org; path=/`;
+   //for dev:
+   //document.cookie = `starredBusses=${starredBussesString}; expires=${expirationDate.toUTCString()}; SameSite=None; Secure; domain=https://bustest.redhawks.us; path=/`;
 
    //update database starredBusses
 
@@ -475,7 +478,7 @@ window.fetchBusses = function(){
       });
 }
 
-//const socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
+//onst socket = new WebSocket("ws://localhost:8080/ws/"); // Connect to WebSocket server
 const socket = new WebSocket("wss://nchsbusapp.org/ws/"); // Connect to WebSocket server
 //const socket = new WebSocket("wss://bustest.redhawks.us/ws/");
 
@@ -509,11 +512,10 @@ function starred() { //add isStarred
    const buttons = document.querySelectorAll('.starring');
    const clickedButton = event.target;
    const row = clickedButton.parentNode.parentNode; // Get the row associated with the clicked button
-   var initelement = row.cells[0]
+   var initelement = row.cells[0];
    var intValue = parseInt(initelement.textContent.trim(), 10);
    const table = row.parentNode; // Get the table element
-   let noOtherStars = false;
-
+   let noOtherStars = false
 
    if (!(starredBusses.has(intValue))) {
       starredBusses.add(intValue);
@@ -536,7 +538,7 @@ function starred() { //add isStarred
 
       table.insertBefore(row, table.firstChild.nextSibling);
    } else {
-
+      console.log("Removing starred bus:", intValue);
       let check = false;
       let v = 0;
 
